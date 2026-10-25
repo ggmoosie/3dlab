@@ -35,6 +35,7 @@ VARIANTS = {   # sRGB hex: fabric (Mask R), lining + drawstrings (Mask G)
     "Black": ("#1D1D1F", "#4C4B4A", None),
     "Olive": ("#4E5236", "#B6AC8E", None),
     "Navy": ("#1E2840", "#A3A6AB", None),
+    "Maroon": ("#6E1E26", "#7A2630", None),           # matches the user's reference: cords and lining in the body colour
     "NavyPrint": ("#1E2840", "#A3A6AB", "Print"),
 }
 
@@ -359,18 +360,42 @@ FBX_SK = dict(use_selection=True, apply_unit_scale=True, apply_scale_options="FB
               use_mesh_modifiers=True, use_custom_props=True, primary_bone_axis="Y", secondary_bone_axis="X")
 
 
+TRIMS = (G.R_STRING, G.R_KNOT, G.R_AGLET, G.R_GROM)
+
+
+def _split(o, keep_trims):
+    """Copy of o with only the cloth (keep_trims False) or only the trims (True)."""
+    c = o.copy(); c.data = o.data.copy()
+    for col in o.users_collection:
+        col.objects.link(c)
+    for m in list(c.modifiers):
+        c.modifiers.remove(m)
+    bm = bmesh.new(); bm.from_mesh(c.data)
+    lay = bm.faces.layers.int.get("reg")
+    dead = [f for f in bm.faces if (f[lay] in TRIMS) != keep_trims]
+    bmesh.ops.delete(bm, geom=dead, context="FACES")
+    bm.to_mesh(c.data); bm.free()
+    return c
+
+
 def lods(low):
+    """Cloth decimated (collapse) to hit 50 % / 25 % of LOD0 overall; eyelets, cords and aglets stay as built (decimating
+    them flattens a cord end into its aglet -> coplanar faces)."""
     out = []
+    total = len(low.data.polygons)
     for i, r in enumerate((0.5, 0.25), 1):
-        o = low.copy(); o.data = low.data.copy(); o.name = o.data.name = f"SK_{ITEM}_LOD{i}"
-        for c in low.users_collection:
-            c.objects.link(o)
-        for m in list(o.modifiers):
-            o.modifiers.remove(m)
-        d = o.modifiers.new("Decimate", "DECIMATE"); d.ratio = r; d.use_collapse_triangulate = True
-        d.vertex_group_factor = 0
-        bpy.context.view_layer.objects.active = o
+        cloth, trims = _split(low, False), _split(low, True)
+        nt = len(trims.data.polygons)
+        d = cloth.modifiers.new("Decimate", "DECIMATE")
+        d.ratio = max(0.05, (r * total - nt) / len(cloth.data.polygons)); d.use_collapse_triangulate = True
+        bpy.context.view_layer.objects.active = cloth
         bpy.ops.object.modifier_apply(modifier="Decimate")
+        bpy.ops.object.select_all(action="DESELECT")
+        cloth.select_set(True); trims.select_set(True)
+        bpy.context.view_layer.objects.active = cloth
+        bpy.ops.object.join()
+        o = cloth
+        o.name = o.data.name = f"SK_{ITEM}_LOD{i}"
         Wl = RG.cleanup(RG.group_matrix(o, RG.ALLOWED), None, smooth=0)       # decimation blends weights: re-limit to 4
         RG.write_groups(o, Wl)
         RG.bind(o, low.parent)
@@ -481,7 +506,7 @@ def renders(low, proxy, rig, mats):
     sc = bpy.context.scene
     skin_m = master.simple("M_ProxySkin", (0.62, 0.30, 0.22), 0.55)
     proxy.data.materials.clear(); proxy.data.materials.append(skin_m)
-    low.data.materials[0] = mats["Navy"]
+    low.data.materials[0] = mats["Maroon"]
     for o in bpy.data.collections["Work"].objects:
         o.hide_render = True
     scene.studio([proxy], key=1.0)
@@ -516,6 +541,49 @@ def renders(low, proxy, rig, mats):
     scene.render(detail, 1024, SMP, res_y=1024)
     log("  hero + detail rendered")
     return shots, hero, detail
+
+
+def turnaround(low, proxy, mats):
+    """The reference's four views (front, back, right profile, 3/4 from the front-right) on the proxy, Maroon, orthographic.
+    Our renders are committed; the side-by-side with the user's reference goes to work/ only (the reference is private)."""
+    from PIL import Image
+    low.data.materials[0] = mats["Maroon"]
+    proxy.data.materials[0] = master.simple("M_ProxySkin2", (0.62, 0.30, 0.22), 0.55)
+    views = [("front", 0), ("back", 180), ("right", -90), ("threequarter", -30)]
+    paths = []
+    sc = bpy.context.scene
+    bd = bpy.data.objects.get("Backdrop")
+    if bd:
+        bd.hide_render = True
+    bg = sc.world.node_tree.nodes["Background"].inputs
+    bg_old = (tuple(bg["Color"].default_value), bg["Strength"].default_value)
+    bg["Color"].default_value = (0.55, 0.56, 0.58, 1); bg["Strength"].default_value = 0.6
+    for nm, yaw in views:
+        y = math.radians(yaw)
+        c = cam_at((0, -2, 92), (400 * math.sin(y), -400 * math.cos(y), 0), name=f"ta_{nm}")
+        c.data.type = "ORTHO"; c.data.ortho_scale = 196
+        p = os.path.join(WORK, f"turn_{nm}.png")
+        scene.render(p, 600, min(SMP, 32), res_y=1086)
+        paths.append(p)
+    ims = [Image.open(p).convert("RGB") for p in paths]
+    if bd:
+        bd.hide_render = False
+    bg["Color"].default_value = bg_old[0]; bg["Strength"].default_value = bg_old[1]
+    strip = Image.new("RGB", (600 * 4, 1086))
+    for i, im in enumerate(ims):
+        strip.paste(im, (600 * i, 0))
+    strip.save(os.path.join(REND, "hoodie_turnaround.png"))
+    ref = os.path.join(HERE, "refs_user", "hoodie_turnaround.webp")
+    if os.path.exists(ref):
+        r = Image.open(ref).convert("RGB")
+        sh = Image.new("RGB", (600 * 4, 1086 * 2), (22, 23, 26))
+        for i in range(4):                                       # each reference panel centred over our view
+            pnl = r.crop((r.width * i // 4, 0, r.width * (i + 1) // 4, r.height)).resize((r.width // 4 * 1086 // r.height, 1086))
+            sh.paste(pnl, (600 * i + (600 - pnl.width) // 2, 0))
+        sh.paste(strip, (0, 1086))
+        sh.save(os.path.join(WORK, "ref_compare.png"))           # private: work/ is gitignored
+    low.data.materials[0] = mats["HeatherGrey"]
+    return os.path.join(REND, "hoodie_turnaround.png")
 
 
 def variant_strip(low, proxy, mats):
@@ -619,8 +687,9 @@ def main():
         log("renders")
         shots, hero, detail = renders(low, proxy, rig, mats)
         vstrip = variant_strip(low, proxy, mats)
+        turnaround(low, proxy, mats)
         sheet(shots + [hero], os.path.join(REND, "_sheet.png"),
-              "SK_Hoodie deformation QC on the proxy body (Navy) + hero (HeatherGrey)")
+              "SK_Hoodie deformation QC on the proxy body (Maroon) + hero (HeatherGrey)")
     low.data.materials[0] = bpy.data.materials[f"M_{ITEM}"]
     bpy.ops.wm.save_as_mainfile(filepath=blend)
     clip = clip_metric(low, proxy, rig, lowM["n_outer"])
@@ -635,9 +704,11 @@ def main():
         log(f"QC {nm}: {line}")
     man = {
         "item": ITEM, "replaces_rows": ["FleeceJacket"], "category": "clothes", "slot": "Shirt", "clip": None, "skeletal": True,
-        "real_object": "pullover fleece hoodie, men's L: chest ~112 cm, body length 68 cm from the high shoulder point, "
-                       "set-in sleeves 62 cm + 6.5 cm rib cuffs, 7 cm rib waistband, kangaroo pocket 32 x 21.5 cm, lined hood with "
-                       "drawstring channel, 2 metal eyelets, flat-ish cords (5 mm) with metal aglets and overhand knots",
+        "real_object": "plain heavy-fleece pullover hoodie, regular fit (user's 4-view reference): hem at the hip (z 89 cm) with a 7 cm rib "
+                       "band covering the belt line, slightly dropped set-in shoulders, sleeves to the wrist with 6.8 cm rib cuffs over "
+                       "the hand root, kangaroo pocket 34 x 16 cm from the band seam to the navel, lined hood worn down standing "
+                       "behind the neck (top ~158 cm, point ~138 cm), 2 metal eyelets ~4 cm off centre, 4 mm round cords ~24 cm with "
+                       "metal aglets",
         "dims_cm": [round(hi.x - lo.x, 1), round(hi.y - lo.y, 1), round(hi.z - lo.z, 1)],
         "pivot": "skeletal: origin = root bone at the floor between the feet; Blender cm scene (scale_length 0.01), FBX in cm",
         "skeleton": {"source": "props/brief/skeleton_ue5_manny_rest.json (rig built with anim/pill_bottle/pill_bottle_anim.build_rig)",
@@ -668,6 +739,7 @@ def main():
         "materials": {"slot": f"M_{ITEM}", "instances": [f"MI_{ITEM}_{v}" for v in VARIANTS]},
         "qc": {"clip_vs_proxy_body": clip, "mesh_qc": qc, "fbx_reimport": "PASS" if ok else "FAIL", "fbx_report": rep},
         "renders": {"sheet": "renders/_sheet.png", "hero": "renders/hoodie.png", "detail": "renders/hoodie_detail.png",
+                    "turnaround": "renders/hoodie_turnaround.png (Maroon; front, back, right profile, 3/4 like the user's reference)",
                     "variants": "renders/hoodie_variants.png"},
         "notes": "Sheen / cloth shading is not in M_Lab_Prop: the fleece fuzz lives in roughness + normal; a UE Cloth shading "
                  "model would add it. The knit at 13 px/cm is a visible-scale jersey/rib pattern, not thread-accurate."}

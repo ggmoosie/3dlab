@@ -112,7 +112,7 @@ def relax(V, F, fixed, f, target=0.0, iters=6, lam=0.45):
 
 # ------------------------------------------------------------------------------------------------------- body cage
 TH = np.radians(np.arange(12) * 30.0)                       # around the torso, 0 = front centre, +90 = left (+X)
-ROWS_Z = [B.Z_HEM, B.Z_BAND, 103.0, 116.0, 128.0]
+ROWS_Z = [B.Z_HEM, B.Z_BAND, 106.0, 117.0, 128.0]
 
 
 def ring_pts(z, scale=1.0):
@@ -169,7 +169,7 @@ def body_cage():
     r5 = []
     for k, t in enumerate(TH):
         if k in (3, 9):
-            p = (math.sin(t) * 20.4, 2.4, 146.4)
+            p = (math.sin(t) * 21.3, 2.4, 146.0)          # slightly dropped shoulder
         else:
             q = ring_pts(141.5)[k]
             z = 141.5 + (2.0 if abs(math.cos(t)) > 0.8 else 0.0) + (0.8 if math.cos(t) < -0.5 else 0.0)
@@ -204,7 +204,7 @@ def body_cage():
         fl = np.linalg.norm(wr - el)
         centres = [(sh + 0.25 * (el - sh), ud, 7.5), (sh + 0.84 * (el - sh), ud, 7.0),
                    (el, (ud + fd) / np.linalg.norm(ud + fd), 6.8), (el + 0.17 * (wr - el), fd, 6.6),
-                   (wr - 6.5 * fd, fd, 4.5), (wr + 0.6 * fd, fd, 4.2)]
+                   (wr - 5.2 * fd, fd, 4.5), (wr + 1.6 * fd, fd, 4.1)]      # cuff over the hand root
         # armhole angles in the upper-arm frame
         ref = np.array([0, -1.0, 0])
         e1 = ref - ref @ ud * ud; e1 /= np.linalg.norm(e1); e2 = np.cross(ud, e1)
@@ -286,7 +286,7 @@ def bez(p0, p1, p2, p3, t):
     return (1 - t) ** 3 * p0 + 3 * (1 - t) ** 2 * t * p1 + 3 * (1 - t) * t * t * p2 + t ** 3 * p3
 
 
-R1, R2 = 0.6, 0.85                          # roll-over radius at the neckline, crown-fold radius (layer gaps 1.2 / 1.7 cm)
+R1, R2 = 0.9, 0.85                          # roll-over radius at the neckline, crown-fold radius (layer gaps 1.2 / 1.7 cm)
 
 
 def hood_paths(N, phi, npts=30):
@@ -308,9 +308,9 @@ def hood_paths(N, phi, npts=30):
     dd = out_h + back[None] * (0.8 * np.abs(np.sin(phi)) * (np.cos(phi) < 0.3))[:, None]
     dd /= np.linalg.norm(dd, axis=1)[:, None]
     Nh = neckline_xyz(psi_h)                                    # where each column sits once past the V fan
-    h = 4.4 - 3.4 * wr
+    h = 4.4 + 2.3 * w - 1.6 * wr * (1 - w)        # collar at the V, lower roll at the sides, standing wall behind the neck
     th0 = -0.25 + 0.45 * wr
-    Lbag = 3.5 + 23.0 * backw ** 1.3
+    Lbag = 3.5 + 15.5 * backw ** 1.3            # hood point at the shoulder-blade line
     L1, L2 = w * Lbag, w * Lbag * 0.99
     T1, T2 = np.pi * wr, np.pi * sstep(0.0, 0.3, w)
     P = np.zeros((c, 5 * npts, 3)); sid = np.repeat(np.arange(5), npts)
@@ -348,6 +348,9 @@ def hood_paths(N, phi, npts=30):
         tt = np.linspace(0, 1, npts)
         mind[i, 3 * npts:4 * npts] = 2 * R1 + 2 * R2 * (1 - np.cos(np.pi * tt)) / 2
         mind[i, 4 * npts:] = 2 * R1 + 2 * R2
+    # the bag spreads sideways as it hangs (reference: hood about shoulder-blade wide)
+    drop = np.clip((N[:, None, 2] - P[..., 2]) / 12.0, 0, 1) * w[:, None]
+    P[..., 0] *= 1 + 0.4 * drop * (np.arange(P.shape[1])[None, :] >= npts)
     # keep hanging layers off the back (push along the support gradient)
     flat = P.reshape(-1, 3); md = (mind * w[:, None]).reshape(-1)
     sel = md > 0
@@ -367,7 +370,7 @@ def resample(P, sid, w, rows_mult=1):
     L = S[:, -1]
     body_end = np.maximum(L - CHAN_W, 0.45 * L)
     sb = np.stack([S[:, np.argmax(sid == k)] for k in range(5)], 1)
-    al = [0, 1, 3, 6, 8, 10]                     # rows at segment starts: rise 1, roll 2, layer 1 3, fold 2, layer 2 2
+    al = [0, 2, 4, 7, 9, 10]                     # rows at segment starts: rise 2, roll 2, layer 1 3, fold 2, layer 2 1
     ks = np.arange(0, 10 * rows_mult + 1) / rows_mult
     al_s = np.stack([np.interp(ks, al, [sb[i, 0], sb[i, 1], sb[i, 2], sb[i, 3], sb[i, 4], body_end[i]]) for i in range(c)])
     al_s = np.minimum(al_s, body_end[:, None])
@@ -432,7 +435,7 @@ def arm_coords(P, s):
 
 def pocket_mask(P):
     x, y, z = P[:, 0], P[:, 1], P[:, 2]
-    return (1 - sstep(15.5, 18.0, np.abs(x))) * (1 - sstep(113.0, 116.5, z)) * (1 - sstep(-4.0, 0.0, y)) * (z > 86)
+    return (1 - sstep(16.5, 19.0, np.abs(x))) * (1 - sstep(112.5, 116.0, z)) * (1 - sstep(-4.0, 0.0, y)) * (z > B.Z_BAND - 1)
 
 
 def folds(P, sl, level_hi=False, hood=None):
@@ -442,7 +445,7 @@ def folds(P, sl, level_hi=False, hood=None):
     d = np.zeros(n)
     x, y, z = P.T
     pm = pocket_mask(P)
-    prof = lambda a: np.abs(np.sin(a)) - 0.6              # rounded ridges, creased valleys
+    prof = lambda a: 0.75 * np.sin(a) + 0.25 * (np.abs(np.sin(a)) - 0.64)   # soft, rounded heavy-fleece folds
     for s, sg in (("l", 1), ("r", -1)):
         side = (np.sign(x) == sg) & (sl > 0.02)
         if not side.any():
@@ -462,7 +465,7 @@ def folds(P, sl, level_hi=False, hood=None):
         a = 2 * np.pi * (sarc - l1) / 3.4 + 1.3 * c + 0.7 * np.sin(2 * th)
         dd += 0.62 * (0.3 + 0.7 * np.maximum(c, 0)) * win * prof(a)
         # stacked bunching above the ribbed cuff
-        sc = l1 + l2 - 6.5
+        sc = l1 + l2 - 5.2
         win = np.exp(-((sarc - (sc - 4.5)) / 3.6) ** 2) * (sarc < sc + 0.3)
         a = 2 * np.pi * sarc / 2.8 + 0.9 * np.sin(2 * th + 0.4 * sarc) + 0.6 * th
         dd += 0.48 * win * prof(a)
@@ -471,9 +474,9 @@ def folds(P, sl, level_hi=False, hood=None):
         win = sstep(4, 9, sarc) * (1 - sstep(l1 - 8, l1 - 4, sarc))
         a = 2 * np.pi * (sarc + 3.0 * th) / 7.0
         dd += 0.26 * under * win * prof(a)
-        # forearm: a long soft twist
-        win = sstep(l1 + 3, l1 + 6, sarc) * (1 - sstep(sc - 9, sc - 6, sarc))
-        dd += 0.18 * win * prof(2 * np.pi * (sarc - 4.0 * th) / 9.0)
+        # forearm: soft horizontal wrinkles
+        win = sstep(l1 + 3, l1 + 6, sarc) * (1 - sstep(sc - 7, sc - 4, sarc))
+        dd += 0.30 * win * prof(2 * np.pi * sarc / 4.6 + 0.5 * np.sin(th) + 0.3 * th)
         if level_hi:
             win = np.exp(-((sarc - l1) / 7.0) ** 2) + np.exp(-((sarc - (sc - 4)) / 4.0) ** 2)
             dd += 0.12 * win * prof(2 * np.pi * sarc / 1.5 + 2.1 * th + 0.8 * np.sin(3 * th))
@@ -491,12 +494,12 @@ def folds(P, sl, level_hi=False, hood=None):
     # waist: gathers above the ribbed band (vertical) + the blouse rolling over the band (horizontal)
     cy = np.interp(z, B.BODY_T[:, 0], B.BODY_T[:, 3])
     th = np.arctan2(x, -(y - cy))
-    win = np.exp(-((z - 96.0) / 4.0) ** 2) * (z > B.Z_BAND)
-    d += torso * (1 - pm) * 0.50 * win * prof(7.0 * th + 0.9 * np.sin(3 * th) + 0.12 * z)
-    win = np.exp(-((z - 93.2) / 2.0) ** 2) * (z > B.Z_BAND + 0.3)
-    d += torso * (1 - pm) * 0.22 * win * prof(2 * np.pi * (z - B.Z_BAND) / 3.0 + 0.5 * np.sin(4 * th))
+    win = np.exp(-((z - (B.Z_BAND + 3.5)) / 3.0) ** 2) * (z > B.Z_BAND)
+    d += torso * (1 - pm) * 0.30 * win * prof(7.0 * th + 0.9 * np.sin(3 * th) + 0.12 * z)
+    win = np.exp(-((z - (B.Z_BAND + 1.6)) / 1.8) ** 2) * (z > B.Z_BAND + 0.3)
+    d += torso * (1 - pm) * 0.18 * win * prof(2 * np.pi * (z - B.Z_BAND) / 3.0 + 0.5 * np.sin(4 * th))
     # side seams pull a few diagonal folds over the hips
-    win = np.exp(-((z - 101.0) / 6.0) ** 2) * sstep(0.75, 0.95, np.abs(np.sin(th)))
+    win = np.exp(-((z - (B.Z_BAND + 6.0)) / 5.0) ** 2) * sstep(0.75, 0.95, np.abs(np.sin(th)))
     d += torso * (1 - pm) * 0.24 * win * prof(2 * np.pi * (z + 6 * np.abs(th)) / 6.5)
     # soft large-scale drape everywhere (keeps panels from looking inflated)
     d += (1 - pm) * 0.16 * np.sin(0.23 * x + 0.11 * z + 0.7) * np.sin(0.19 * y + 0.13 * z + 1.9)
@@ -534,7 +537,7 @@ def clear_body(V, F, thick, margin=0.35, mask=None):
 
 
 # ------------------------------------------------------------------------------------------------------------ pocket
-PK_Z0, PK_Z1, PK_ZO, PK_W0, PK_W1 = 91.9, 113.5, 97.0, 16.0, 9.5
+PK_Z0, PK_Z1, PK_ZO, PK_W0, PK_W1 = B.Z_BAND + 0.4, 112.5, B.Z_BAND + 3.5, 17.0, 10.5
 
 
 def pocket_edge_x(z):
@@ -689,7 +692,7 @@ def trefoil(centre, axis, scale, n):
 
 
 # ------------------------------------------------------------------------------------------------------- drawstrings
-STR_R, STR_SQ = 0.26, 0.75
+STR_R, STR_SQ = 0.2, 1.0
 
 
 def rope(start_pts, length, bvh, clear, seg=0.5, iters=260):
@@ -740,7 +743,7 @@ def string_paths(Vo, Fo, eyelets):
     from mathutils.bvhtree import BVHTree
     bvh = BVHTree.FromPolygons([Vector(v) for v in Vo], [list(map(int, f)) for f in Fo])
     out = []
-    for (p, n), length in zip(eyelets, (31.0, 28.5)):
+    for (p, n), length in zip(eyelets, (24.5, 23.8)):
         start = [p - n * 0.55, p - n * 0.1, p + n * 0.55, p + n * 1.0 + np.array([0, 0, -0.3])]
         X = rope(start, length, bvh, STR_R + 0.12)
         Xs = X.copy()
@@ -760,13 +763,9 @@ def string_parts(paths, hi=False):
         parts.append((V, F, sm, R_STRING, tube.coords))
         s = np.r_[0, np.cumsum(np.linalg.norm(np.diff(P, axis=0), axis=1))]
         at = lambda d: np.stack([np.interp(d, s, P[:, k]) for k in range(3)], -1)
-        kc = at(L - 3.0); kt = at(L - 2.6) - at(L - 3.4)
-        kn = trefoil(kc, kt, 0.15, 72 if hi else 24)
-        V, F, sm = tube(kn, 0.22, 8 if hi else 5, closed=True)
-        parts.append((V, F, sm, R_KNOT, tube.coords))
-        ag = np.stack([at(d) for d in np.linspace(L - 2.1, L, 8 if hi else 4)])
+        ag = np.stack([at(d) for d in np.linspace(L - 1.8, L, 8 if hi else 4)])
         ag[-1] += (ag[-1] - ag[-2]) / np.linalg.norm(ag[-1] - ag[-2]) * 0.1
-        V, F, sm = tube(ag, 0.31, 16 if hi else 6)
+        V, F, sm = tube(ag, 0.25, 16 if hi else 6)
         parts.append((V, F, sm, R_AGLET, tube.coords))
     return parts
 
@@ -821,10 +820,10 @@ def build(level, eyelets=None, paths=None, log=print):
         vn = vertex_normals(V, F)
         eyelets = []
         nn = idx.shape[0] - 1
-        for j in (2 * mult, nn - 2 * mult):
+        for j in (1 * mult, nn - 1 * mult):
             a, b = idx[j, cr], idx[j, rows - 1]
             p = (V[a] + V[b]) / 2; n = vn[a] + vn[b]; n /= np.linalg.norm(n)
-            eyelets.append((p + n * 0.0, n))
+            eyelets.append((p + n * 0.03, n))            # 0.3 mm proud: no flange face coplanar with the channel
     if paths is None:
         paths = string_paths(V, F, eyelets)
     # shells

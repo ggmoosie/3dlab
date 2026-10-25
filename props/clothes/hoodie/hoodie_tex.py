@@ -67,7 +67,7 @@ def details(R, px_cm, seams, V, wear_pts, seed=7):
     wale = np.abs(np.sin(np.pi * fu / w_p)) ** 0.6
     course = 0.5 + 0.5 * np.cos(2 * np.pi * (fv / c_p + 0.5 * np.mod(col, 2)) + 1.2 * (np.mod(fu / w_p, 1) - 0.5))
     knit = 0.6 * wale + 0.4 * wale * course
-    H += fab * (0.010 * knit + 0.006 * fuzz)
+    H += fab * (0.004 * knit + 0.004 * fuzz)          # heavy fleece: knit not visible at viewing distance
     # 2x1 ribbing on band and cuffs: raised ribs along the grain
     rp = 0.46
     ph = np.mod(fu / rp, 1.0)

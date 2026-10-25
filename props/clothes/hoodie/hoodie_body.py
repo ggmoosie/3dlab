@@ -141,9 +141,9 @@ BODY_T = np.array([
     (119, 15.7, 10.9, -6.0), (127, 16.7, 11.7, -6.0), (135, 17.2, 11.5, -5.5), (141, 16.3, 10.2, -3.9), (146, 12.6, 8.4, -1.6),
     (150, 7.6, 6.8, 0.2)])
 # outer-surface offset of the hoodie over the body loft (gap + fabric): band 0.5+0.7 rib, chest 0.8+0.45, waist relaxed
-EASE_T = np.array([(84.5, 1.25), (91.5, 1.3), (94.5, 2.6), (103, 2.3), (111, 2.1), (119, 1.7), (126, 1.35), (135, 1.25),
+EASE_T = np.array([(89.0, 1.25), (96.0, 1.3), (98.5, 1.9), (104, 2.0), (111, 1.9), (119, 1.6), (126, 1.35), (135, 1.25),
                    (141, 1.25), (146, 1.3), (151, 1.3)])
-Z_HEM, Z_BAND = 84.5, 91.5
+Z_HEM, Z_BAND = 89.0, 96.0          # reference: hem at the hip, 7 cm rib band covering the belt line
 
 
 def loft(P, tab, ease=None, z0=None, z1=None):
@@ -198,11 +198,11 @@ def arm_garment(P, s):
     sh, el, wr = J["upperarm_" + s], J["lowerarm_" + s], J["hand_" + s]
     fl = np.linalg.norm(wr - el)
     t = cone_t(P, el, wr)                                     # 0 elbow .. 1 wrist
-    cuff_top = 1 - 6.5 / fl
+    cuff_top = 1 - 5.2 / fl
     # forearm radius: body 4.1 -> 2.9; outer sleeve: + 2.45 relaxed, bunching flare just above the cuff, + 1.2 at the cuff
-    rb = 4.1 + (2.9 - 4.1) * np.clip(t, 0, 1)
+    rb = 4.1 + (2.9 - 4.1) * np.clip(t, 0, 1) - 0.25 * np.clip((t - 1) * fl, 0, 1.5)
     ease = np.interp(t, [0, 0.45, cuff_top - 0.06, cuff_top, cuff_top + 0.05, 1.0], [2.45, 2.5, 2.7, 1.9, 1.25, 1.2])
-    fore = cone(P, el, wr + (wr - el) / fl * 0.6, 1.0, 1.0) + 1.0 - (rb + ease)
+    fore = cone(P, el, wr + (wr - el) / fl * 1.9, 1.0, 1.0) + 1.0 - (rb + ease)
     up = cone(P, sh, el, 5.0 + 2.45, 4.1 + 2.45)
     return smin(up, fore, 1.5)
 

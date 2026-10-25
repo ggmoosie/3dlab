@@ -7,11 +7,11 @@
  "slot": "Shirt",
  "clip": null,
  "skeletal": true,
- "real_object": "pullover fleece hoodie, men's L: chest ~112 cm, body length 68 cm from the high shoulder point, set-in sleeves 62 cm + 6.5 cm rib cuffs, 7 cm rib waistband, kangaroo pocket 32 x 21.5 cm, lined hood with drawstring channel, 2 metal eyelets, flat-ish cords (5 mm) with metal aglets and overhand knots",
+ "real_object": "plain heavy-fleece pullover hoodie, regular fit (user's 4-view reference): hem at the hip (z 89 cm) with a 7 cm rib band covering the belt line, slightly dropped set-in shoulders, sleeves to the wrist with 6.8 cm rib cuffs over the hand root, kangaroo pocket 34 x 16 cm from the band seam to the navel, lined hood worn down standing behind the neck (top ~158 cm, point ~138 cm), 2 metal eyelets ~4 cm off centre, 4 mm round cords ~24 cm with metal aglets",
  "dims_cm": [
-  103.3,
-  31.4,
-  71.4
+  103.9,
+  32.3,
+  72.1
  ],
  "pivot": "skeletal: origin = root bone at the floor between the feet; Blender cm scene (scale_length 0.01), FBX in cm",
  "skeleton": {
@@ -58,16 +58,16 @@
    "min_cm": 0.35,
    "torso_p5_p50_p95_cm": [
     0.74,
-    1.25,
-    1.84
+    1.2,
+    1.53
    ]
   },
   "outer_envelope": "chest/back ~1.25 cm over the body (0.8 gap + 0.45 fleece), waist up to 2.6 cm (relaxed), rib band / cuffs 1.25 cm; hood lies on the upper back up to ~4.5 cm proud. Vests should clear body + 2 cm on the torso"
  },
  "tris": {
-  "SK_Hoodie": 14000,
-  "SK_Hoodie_LOD1": 7000,
-  "SK_Hoodie_LOD2": 3500
+  "SK_Hoodie": 13520,
+  "SK_Hoodie_LOD1": 6760,
+  "SK_Hoodie_LOD2": 3380
  },
  "textures": {
   "size": 2048,
@@ -83,9 +83,10 @@
    "Black": null,
    "Olive": null,
    "Navy": null,
+   "Maroon": null,
    "NavyPrint": "T_Hoodie_Label_Print.png"
   },
-  "texel_density_px_per_cm": 12.9,
+  "texel_density_px_per_cm": 12.4,
   "density_factors": {
    "inner": 0.4,
    "pocket_in": 0.4,
@@ -174,6 +175,25 @@
    "WearAmount": 0.35,
    "Dirt": 0.35
   },
+  "Maroon": {
+   "ColorA": [
+    0.15592646598815918,
+    0.012983030639588833,
+    0.019382361322641373
+   ],
+   "RoughA": 0.93,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.19461780786514282,
+    0.019382361322641373,
+    0.02955683320760727
+   ],
+   "RoughB": 0.86,
+   "MetalB": 0.0,
+   "LabelRough": 0.7,
+   "WearAmount": 0.35,
+   "Dirt": 0.35
+  },
   "NavyPrint": {
    "ColorA": [
     0.012983030639588833,
@@ -201,6 +221,7 @@
    "MI_Hoodie_Black",
    "MI_Hoodie_Olive",
    "MI_Hoodie_Navy",
+   "MI_Hoodie_Maroon",
    "MI_Hoodie_NavyPrint"
   ]
  },
@@ -213,45 +234,45 @@
     "outer_max_depth_cm": 0.0
    },
    "arms_up_90": {
-    "verts_inside_body": 13,
-    "max_depth_cm": 0.49,
-    "outer_surface_verts_inside": 1,
-    "outer_max_depth_cm": 0.05
+    "verts_inside_body": 20,
+    "max_depth_cm": 0.39,
+    "outer_surface_verts_inside": 0,
+    "outer_max_depth_cm": 0.0
    },
    "arms_forward": {
     "verts_inside_body": 13,
-    "max_depth_cm": 0.78,
+    "max_depth_cm": 0.69,
     "outer_surface_verts_inside": 7,
-    "outer_max_depth_cm": 0.78
+    "outer_max_depth_cm": 0.69
    },
    "crouch_twist": {
-    "verts_inside_body": 187,
-    "max_depth_cm": 1.95,
-    "outer_surface_verts_inside": 63,
-    "outer_max_depth_cm": 1.5
+    "verts_inside_body": 206,
+    "max_depth_cm": 1.91,
+    "outer_surface_verts_inside": 74,
+    "outer_max_depth_cm": 1.46
    },
    "elbow_120": {
     "verts_inside_body": 6,
-    "max_depth_cm": 0.1,
+    "max_depth_cm": 0.13,
     "outer_surface_verts_inside": 4,
-    "outer_max_depth_cm": 0.1
+    "outer_max_depth_cm": 0.13
    }
   },
   "mesh_qc": {
    "SK_Hoodie": {
     "errors": 0,
     "warnings": 3,
-    "summary": "QC SUMMARY objects=1 shells=10 tris=14000 errors=0 warnings=3 -> PASS"
+    "summary": "QC SUMMARY objects=1 shells=8 tris=13520 errors=0 warnings=3 -> PASS"
    },
    "SK_Hoodie_LOD1": {
     "errors": 0,
-    "warnings": 3,
-    "summary": "QC SUMMARY objects=1 shells=10 tris=7000 errors=0 warnings=3 -> PASS"
+    "warnings": 2,
+    "summary": "QC SUMMARY objects=1 shells=8 tris=6760 errors=0 warnings=2 -> PASS"
    },
    "SK_Hoodie_LOD2": {
     "errors": 0,
     "warnings": 3,
-    "summary": "QC SUMMARY objects=1 shells=10 tris=3500 errors=0 warnings=3 -> PASS"
+    "summary": "QC SUMMARY objects=1 shells=8 tris=3380 errors=0 warnings=3 -> PASS"
    }
   },
   "fbx_reimport": "PASS",
@@ -304,7 +325,7 @@
      1.0
     ],
     "max_influences": 4,
-    "tris": 14000,
+    "tris": 13520,
     "materials": [
      "M_Hoodie"
     ],
@@ -359,7 +380,7 @@
      1.0
     ],
     "max_influences": 4,
-    "tris": 7000,
+    "tris": 6760,
     "materials": [
      "M_Hoodie"
     ],
@@ -414,7 +435,7 @@
      1.0
     ],
     "max_influences": 4,
-    "tris": 3500,
+    "tris": 3380,
     "materials": [
      "M_Hoodie"
     ],
@@ -427,6 +448,7 @@
   "sheet": "renders/_sheet.png",
   "hero": "renders/hoodie.png",
   "detail": "renders/hoodie_detail.png",
+  "turnaround": "renders/hoodie_turnaround.png (Maroon; front, back, right profile, 3/4 like the user's reference)",
   "variants": "renders/hoodie_variants.png"
  },
  "notes": "Sheen / cloth shading is not in M_Lab_Prop: the fleece fuzz lives in roughness + normal; a UE Cloth shading model would add it. The knit at 13 px/cm is a visible-scale jersey/rib pattern, not thread-accurate."
