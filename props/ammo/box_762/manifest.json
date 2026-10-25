@@ -1,0 +1,162 @@
+{
+ "item": "AmmoBox762",
+ "replaces_rows": [
+  "762RoundBox (new)"
+ ],
+ "category": "ammo",
+ "clip": null,
+ "real_object": "20-round .308 / 7.62x51 box: 5.8 x 7.0 x 7.7 cm",
+ "dims_cm": [
+  5.8,
+  7.0,
+  7.7
+ ],
+ "pivot": "bottom centre, long axis +Y, front (tuck side) faces -X",
+ "parts": {
+  "SM_AmmoBox762_Lid": {
+   "pivot": "hinge line, top of the +X wall",
+   "rest_location_cm": [
+    2.9,
+    0,
+    7.7
+   ],
+   "rest_rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "opens": "about local +Y, 0 -> 115 deg"
+  },
+  "SM_AmmoBox762_Tray": {
+   "pivot": "tray bottom centre",
+   "rest_location_cm": [
+    0,
+    0,
+    0.06
+   ],
+   "rest_rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "opens": "slides +Z, 4.1 cm to clear the walls"
+  }
+ },
+ "contents": {
+  "round_mesh": "SM_Round762_Low",
+  "count": 20,
+  "printed_count": 20,
+  "slot_base_z_cm": 0.38,
+  "slots_cm": [
+   [
+    -2.1,
+    -2.72
+   ],
+   [
+    -0.7,
+    -2.72
+   ],
+   [
+    0.7,
+    -2.72
+   ],
+   [
+    2.1,
+    -2.72
+   ],
+   [
+    -2.1,
+    -1.36
+   ],
+   [
+    -0.7,
+    -1.36
+   ],
+   [
+    0.7,
+    -1.36
+   ],
+   [
+    2.1,
+    -1.36
+   ],
+   [
+    -2.1,
+    0.0
+   ],
+   [
+    -0.7,
+    0.0
+   ],
+   [
+    0.7,
+    0.0
+   ],
+   [
+    2.1,
+    0.0
+   ],
+   [
+    -2.1,
+    1.36
+   ],
+   [
+    -0.7,
+    1.36
+   ],
+   [
+    0.7,
+    1.36
+   ],
+   [
+    2.1,
+    1.36
+   ],
+   [
+    -2.1,
+    2.72
+   ],
+   [
+    -0.7,
+    2.72
+   ],
+   [
+    0.7,
+    2.72
+   ],
+   [
+    2.1,
+    2.72
+   ]
+  ]
+ },
+ "tris": {
+  "SM_AmmoBox762": 156,
+  "SM_AmmoBox762_Lid": 28,
+  "SM_AmmoBox762_Tray": 140
+ },
+ "textures": {
+  "size": 1024,
+  "normal": "OpenGL (flip green in UE)",
+  "variants": {
+   "Default": "T_AmmoBox762_Label_Default.png"
+  }
+ },
+ "variant_params": {
+  "Default": {
+   "ColorA": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "LabelRough": 0.6,
+   "WearAmount": 0.45,
+   "Dirt": 0.45
+  }
+ },
+ "mask": "R tray plastic \u00b7 B print \u00b7 A fold-edge wear",
+ "collision": "UCX_SM_AmmoBox762_00 (box hull)",
+ "lods": "none (< 2k tris)"
+}

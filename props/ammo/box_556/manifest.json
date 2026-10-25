@@ -1,0 +1,282 @@
+{
+ "item": "AmmoBox556",
+ "replaces_rows": [
+  "556RoundBox"
+ ],
+ "category": "ammo",
+ "clip": null,
+ "real_object": "50-round 5.56 tuck box with tray, sized to the DT_Ammo row 11.9 x 5.8 x 7.4 cm",
+ "dims_cm": [
+  5.8,
+  11.9,
+  7.4
+ ],
+ "pivot": "bottom centre, long axis +Y, front (tuck side) faces -X",
+ "parts": {
+  "SM_AmmoBox556_Lid": {
+   "pivot": "hinge line, top of the +X wall",
+   "rest_location_cm": [
+    2.9,
+    0,
+    7.4
+   ],
+   "rest_rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "opens": "about local +Y, 0 -> 115 deg"
+  },
+  "SM_AmmoBox556_Tray": {
+   "pivot": "tray bottom centre",
+   "rest_location_cm": [
+    0,
+    0,
+    0.06
+   ],
+   "rest_rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "opens": "slides +Z, 4.5 cm to clear the walls"
+  }
+ },
+ "contents": {
+  "round_mesh": "SM_Round556_Low",
+  "count": 50,
+  "printed_count": 50,
+  "slot_base_z_cm": 1.45,
+  "slots_cm": [
+   [
+    -2.24,
+    -5.265
+   ],
+   [
+    -1.12,
+    -5.265
+   ],
+   [
+    0.0,
+    -5.265
+   ],
+   [
+    1.12,
+    -5.265
+   ],
+   [
+    2.24,
+    -5.265
+   ],
+   [
+    -2.24,
+    -4.095
+   ],
+   [
+    -1.12,
+    -4.095
+   ],
+   [
+    0.0,
+    -4.095
+   ],
+   [
+    1.12,
+    -4.095
+   ],
+   [
+    2.24,
+    -4.095
+   ],
+   [
+    -2.24,
+    -2.925
+   ],
+   [
+    -1.12,
+    -2.925
+   ],
+   [
+    0.0,
+    -2.925
+   ],
+   [
+    1.12,
+    -2.925
+   ],
+   [
+    2.24,
+    -2.925
+   ],
+   [
+    -2.24,
+    -1.755
+   ],
+   [
+    -1.12,
+    -1.755
+   ],
+   [
+    0.0,
+    -1.755
+   ],
+   [
+    1.12,
+    -1.755
+   ],
+   [
+    2.24,
+    -1.755
+   ],
+   [
+    -2.24,
+    -0.585
+   ],
+   [
+    -1.12,
+    -0.585
+   ],
+   [
+    0.0,
+    -0.585
+   ],
+   [
+    1.12,
+    -0.585
+   ],
+   [
+    2.24,
+    -0.585
+   ],
+   [
+    -2.24,
+    0.585
+   ],
+   [
+    -1.12,
+    0.585
+   ],
+   [
+    0.0,
+    0.585
+   ],
+   [
+    1.12,
+    0.585
+   ],
+   [
+    2.24,
+    0.585
+   ],
+   [
+    -2.24,
+    1.755
+   ],
+   [
+    -1.12,
+    1.755
+   ],
+   [
+    0.0,
+    1.755
+   ],
+   [
+    1.12,
+    1.755
+   ],
+   [
+    2.24,
+    1.755
+   ],
+   [
+    -2.24,
+    2.925
+   ],
+   [
+    -1.12,
+    2.925
+   ],
+   [
+    0.0,
+    2.925
+   ],
+   [
+    1.12,
+    2.925
+   ],
+   [
+    2.24,
+    2.925
+   ],
+   [
+    -2.24,
+    4.095
+   ],
+   [
+    -1.12,
+    4.095
+   ],
+   [
+    0.0,
+    4.095
+   ],
+   [
+    1.12,
+    4.095
+   ],
+   [
+    2.24,
+    4.095
+   ],
+   [
+    -2.24,
+    5.265
+   ],
+   [
+    -1.12,
+    5.265
+   ],
+   [
+    0.0,
+    5.265
+   ],
+   [
+    1.12,
+    5.265
+   ],
+   [
+    2.24,
+    5.265
+   ]
+  ]
+ },
+ "tris": {
+  "SM_AmmoBox556": 156,
+  "SM_AmmoBox556_Lid": 28,
+  "SM_AmmoBox556_Tray": 140
+ },
+ "textures": {
+  "size": 2048,
+  "normal": "OpenGL (flip green in UE)",
+  "variants": {
+   "Default": "T_AmmoBox556_Label_Default.png"
+  }
+ },
+ "variant_params": {
+  "Default": {
+   "ColorA": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "LabelRough": 0.6,
+   "WearAmount": 0.45,
+   "Dirt": 0.45
+  }
+ },
+ "mask": "R tray plastic \u00b7 B print \u00b7 A fold-edge wear",
+ "collision": "UCX_SM_AmmoBox556_00 (box hull)",
+ "lods": "none (< 2k tris)"
+}
