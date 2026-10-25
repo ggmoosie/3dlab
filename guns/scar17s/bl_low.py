@@ -151,7 +151,27 @@ def main():
         o.name = o.data.name = name
         o.data.materials.clear()
         bm = bmesh.new(); bm.from_mesh(o.data); bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-6)
-        bmesh.ops.dissolve_degenerate(bm, dist=1e-5, edges=bm.edges[:]); bmesh.ops.triangulate(bm, faces=[f for f in bm.faces if len(f.verts) > 3])
+        bmesh.ops.dissolve_degenerate(bm, dist=1e-5, edges=bm.edges[:])
+        # game-mesh hygiene: close small holes left by decimation/clipping, drop tiny detached islands (< 60 faces)
+        bmesh.ops.holes_fill(bm, edges=[e for e in bm.edges if e.is_boundary], sides=16)
+        seen, drop = set(), []
+        for f0 in bm.faces:
+            if f0.index in seen:
+                continue
+            st, isl = [f0], []
+            seen.add(f0.index)
+            while st:
+                f = st.pop(); isl.append(f)
+                for e in f.edges:
+                    for g in e.link_faces:
+                        if g.index not in seen:
+                            seen.add(g.index); st.append(g)
+            if len(isl) < 60:
+                drop += isl
+        if drop:
+            bmesh.ops.delete(bm, geom=list(set(drop)), context="FACES")
+            log(f"  {asm}: dropped {len(set(drop))} faces of tiny islands")
+        bmesh.ops.triangulate(bm, faces=[f for f in bm.faces if len(f.verts) > 3])
         bm.to_mesh(o.data); bm.free()
         w = o.modifiers.new("wn", "WEIGHTED_NORMAL"); w.mode = "FACE_AREA"; w.weight = 50; w.keep_sharp = False; w.thresh = 0.01
         with bpy.context.temp_override(object=o, active_object=o):

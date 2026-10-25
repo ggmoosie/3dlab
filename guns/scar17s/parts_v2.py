@@ -314,7 +314,7 @@ def _drum(X, Y, Z, x, row, rpx, x0, x1, knurl=True):
 
 
 def rsight(X, Y, Z):
-    d = _sight(X, Y, Z, [(660, 841), (660, 826), (672, 815), (690, 820), (703, 834), (703, 841)], (662, 762, 679, 818), 4.2)
+    d = _sight(X, Y, Z, [(661.5, 841), (661.5, 826), (673, 815), (690, 820), (703.5, 834), (703.5, 841)], (662, 762, 679, 818), 4.2)
     d = S.union(d, _drum(X, Y, Z, 670, 826, 10.5, -13.8, 10.5))                    # windage / hinge drum, knob right
     d = S.union(d, _drum(X, Y, Z, 689, 837, 6.0, -12.0, 12.0, knurl=False))         # cross-bolt boss
     y, z = bp(670, 775)
@@ -615,7 +615,7 @@ def screws_stock(X, Y, Z):
 def table():
     T = {}
     lo, hi = _bb("upper", 10, 34)
-    T["upper"] = (upper, (lo[0], R.extent("hinge")[0] - 6, lo[2]), hi, 0.4, "anod")
+    T["upper"] = (upper, (lo[0], R.extent("hinge")[0] - 6, min(lo[2], R.extent("hinge")[2] - 6)), hi, 0.4, "anod")
     lo, hi = _bb("upper", 10, 34)
     T["upperhw"] = (upper_hw_parts, (-34, lo[1], -48), (62, hi[1], 50), 0.18, "steel")
     ych, zch = bp(1100, 869)
