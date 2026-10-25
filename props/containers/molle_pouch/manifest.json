@@ -6,114 +6,162 @@
  "category": "containers",
  "clip": null,
  "dims_cm": [
-  15.1,
-  8.3,
-  17.1
+  16.4,
+  8.55,
+  17.49
  ],
- "real_object": "MOLLE general-purpose pouch, 500D nylon, 3 PALS rows",
- "pivot": "base centre",
+ "real_object": "6x6 MOLLE utility pouch (clamshell zipper), 1000D cordura: body 15.2 x 7.6 x 15.2 cm; bbox includes the PALS straps, top strap tabs and cord pulls",
+ "pivot": "base centre, +Z up, front = -Y",
  "parts": {
   "SM_GPPouch_Flap": {
-   "pivot": "rear hinge at the top",
-   "opens": "about local X to -100 deg"
+   "pivot": "fold line across the front at the zipper ends (x 0, y -4.1, z 6.9 cm)",
+   "rest_location_cm": [
+    0.0,
+    -4.1,
+    6.9
+   ],
+   "rest_rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "opens": "about local X to +100 deg (front-upper clamshell folds forward and down)",
+   "contract_change": "was 'rear hinge at the top, about local X to -100 deg' (top lid); the 6x6 reference is a clamshell zipped down both gussets, so the part now hinges at the front fold line"
   }
  },
  "grid_suggestion": "2x2 container, 2x3 inside",
  "tris": {
-  "SM_GPPouch": 3256,
-  "SM_GPPouch_Flap": 1420,
-  "SM_GPPouch_LOD1": 1628,
-  "SM_GPPouch_LOD2": 814
+  "SM_GPPouch": 6744,
+  "SM_GPPouch_Flap": 2168,
+  "SM_GPPouch_LOD1": 3372,
+  "SM_GPPouch_LOD2": 1686,
+  "SM_GPPouch_Flap_LOD1": 1084,
+  "SM_GPPouch_Flap_LOD2": 542
  },
  "textures": {
   "size": 2048,
   "normal": "OpenGL (flip green in UE)",
+  "maps": {
+   "BaseColor": "T_GPPouch_BaseColor.png",
+   "Normal": "T_GPPouch_Normal.png",
+   "ORM": "T_GPPouch_ORM.png",
+   "Mask": "T_GPPouch_Mask.png"
+  },
   "variants": {
-   "Coyote": "T_GPPouch_Label_Coyote.png",
-   "RangerGreen": "T_GPPouch_Label_RangerGreen.png",
-   "Black": "T_GPPouch_Label_Black.png",
-   "WolfGrey": "T_GPPouch_Label_WolfGrey.png",
-   "Woodland": "T_GPPouch_Label_Woodland.png",
-   "UrbanDigital": "T_GPPouch_Label_UrbanDigital.png"
+   "RangerGreen": null,
+   "Coyote": null,
+   "Black": null,
+   "WolfGrey": null,
+   "MultiTerrain": "T_GPPouch_Label_MultiTerrain.png"
   }
  },
+ "mask": "R fabric (cordura), G webbing/thread/trim/plastic hardware, B print area (camo skins only; solid skins leave it empty), A wear",
  "variant_params": {
-  "Coyote": {
-   "ColorB": [
-    0.03,
-    0.03,
-    0.03
-   ],
-   "RoughB": 0.45,
-   "MetalB": 0.0,
-   "LabelRough": 0.85,
-   "WearAmount": 0.4,
-   "Dirt": 0.45
-  },
   "RangerGreen": {
-   "ColorB": [
-    0.03,
-    0.03,
-    0.03
+   "ColorA": [
+    0.10459999740123749,
+    0.08869999647140503,
+    0.054499998688697815
    ],
-   "RoughB": 0.45,
+   "RoughA": 0.8,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.19460000097751617,
+    0.16509999334812164,
+    0.13289999961853027
+   ],
+   "RoughB": 0.78,
    "MetalB": 0.0,
-   "LabelRough": 0.85,
-   "WearAmount": 0.4,
-   "Dirt": 0.45
+   "LabelRough": 0.8,
+   "WearAmount": 0.08,
+   "Dirt": 0.3
+  },
+  "Coyote": {
+   "ColorA": [
+    0.2085999995470047,
+    0.1356000006198883,
+    0.06480000168085098
+   ],
+   "RoughA": 0.8,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.2542000114917755,
+    0.17790000140666962,
+    0.09759999811649323
+   ],
+   "RoughB": 0.78,
+   "MetalB": 0.0,
+   "LabelRough": 0.8,
+   "WearAmount": 0.08,
+   "Dirt": 0.3
   },
   "Black": {
-   "ColorB": [
-    0.02,
-    0.02,
-    0.02
+   "ColorA": [
+    0.013700000010430813,
+    0.013700000010430813,
+    0.015200000256299973
    ],
-   "RoughB": 0.45,
+   "RoughA": 0.8,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.01850000023841858,
+    0.01850000023841858,
+    0.0203000009059906
+   ],
+   "RoughB": 0.78,
    "MetalB": 0.0,
-   "LabelRough": 0.85,
-   "WearAmount": 0.4,
-   "Dirt": 0.45
+   "LabelRough": 0.8,
+   "WearAmount": 0.08,
+   "Dirt": 0.3
   },
   "WolfGrey": {
-   "ColorB": [
-    0.03,
-    0.03,
-    0.03
+   "ColorA": [
+    0.1143999993801117,
+    0.11949999630451202,
+    0.12479999661445618
    ],
-   "RoughB": 0.45,
+   "RoughA": 0.8,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.1746000051498413,
+    0.18119999766349792,
+    0.19460000097751617
+   ],
+   "RoughB": 0.78,
    "MetalB": 0.0,
-   "LabelRough": 0.85,
-   "WearAmount": 0.4,
-   "Dirt": 0.45
+   "LabelRough": 0.8,
+   "WearAmount": 0.08,
+   "Dirt": 0.3
   },
-  "Woodland": {
-   "ColorB": [
-    0.25,
-    0.2,
-    0.12
+  "MultiTerrain": {
+   "ColorA": [
+    0.3231000006198883,
+    0.2542000114917755,
+    0.13840000331401825
    ],
-   "RoughB": 0.45,
-   "MetalB": 0.0,
-   "LabelRough": 0.85,
-   "WearAmount": 0.4,
-   "Dirt": 0.45
-  },
-  "UrbanDigital": {
+   "RoughA": 0.8,
+   "MetalA": 0.0,
    "ColorB": [
-    0.03,
-    0.03,
-    0.03
+    0.27469998598098755,
+    0.2231999933719635,
+    0.1273999959230423
    ],
-   "RoughB": 0.45,
+   "RoughB": 0.78,
    "MetalB": 0.0,
-   "LabelRough": 0.85,
-   "WearAmount": 0.4,
-   "Dirt": 0.45
+   "LabelRough": 0.8,
+   "WearAmount": 0.08,
+   "Dirt": 0.3
   }
  },
- "collision": "UCX_SM_GPPouch_00",
+ "collision": [
+  "UCX_SM_GPPouch_00",
+  "UCX_SM_GPPouch_Flap_00"
+ ],
  "lods": [
-  "SM_GPPouch_LOD1 (50%)",
-  "SM_GPPouch_LOD2 (25%)"
- ]
+  "SM_GPPouch_LOD1",
+  "SM_GPPouch_LOD2",
+  "SM_GPPouch_Flap_LOD1",
+  "SM_GPPouch_Flap_LOD2"
+ ],
+ "notes": "Texture detail: baked high->low normal/AO/curvature + synthesised weave, webbing ribs, stitch rows, bar-tacks, paracord braid. Liner (inside) at 0.3x texel density."
 }
