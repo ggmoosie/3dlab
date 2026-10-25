@@ -270,7 +270,7 @@ def upper_hw_parts(X, Y, Z):
     """black hardware traced from the photo (port frame + folded charging handle, QD plates, hinge plate, sling cup)"""
     hw = upper_hw(Y, Z)
     # rear hinge strip (black, both sides): clean plate with rounded ends instead of the traced outline
-    strip = S.extrude(_rect_px(Y, Z, 617, 849, 627, 998, 1.2), np.abs(X), hw - 0.8, hw + 1.0, 0.6)
+    strip = S.extrude(_rect_px(Y, Z, 617, 849, 627, 942, 1.2), np.abs(X), hw - 0.8, hw + 1.0, 0.6)
     d = S.union(strip, side_plates(X, Y, Z, hw))
     # inside the side slot (refs): the black charging rail, round rear end, a pin dot, recessed in the slot
     rail = S.extrude(_cap(Y, Z, (864, 869), (1098, 869), 6.5), np.abs(X), hw - 6.5, hw - 2.6, 0.8)
@@ -290,7 +290,7 @@ def _poly2(Y, Z, pts_px):
     return d
 
 
-def _sight(X, Y, Z, base_px, leaf_px, leaf_hw, base_hw=10.5):
+def _sight(X, Y, Z, base_px, leaf_px, leaf_hw, base_hw=11.6):
     """folding sight measured off the photo (clean machined shapes, not the traced outline): chamfered clamp base
     straddling the rail + thin flip leaf with a rounded top"""
     base = S.extrude(_poly2(Y, Z, base_px), np.abs(X), -base_hw, base_hw, 1.0)
@@ -319,7 +319,6 @@ def rsight(X, Y, Z):
     d = S.union(d, _drum(X, Y, Z, 689, 837, 6.0, -12.0, 12.0, knurl=False))         # cross-bolt boss
     y, z = bp(670, 775)
     d = S.diff(d, S.cyl(X, Y, Z, "y", (0, z), 1.3, y - 30, y + 30))                 # peep aperture
-    d = S.rdiff(d, S.box(X, Y, Z, (-2.0, y - 3, z - 12), (2.0, y + 3, z - 4), 1.0), 0.4)   # lightening window
     return d
 
 
@@ -329,7 +328,7 @@ def fsight(X, Y, Z):
     gap = np.maximum(np.maximum(np.abs(X) - 3.8, zp - Z), -(np.abs(X) - 1.1))     # protective ears around the post
     d = S.rdiff(d, gap, 0.3)
     d = S.union(d, _drum(X, Y, Z, 1563, 818, 5.0, -8.0, 8.0, knurl=False))         # leaf hinge pin
-    return DT.apply(d, X, Y, Z, "fsight", 10.5, mirror=False)
+    return DT.apply(d, X, Y, Z, "fsight", 11.6, mirror=False)
 
 
 # ------------------------------------------------------------------ bolt carrier group
@@ -600,7 +599,7 @@ def screws_upper(X, Y, Z):
     """steel heads on the receiver, its plates and the sights (one shell per assembly so the stock can fold)"""
     hw = upper_hw(Y, Z)
     return np.minimum.reduce([DT.heads(X, Y, Z, "upper", hw), DT.heads(X, Y, Z, "plate", hw + 1.6),
-                              DT.heads(X, Y, Z, "fsight", 10.5, mirror=False)])
+                              DT.heads(X, Y, Z, "fsight", 11.6, mirror=False)])
 
 
 def screws_lower(X, Y, Z):
@@ -618,7 +617,7 @@ def table():
     lo, hi = _bb("upper", 10, 34)
     T["upper"] = (upper, (lo[0], R.extent("hinge")[0] - 6, lo[2]), hi, 0.4, "anod")
     lo, hi = _bb("upper", 10, 34)
-    T["upperhw"] = (upper_hw_parts, (-34, lo[1], -40), (62, hi[1], 50), 0.18, "steel")
+    T["upperhw"] = (upper_hw_parts, (-34, lo[1], -48), (62, hi[1], 50), 0.18, "steel")
     ych, zch = bp(1100, 869)
     T["chandle"] = (chandle, (-62, ych - 30, zch - 25), (62, ych + 18, zch + 12), 0.15, "steel")
     T["screws_u"] = (screws_upper, (-34, R.px2b(600, 0)[0], -30), (34, R.px2b(1610, 0)[0], 90), 0.14, "steel")
@@ -631,7 +630,7 @@ def table():
     T["bolt"] = (bcg, (-17, -134, -18), (17, 3, 25), 0.25, "park")
     T["lower"] = (lower, *_bb("lower", 8, 26), 0.32, "poly")
     T["trigger"] = (trigger, *_bb("trigger", 4, 6), 0.12, "steel")
-    T["controls"] = (controls, (-27, R.px2b(700, 0)[0], R.px2b(0, 1010)[1]), (27, R.px2b(930, 0)[0], R.px2b(0, 930)[1]), 0.14, "steel")
+    T["controls"] = (controls, (-27, R.px2b(700, 0)[0], R.px2b(0, 1032)[1]), (27, R.px2b(930, 0)[0], R.px2b(0, 930)[1]), 0.14, "steel")
     T["pins"] = (pins, (-26, R.px2b(615, 0)[0], -50), (26, R.px2b(1050, 0)[0], -30), 0.15, "steel")
     T["grip"] = (grip, *_bb("grip", 6, 18), 0.28, "poly")
     T["vgrip"] = (vgrip, *_bb("vgrip", 6, 17), 0.28, "poly")
