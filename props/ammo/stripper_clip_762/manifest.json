@@ -1,0 +1,94 @@
+{
+ "item": "StripperClip762",
+ "replaces_rows": [
+  "StripperClip (new)"
+ ],
+ "category": "ammo",
+ "clip": null,
+ "real_object": "5-round 7.62x51 / M14-pattern stamped steel stripper clip, 6.2 x 1.4 x 0.3 cm",
+ "dims_cm": [
+  1.32,
+  6.15,
+  0.38
+ ],
+ "pivot": "bottom centre, channel along +Y",
+ "contents": {
+  "round_mesh": "SM_Round762_Low",
+  "count": 5,
+  "slots_cm": [
+   [
+    0.0,
+    -2.42,
+    0.0
+   ],
+   [
+    0.0,
+    -1.21,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    1.21,
+    0.0
+   ],
+   [
+    0.0,
+    2.42,
+    0.0
+   ]
+  ]
+ },
+ "tris": {
+  "SM_StripperClip762": 108
+ },
+ "textures": {
+  "size": 512,
+  "normal": "OpenGL (flip green in UE)"
+ },
+ "variant_params": {
+  "Phosphate": {
+   "ColorA": [
+    0.09,
+    0.095,
+    0.085
+   ],
+   "RoughA": 0.7,
+   "MetalA": 0.6,
+   "LabelRough": 0.5,
+   "WearAmount": 0.4,
+   "Dirt": 0.5
+  },
+  "Blued": {
+   "ColorA": [
+    0.04,
+    0.045,
+    0.06
+   ],
+   "RoughA": 0.35,
+   "MetalA": 1.0,
+   "LabelRough": 0.5,
+   "WearAmount": 0.4,
+   "Dirt": 0.5
+  },
+  "Brass": {
+   "ColorA": [
+    0.7,
+    0.5,
+    0.2
+   ],
+   "RoughA": 0.32,
+   "MetalA": 1.0,
+   "LabelRough": 0.5,
+   "WearAmount": 0.4,
+   "Dirt": 0.5
+  }
+ },
+ "mask": "R finish \u00b7 A edge wear",
+ "collision": "UCX_SM_StripperClip762_00",
+ "lods": "none"
+}

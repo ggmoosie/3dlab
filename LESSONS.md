@@ -7,3 +7,4 @@
 - 2026-10-25: FBX re-import flagged decal holes → `use_custom_props=False` dropped `qc_open` → export custom props (UE ignores them).
 - 2026-10-25: background build died after save → `&` inside a run_in_background command → let the tool background it; never add `&`.
 - 2026-10-25: dieline prints mirrored → u must follow the viewer's right seen from outside: flip +Y, -X, -Z faces.
+- 2026-10-25: ammo-can latch union silently lost the plate (open edges + a "floating" tab) → `geo.rounded_box` corner radius r = 3 mm on a 3 mm-thick plate degenerates the bevel, and EXACT booleans on it drop the operand → keep r < half the smallest side; check bounds/open edges after each union when a part goes missing.
