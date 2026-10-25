@@ -19,14 +19,14 @@ PARTS = ["Upper", "Barrel", "Muzzle", "Bolt", "Lower", "Grip", "VGrip", "Stock",
 RECEIVER = ("Upper", "Lower", "Grip", "VGrip", "Stock", "Mag")
 # FDE measured on the profile master (photo ratios: anodised R/G 1.40 B/G 0.58; polymer R/G 1.7 B/G 0.43; grips paler)
 VARIANTS = {
-    "FDE": dict(ColorA=(0.34, 0.243, 0.141), RoughA=0.5, MetalA=0.0, ColorB=(0.32, 0.192, 0.083), RoughB=0.62, MetalB=0.0,
-                LabelRough=0.6, WearAmount=0.3, Dirt=0.45),
+    "FDE": dict(ColorA=(0.1440, 0.0868, 0.0288), RoughA=0.5, MetalA=0.0, ColorB=(0.3639, 0.1948, 0.0458), RoughB=0.62, MetalB=0.0,
+                LabelRough=0.6, WearAmount=0.12, Dirt=0.15),                    # look_match.py fit to the hero34 photo
     "Black": dict(ColorA=(0.030, 0.030, 0.032), RoughA=0.46, MetalA=0.0, ColorB=(0.032, 0.031, 0.030), RoughB=0.62, MetalB=0.0,
                   LabelRough=0.6, WearAmount=0.42, Dirt=0.35),
     "Camo": dict(ColorA=(0.34, 0.243, 0.141), RoughA=0.5, MetalA=0.0, ColorB=(0.32, 0.192, 0.083), RoughB=0.64, MetalB=0.0,
                  LabelRough=0.62, WearAmount=0.3, Dirt=0.45),
 }
-GRIP_FDE = dict(ColorB=(0.46, 0.37, 0.27))                               # FN grips are a paler tan than the lower
+GRIP_FDE = dict(ColorB=(0.3328, 0.1926, 0.0619))                    # grips: their own fit (look_match.py)
 NEUTRAL = dict(ColorA=(0.5, 0.5, 0.5), RoughA=0.4, MetalA=0.0, ColorB=(0.5, 0.5, 0.5), RoughB=0.4, MetalB=0.0,
                LabelRough=0.5, WearAmount=0.55, Dirt=0.4)
 LOD = {"Upper", "Bolt", "Lower", "Grip", "VGrip", "Stock", "Mag", "Muzzle"}

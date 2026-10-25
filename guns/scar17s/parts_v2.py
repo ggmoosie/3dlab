@@ -367,7 +367,7 @@ def bcg(X, Y, Z):
 # ------------------------------------------------------------------ barrel + muzzle brake
 def barrel(X, Y, Z):
     Rr = np.sqrt(X * X + Z * Z)
-    photo = [(y, r) for y, r in R.column_radius(1604, 1744)[::3]]          # exposed barrel: the photo's diameter
+    photo = [(y, r) for y, r in R.column_radius(1604, 1744)[::3] if r < 10.0]   # exposed barrel (drop handguard-edge px)
     yb = bp(1745, 0)[0]
     prof = [(-4.0, 14.5), (60.0, 14.5), (75.0, 12.5), (photo[0][0] - 12, 11.5)] + photo + [(yb, 7.9), (413.0, 7.9)]
     d = V1.lathe(Y, Rr, prof)

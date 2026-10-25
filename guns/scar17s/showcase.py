@@ -224,12 +224,19 @@ def hero34():
     sys.argv = argv
     cam = bpy.data.objects.get(match["camera"])
     bpy.context.scene.camera = cam
-    world_color((0.47, 0.43, 0.39), 1.0)                                                 # the reference's taupe ground
     allo = list(o for n, o in objs.items() if n != "Round")
     lo, hi = scene.bounds(allo); c = (lo + hi) / 2; r = (hi - lo).length
-    area("key", c + Vector((-0.6, -0.9, 1.1)) * r, Euler((math.radians(40), 0, math.radians(-30))), r * 1.2, 380 * r * r)
-    area("fill", c + Vector((1.2, -0.3, 0.2)) * r, Euler((math.radians(85), 0, math.radians(75))), r * 1.5, 120 * r * r)
-    area("rim", c + Vector((0.3, 1.2, 0.9)) * r, Euler((math.radians(-40), 0, math.radians(165))), r * 0.8, 260 * r * r)
+    look = json.load(open(os.path.join(WORK, "look_hero34.json")))                     # look_match.py: fitted to the photo
+    w = bpy.context.scene.world or bpy.data.worlds.new("W"); bpy.context.scene.world = w; w.use_nodes = True
+    nt = w.node_tree; nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputWorld"); lp = nt.nodes.new("ShaderNodeLightPath"); mix = nt.nodes.new("ShaderNodeMixShader")
+    bgc = nt.nodes.new("ShaderNodeBackground"); amb = nt.nodes.new("ShaderNodeBackground")
+    bgc.inputs[0].default_value = (*look["world"][:3], 1); bgc.inputs[1].default_value = look["world"][3]
+    amb.inputs[0].default_value = (0.5, 0.5, 0.5, 1); amb.inputs[1].default_value = look["ambient"]
+    nt.links.new(lp.outputs["Is Camera Ray"], mix.inputs[0]); nt.links.new(amb.outputs[0], mix.inputs[1])
+    nt.links.new(bgc.outputs[0], mix.inputs[2]); nt.links.new(mix.outputs[0], out.inputs[0])
+    for n, L in look["lights"].items():
+        area(n, c + Vector(L["loc"]) * r, Euler(L["rot"]), L["size"] * r, L["energy"] * r * r)
     render(os.path.join(REV, "showcase_hero34.png"), 1800, 1200, SMP)
 
 
