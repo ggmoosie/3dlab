@@ -1,0 +1,119 @@
+{
+ "item": "GPPouch",
+ "replaces_rows": [
+  "SmallContainer"
+ ],
+ "category": "containers",
+ "clip": null,
+ "dims_cm": [
+  15.1,
+  8.3,
+  17.1
+ ],
+ "real_object": "MOLLE general-purpose pouch, 500D nylon, 3 PALS rows",
+ "pivot": "base centre",
+ "parts": {
+  "SM_GPPouch_Flap": {
+   "pivot": "rear hinge at the top",
+   "opens": "about local X to -100 deg"
+  }
+ },
+ "grid_suggestion": "2x2 container, 2x3 inside",
+ "tris": {
+  "SM_GPPouch": 3256,
+  "SM_GPPouch_Flap": 1420,
+  "SM_GPPouch_LOD1": 1628,
+  "SM_GPPouch_LOD2": 814
+ },
+ "textures": {
+  "size": 2048,
+  "normal": "OpenGL (flip green in UE)",
+  "variants": {
+   "Coyote": "T_GPPouch_Label_Coyote.png",
+   "RangerGreen": "T_GPPouch_Label_RangerGreen.png",
+   "Black": "T_GPPouch_Label_Black.png",
+   "WolfGrey": "T_GPPouch_Label_WolfGrey.png",
+   "Woodland": "T_GPPouch_Label_Woodland.png",
+   "UrbanDigital": "T_GPPouch_Label_UrbanDigital.png"
+  }
+ },
+ "variant_params": {
+  "Coyote": {
+   "ColorB": [
+    0.03,
+    0.03,
+    0.03
+   ],
+   "RoughB": 0.45,
+   "MetalB": 0.0,
+   "LabelRough": 0.85,
+   "WearAmount": 0.4,
+   "Dirt": 0.45
+  },
+  "RangerGreen": {
+   "ColorB": [
+    0.03,
+    0.03,
+    0.03
+   ],
+   "RoughB": 0.45,
+   "MetalB": 0.0,
+   "LabelRough": 0.85,
+   "WearAmount": 0.4,
+   "Dirt": 0.45
+  },
+  "Black": {
+   "ColorB": [
+    0.02,
+    0.02,
+    0.02
+   ],
+   "RoughB": 0.45,
+   "MetalB": 0.0,
+   "LabelRough": 0.85,
+   "WearAmount": 0.4,
+   "Dirt": 0.45
+  },
+  "WolfGrey": {
+   "ColorB": [
+    0.03,
+    0.03,
+    0.03
+   ],
+   "RoughB": 0.45,
+   "MetalB": 0.0,
+   "LabelRough": 0.85,
+   "WearAmount": 0.4,
+   "Dirt": 0.45
+  },
+  "Woodland": {
+   "ColorB": [
+    0.25,
+    0.2,
+    0.12
+   ],
+   "RoughB": 0.45,
+   "MetalB": 0.0,
+   "LabelRough": 0.85,
+   "WearAmount": 0.4,
+   "Dirt": 0.45
+  },
+  "UrbanDigital": {
+   "ColorB": [
+    0.03,
+    0.03,
+    0.03
+   ],
+   "RoughB": 0.45,
+   "MetalB": 0.0,
+   "LabelRough": 0.85,
+   "WearAmount": 0.4,
+   "Dirt": 0.45
+  }
+ },
+ "collision": "UCX_SM_GPPouch_00",
+ "lods": [
+  "SM_GPPouch_LOD1 (50%)",
+  "SM_GPPouch_LOD2 (25%)"
+ ]
+}

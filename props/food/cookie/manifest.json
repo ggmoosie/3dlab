@@ -1,0 +1,51 @@
+{
+ "item": "Cookie",
+ "replaces_rows": [
+  "Cookie"
+ ],
+ "category": "food",
+ "clip": "A_Consume_Eat_Disc",
+ "dims_cm": [
+  7.26,
+  1.63,
+  7.23
+ ],
+ "real_object": "bakery cookie, \u00d873 \u00d7 15 mm",
+ "pivot": "centre, disc axis = Y (top faces +Y in Blender / -Y in UE)",
+ "tris": {
+  "SM_Cookie": 960
+ },
+ "textures": {
+  "size": 2048,
+  "normal": "OpenGL (flip green in UE)",
+  "variants": {
+   "ChocChip": "T_Cookie_Label_ChocChip.png",
+   "OatmealRaisin": "T_Cookie_Label_OatmealRaisin.png",
+   "DoubleChoc": "T_Cookie_Label_DoubleChoc.png",
+   "SugarCookie": "T_Cookie_Label_SugarCookie.png"
+  }
+ },
+ "variant_params": {
+  "ChocChip": {
+   "LabelRough": 0.72,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  },
+  "OatmealRaisin": {
+   "LabelRough": 0.72,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  },
+  "DoubleChoc": {
+   "LabelRough": 0.72,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  },
+  "SugarCookie": {
+   "LabelRough": 0.72,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  }
+ },
+ "collision": "UCX_SM_Cookie_00"
+}

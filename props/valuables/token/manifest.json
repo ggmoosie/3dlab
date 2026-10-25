@@ -1,0 +1,262 @@
+{
+ "item": "Token",
+ "set": "Token Box",
+ "category": "valuables",
+ "clip": null,
+ "dims_cm": [
+  2.3,
+  2.3,
+  0.17
+ ],
+ "real_object": "23 mm transit token",
+ "pivot": "centre of the bottom face",
+ "tris": {
+  "SM_Token": 768
+ },
+ "textures": {
+  "size": 1024,
+  "normal": "OpenGL; each variant overrides Normal with its relief",
+  "variants": {
+   "1953_Y": "T_Token_Label_1953_Y.png",
+   "1970_Large": "T_Token_Label_1970_Large.png",
+   "1980_Solid": "T_Token_Label_1980_Solid.png",
+   "1986_Bullseye": "T_Token_Label_1986_Bullseye.png",
+   "1995_Bimetal": "T_Token_Label_1995_Bimetal.png",
+   "2003_Last": "T_Token_Label_2003_Last.png",
+   "Commemorative": "T_Token_Label_Commemorative.png",
+   "Misprint": "T_Token_Label_Misprint.png",
+   "Arcade_Secret": "T_Token_Label_Arcade_Secret.png"
+  }
+ },
+ "variant_params": {
+  "1953_Y": {
+   "ColorA": [
+    0.78,
+    0.62,
+    0.32
+   ],
+   "RoughA": 0.32,
+   "MetalA": 1.0,
+   "ColorB": [
+    0.78,
+    0.62,
+    0.32
+   ],
+   "RoughB": 0.3,
+   "MetalB": 1.0,
+   "LabelRough": 0.7,
+   "WearAmount": 0.0,
+   "Dirt": 0.3
+  },
+  "1970_Large": {
+   "ColorA": [
+    0.78,
+    0.62,
+    0.32
+   ],
+   "RoughA": 0.32,
+   "MetalA": 1.0,
+   "ColorB": [
+    0.78,
+    0.62,
+    0.32
+   ],
+   "RoughB": 0.3,
+   "MetalB": 1.0,
+   "LabelRough": 0.7,
+   "WearAmount": 0.0,
+   "Dirt": 0.3
+  },
+  "1980_Solid": {
+   "ColorA": [
+    0.62,
+    0.4,
+    0.22
+   ],
+   "RoughA": 0.32,
+   "MetalA": 1.0,
+   "ColorB": [
+    0.62,
+    0.4,
+    0.22
+   ],
+   "RoughB": 0.3,
+   "MetalB": 1.0,
+   "LabelRough": 0.7,
+   "WearAmount": 0.0,
+   "Dirt": 0.3
+  },
+  "1986_Bullseye": {
+   "ColorA": [
+    0.78,
+    0.62,
+    0.32
+   ],
+   "RoughA": 0.32,
+   "MetalA": 1.0,
+   "ColorB": [
+    0.72,
+    0.72,
+    0.7
+   ],
+   "RoughB": 0.3,
+   "MetalB": 1.0,
+   "LabelRough": 0.7,
+   "WearAmount": 0.0,
+   "Dirt": 0.3
+  },
+  "1995_Bimetal": {
+   "ColorA": [
+    0.72,
+    0.72,
+    0.7
+   ],
+   "RoughA": 0.32,
+   "MetalA": 1.0,
+   "ColorB": [
+    0.78,
+    0.62,
+    0.32
+   ],
+   "RoughB": 0.3,
+   "MetalB": 1.0,
+   "LabelRough": 0.7,
+   "WearAmount": 0.0,
+   "Dirt": 0.3
+  },
+  "2003_Last": {
+   "ColorA": [
+    0.8,
+    0.45,
+    0.3
+   ],
+   "RoughA": 0.32,
+   "MetalA": 1.0,
+   "ColorB": [
+    0.8,
+    0.45,
+    0.3
+   ],
+   "RoughB": 0.3,
+   "MetalB": 1.0,
+   "LabelRough": 0.7,
+   "WearAmount": 0.0,
+   "Dirt": 0.3
+  },
+  "Commemorative": {
+   "ColorA": [
+    0.95,
+    0.75,
+    0.3
+   ],
+   "RoughA": 0.32,
+   "MetalA": 1.0,
+   "ColorB": [
+    0.95,
+    0.75,
+    0.3
+   ],
+   "RoughB": 0.3,
+   "MetalB": 1.0,
+   "LabelRough": 0.7,
+   "WearAmount": 0.0,
+   "Dirt": 0.3
+  },
+  "Misprint": {
+   "ColorA": [
+    0.78,
+    0.62,
+    0.32
+   ],
+   "RoughA": 0.32,
+   "MetalA": 1.0,
+   "ColorB": [
+    0.78,
+    0.62,
+    0.32
+   ],
+   "RoughB": 0.3,
+   "MetalB": 1.0,
+   "LabelRough": 0.7,
+   "WearAmount": 0.0,
+   "Dirt": 0.3
+  },
+  "Arcade_Secret": {
+   "ColorA": [
+    0.25,
+    0.25,
+    0.27
+   ],
+   "RoughA": 0.32,
+   "MetalA": 1.0,
+   "ColorB": [
+    0.25,
+    0.25,
+    0.27
+   ],
+   "RoughB": 0.3,
+   "MetalB": 1.0,
+   "LabelRough": 0.7,
+   "WearAmount": 0.0,
+   "Dirt": 0.3
+  }
+ },
+ "variant_normals": {
+  "1953_Y": "T_Token_Normal_1953_Y.png",
+  "1970_Large": "T_Token_Normal_1970_Large.png",
+  "1980_Solid": "T_Token_Normal_1980_Solid.png",
+  "1986_Bullseye": "T_Token_Normal_1986_Bullseye.png",
+  "1995_Bimetal": "T_Token_Normal_1995_Bimetal.png",
+  "2003_Last": "T_Token_Normal_2003_Last.png",
+  "Commemorative": "T_Token_Normal_Commemorative.png",
+  "Misprint": "T_Token_Normal_Misprint.png",
+  "Arcade_Secret": "T_Token_Normal_Arcade_Secret.png"
+ },
+ "collection": {
+  "1953_Y": {
+   "number": 1,
+   "rarity": "common",
+   "lore": "The first Y-cut token. Fare: 15\u00a2."
+  },
+  "1970_Large": {
+   "number": 2,
+   "rarity": "common",
+   "lore": "Thirty cents and a bigger coin."
+  },
+  "1980_Solid": {
+   "number": 3,
+   "rarity": "common",
+   "lore": "Solid brass, no cut-out."
+  },
+  "1986_Bullseye": {
+   "number": 4,
+   "rarity": "uncommon",
+   "lore": "The bullseye: brass ring, steel heart."
+  },
+  "1995_Bimetal": {
+   "number": 5,
+   "rarity": "uncommon",
+   "lore": "Last of the bi-metals before the cards."
+  },
+  "2003_Last": {
+   "number": 6,
+   "rarity": "rare",
+   "lore": "Struck for the final day of tokens."
+  },
+  "Commemorative": {
+   "number": 7,
+   "rarity": "rare",
+   "lore": "Centennial gold. Someone kept it polished."
+  },
+  "Misprint": {
+   "number": 8,
+   "rarity": "rare",
+   "lore": "Die struck backwards. Collectors lose sleep over this."
+  },
+  "Arcade_Secret": {
+   "number": 9,
+   "rarity": "legendary",
+   "lore": "Not a fare token. Opens the back room at Coney."
+  }
+ }
+}

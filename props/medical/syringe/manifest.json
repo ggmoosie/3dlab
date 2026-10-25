@@ -1,0 +1,208 @@
+{
+ "item": "Syringe",
+ "replaces_rows": [
+  "AdrenalineSyringe",
+  "MorphineSyringe",
+  "PainkillerSyringe"
+ ],
+ "category": "medical",
+ "clip": "A_Consume_Inject_Forearm / A_Consume_Syringe_Thigh",
+ "dims_cm": [
+  3.4,
+  1.3,
+  12.0
+ ],
+ "real_object": "5 mL luer syringe + 23G needle",
+ "pivot": "barrel centre, +Z toward the needle",
+ "parts": {
+  "SM_Syringe_Plunger": {
+   "pivot": "thumb pad centre",
+   "travel_cm": 3.8,
+   "axis": "+Z"
+  },
+  "SM_Syringe_Cap": {
+   "pivot": "open end",
+   "pull_cm": 4.5,
+   "axis": "+Z"
+  },
+  "SM_Syringe_Liquid": {
+   "pivot": "front of the bore",
+   "note": "scale Z with the plunger travel"
+  }
+ },
+ "material_slots": {
+  "SM_Syringe": [
+   "M_Lab_Glass (barrel)",
+   "MI_Syringe_<V> (hub, needle, label)"
+  ]
+ },
+ "tris": {
+  "SM_Syringe": 1060,
+  "SM_Syringe_Label": 240,
+  "SM_Syringe_Plunger": 600,
+  "SM_Syringe_Cap": 192,
+  "SM_Syringe_Liquid": 144
+ },
+ "textures": {
+  "size": 1024,
+  "normal": "OpenGL (flip green in UE)",
+  "variants": {
+   "EpiShot": "T_Syringe_Label_EpiShot.png",
+   "Morphex": "T_Syringe_Label_Morphex.png",
+   "Analgex": "T_Syringe_Label_Analgex.png",
+   "Atrox": "T_Syringe_Label_Atrox.png",
+   "Rush": "T_Syringe_Label_Rush.png",
+   "Amoxiflex": "T_Syringe_Label_Amoxiflex.png"
+  }
+ },
+ "variant_params": {
+  "EpiShot": {
+   "ColorA": [
+    0.85,
+    0.62,
+    0.02
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.02,
+    0.02,
+    0.02
+   ],
+   "RoughB": 0.55,
+   "MetalB": 0.0,
+   "LabelRough": 0.6,
+   "WearAmount": 0.0,
+   "Dirt": 0.2
+  },
+  "Morphex": {
+   "ColorA": [
+    0.6,
+    0.03,
+    0.04
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.02,
+    0.02,
+    0.02
+   ],
+   "RoughB": 0.55,
+   "MetalB": 0.0,
+   "LabelRough": 0.6,
+   "WearAmount": 0.0,
+   "Dirt": 0.2
+  },
+  "Analgex": {
+   "ColorA": [
+    0.05,
+    0.18,
+    0.6
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.02,
+    0.02,
+    0.02
+   ],
+   "RoughB": 0.55,
+   "MetalB": 0.0,
+   "LabelRough": 0.6,
+   "WearAmount": 0.0,
+   "Dirt": 0.2
+  },
+  "Atrox": {
+   "ColorA": [
+    0.05,
+    0.4,
+    0.12
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.02,
+    0.02,
+    0.02
+   ],
+   "RoughB": 0.55,
+   "MetalB": 0.0,
+   "LabelRough": 0.6,
+   "WearAmount": 0.0,
+   "Dirt": 0.2
+  },
+  "Rush": {
+   "ColorA": [
+    0.95,
+    0.35,
+    0.02
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.02,
+    0.02,
+    0.02
+   ],
+   "RoughB": 0.55,
+   "MetalB": 0.0,
+   "LabelRough": 0.6,
+   "WearAmount": 0.0,
+   "Dirt": 0.2
+  },
+  "Amoxiflex": {
+   "ColorA": [
+    0.85,
+    0.85,
+    0.85
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.02,
+    0.02,
+    0.02
+   ],
+   "RoughB": 0.55,
+   "MetalB": 0.0,
+   "LabelRough": 0.6,
+   "WearAmount": 0.0,
+   "Dirt": 0.2
+  }
+ },
+ "liquid_tints": {
+  "EpiShot": [
+   0.98,
+   0.95,
+   0.75
+  ],
+  "Morphex": [
+   0.97,
+   0.97,
+   0.97
+  ],
+  "Analgex": [
+   0.8,
+   0.88,
+   1.0
+  ],
+  "Atrox": [
+   0.95,
+   0.98,
+   0.95
+  ],
+  "Rush": [
+   1.0,
+   0.55,
+   0.12
+  ],
+  "Amoxiflex": [
+   0.92,
+   0.9,
+   0.85
+  ]
+ },
+ "collision": "UCX_SM_Syringe_00",
+ "qc_notes": "label is a declared decal (qc_open)"
+}

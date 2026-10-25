@@ -1,0 +1,100 @@
+{
+ "item": "BandageRoll",
+ "replaces_rows": [
+  "Bandage",
+  "BandageRoll"
+ ],
+ "category": "medical",
+ "clip": "A_Consume_Bandage_Wrap",
+ "dims_cm": [
+  5.0,
+  7.0,
+  7.0
+ ],
+ "real_object": "5 cm conforming / elastic bandage roll",
+ "pivot": "roll centre, axis = local X",
+ "parts": {
+  "SM_BandageRoll_Tail": {
+   "pivot": "where the strip leaves the roll (0, 0, -3.5 cm)",
+   "note": "loose end; scale/rotate to unroll"
+  }
+ },
+ "tris": {
+  "SM_BandageRoll": 480,
+  "SM_BandageRoll_Tail": 132
+ },
+ "textures": {
+  "size": 2048,
+  "normal": "OpenGL (flip green in UE)",
+  "variants": {
+   "Gauze": "T_BandageRoll_Label_Gauze.png",
+   "Elastic": "T_BandageRoll_Label_Elastic.png",
+   "Cohesive": "T_BandageRoll_Label_Cohesive.png",
+   "ClotStop": "T_BandageRoll_Label_ClotStop.png",
+   "Used": "T_BandageRoll_Label_Used.png"
+  }
+ },
+ "variant_params": {
+  "Gauze": {
+   "ColorA": [
+    0.86,
+    0.85,
+    0.8
+   ],
+   "RoughA": 0.92,
+   "MetalA": 0.0,
+   "LabelRough": 0.85,
+   "WearAmount": 0.0,
+   "Dirt": 0.6
+  },
+  "Elastic": {
+   "ColorA": [
+    0.78,
+    0.62,
+    0.48
+   ],
+   "RoughA": 0.92,
+   "MetalA": 0.0,
+   "LabelRough": 0.85,
+   "WearAmount": 0.0,
+   "Dirt": 0.6
+  },
+  "Cohesive": {
+   "ColorA": [
+    0.2,
+    0.42,
+    0.75
+   ],
+   "RoughA": 0.92,
+   "MetalA": 0.0,
+   "LabelRough": 0.85,
+   "WearAmount": 0.0,
+   "Dirt": 0.6
+  },
+  "ClotStop": {
+   "ColorA": [
+    0.55,
+    0.5,
+    0.42
+   ],
+   "RoughA": 0.92,
+   "MetalA": 0.0,
+   "LabelRough": 0.85,
+   "WearAmount": 0.0,
+   "Dirt": 0.6
+  },
+  "Used": {
+   "ColorA": [
+    0.8,
+    0.77,
+    0.7
+   ],
+   "RoughA": 0.92,
+   "MetalA": 0.0,
+   "LabelRough": 0.85,
+   "WearAmount": 0.0,
+   "Dirt": 0.8
+  }
+ },
+ "collision": "UCX_SM_BandageRoll_00"
+}

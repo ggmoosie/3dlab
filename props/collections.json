@@ -1,0 +1,59 @@
+{
+  "_doc": "Collection sets + crafting recipes. Read by the stash Collector's Wall and the workshop UI. Variant keys match each prop's manifest.json variant_params (one MI per piece). See props/COLLECTIONS.md.",
+  "rarity_weights": {"common": 55, "uncommon": 30, "rare": 12, "legendary": 3},
+  "duplicates": {"sell": true, "trade_in": {"give": 3, "get": "random_missing_piece", "where": "BlackMarket"}},
+  "sets": {
+    "TokenBox": {
+      "title": "Token Box", "mesh": "SM_Token", "manifest": "props/valuables/token/manifest.json",
+      "pieces": ["1953_Y", "1970_Large", "1980_Solid", "1986_Bullseye", "1995_Bimetal", "2003_Last", "Commemorative", "Misprint"],
+      "secret": "Arcade_Secret",
+      "bonus": {"id": "TraderValuablesBonus", "value": 0.05, "text": "Traders pay +5% for valuables"},
+      "drops": ["StationBooth", "Turnstile", "CouchCushion", "DeskDrawer"]
+    },
+    "StoopballCards": {
+      "title": "Stoopball Cards '87", "mesh": "SM_TradingCard", "case_mesh": "SM_Toploader", "manifest": "props/valuables/trading_card/manifest.json",
+      "pieces": ["01_Marino", "02_Okafor", "03_Ruiz", "04_Kowalczyk", "05_Bianchi", "06_Washington", "07_Arai", "08_Doyle", "09_Caruso", "10_Alvarez", "11_Silverman", "12_Pike"],
+      "secret": "13_MarinoHolo",
+      "bonus": {"id": "StashRow", "value": 1, "text": "+1 stash row"},
+      "drops": ["KidsRoom", "BodegaCounter", "ShoeBox"]
+    },
+    "SnowGlobes": {"title": "I Survived the City", "mesh": "SM_SnowGlobe", "status": "planned", "pieces": 6,
+      "bonus": {"id": "GalleyBuffDuration", "value": 0.25, "text": "Galley buffs last 25% longer"}, "drops": ["SouvenirShop", "Apartment"]},
+    "CrateDiggers": {"title": "Crate Diggers", "mesh": "SM_Record", "status": "planned", "pieces": 8,
+      "bonus": {"id": "HubRecordPlayer", "text": "Unlocks the Commons record player"}, "drops": ["WalkUp", "RecordStore"]},
+    "LastPhotos": {"title": "Last Photos", "mesh": "SM_Polaroid", "status": "planned", "pieces": 10,
+      "bonus": {"id": "StashMarkers", "text": "Each photo reveals one hidden stash marker"}, "drops": ["Body", "Fridge", "NoticeBoard"]},
+    "Mascots": {"title": "Mascots", "mesh": "SM_Bobblehead", "status": "planned", "pieces": 6,
+      "bonus": {"id": "HubAdjacentXP", "value": 0.05, "text": "+5% XP in hub-adjacent raids"}, "drops": ["SportsBar", "Office"]}
+  },
+  "materials": {
+    "DuctTape": {"mesh": "SM_DuctTape", "variants": ["Silver", "Black", "Camo", "Orange", "White"], "uses": 4, "stack": 3},
+    "Batteries": {"mesh": "SM_Batteries", "single_mesh": "SM_Battery_AA", "variants": ["KiloWatt", "BodegaBasics", "Ironcell"], "cells": 4, "stack": 5},
+    "Paracord": {"mesh": "SM_Paracord", "status": "planned", "uses": 3},
+    "Superglue": {"mesh": "SM_Superglue", "status": "planned", "uses": 2},
+    "Filament": {"mesh": "SM_FilamentSpool", "status": "existing_rows"},
+    "ScrapMetal": {"mesh": "SM_ScrapMetal", "status": "planned"},
+    "BandageRoll": {"mesh": "SM_BandageRoll", "uses": 1},
+    "Stick": {"mesh": null, "note": "world pickup (broom handle / chair leg)"},
+    "Cans": {"mesh": "SM_SodaCan", "note": "any empty can"},
+    "Wires": {"mesh": null, "status": "planned"},
+    "SteelWool": {"mesh": null, "status": "planned"},
+    "ArmorPlate": {"mesh": null, "note": "existing item"}
+  },
+  "recipes": [
+    {"id": "Splint", "in": {"DuctTape": 1, "Stick": 1}, "out": {"Splint": 1}, "time_s": 6, "station": "Field"},
+    {"id": "BarricadePatch", "in": {"DuctTape": 1, "ScrapMetal": 1}, "out": {"BarricadePatch": 1}, "time_s": 10, "station": "Workshop"},
+    {"id": "GripWrap", "in": {"DuctTape": 1}, "out": {"Mod_GripWrap": 1}, "time_s": 8, "station": "Workshop", "effect": {"recoil_control": 0.04}},
+    {"id": "ArmorRepair", "in": {"DuctTape": 2, "ArmorPlate": 1}, "out": {"ArmorDurability": 25}, "time_s": 15, "station": "Workshop"},
+    {"id": "Flashlight", "in": {"Batteries": 1}, "out": {"FlashlightCharge": 100}, "time_s": 2, "station": "Field"},
+    {"id": "Radio", "in": {"Batteries": 1}, "out": {"RadioCharge": 100}, "time_s": 2, "station": "Field"},
+    {"id": "NVG", "in": {"Batteries": 2}, "out": {"NVGCharge": 100}, "time_s": 3, "station": "Field"},
+    {"id": "KeycardBypass", "in": {"Batteries": 1, "Wires": 1, "DuctTape": 1}, "out": {"KeycardBypass": 1}, "time_s": 20, "station": "Workshop"},
+    {"id": "TripwireAlarm", "in": {"Paracord": 1, "Cans": 2}, "out": {"TripwireAlarm": 1}, "time_s": 8, "station": "Field"},
+    {"id": "Sling", "in": {"Paracord": 1}, "out": {"Mod_Sling": 1}, "time_s": 10, "station": "Workshop"},
+    {"id": "Tourniquet", "in": {"Paracord": 1, "Stick": 1}, "out": {"Tourniquet": 1}, "time_s": 6, "station": "Field"},
+    {"id": "WoundSeal", "in": {"Superglue": 1, "BandageRoll": 1}, "out": {"WoundSeal": 1}, "time_s": 5, "station": "Field"},
+    {"id": "ModRepair", "in": {"Superglue": 1}, "out": {"ModDurability": 30}, "time_s": 8, "station": "Workshop"},
+    {"id": "SuppressorBaffles", "in": {"Filament": 1, "SteelWool": 1}, "out": {"Mod_PrintedSuppressor": 1}, "time_s": 40, "station": "Printer"}
+  ]
+}

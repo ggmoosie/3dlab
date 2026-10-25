@@ -1,0 +1,102 @@
+{
+ "item": "DuctTape",
+ "category": "crafting",
+ "clip": null,
+ "recipes": [
+  "Splint",
+  "BarricadePatch",
+  "GripWrap",
+  "ArmorRepair"
+ ],
+ "dims_cm": [
+  4.8,
+  11.0,
+  11.0
+ ],
+ "real_object": "48 mm \u00d7 55 m duct tape on a 3\" core",
+ "pivot": "roll centre, axis = local X",
+ "parts": {
+  "SM_DuctTape_Tail": {
+   "pivot": "top tangent line (0, 0, 5.5 cm)",
+   "note": "pulled strip with torn end; rotate about X / scale Y to pull"
+  }
+ },
+ "tris": {
+  "SM_DuctTape": 768,
+  "SM_DuctTape_Tail": 832
+ },
+ "textures": {
+  "size": 2048,
+  "normal": "OpenGL (flip green in UE)",
+  "variants": {
+   "Silver": "T_DuctTape_Label_Silver.png",
+   "Black": "T_DuctTape_Label_Black.png",
+   "Camo": "T_DuctTape_Label_Camo.png",
+   "Orange": "T_DuctTape_Label_Orange.png",
+   "White": "T_DuctTape_Label_White.png"
+  }
+ },
+ "variant_params": {
+  "Silver": {
+   "ColorA": [
+    0.42,
+    0.43,
+    0.44
+   ],
+   "RoughA": 0.36,
+   "MetalA": 0.6,
+   "LabelRough": 0.85,
+   "WearAmount": 0.15,
+   "Dirt": 0.5
+  },
+  "Black": {
+   "ColorA": [
+    0.025,
+    0.025,
+    0.028
+   ],
+   "RoughA": 0.55,
+   "MetalA": 0.0,
+   "LabelRough": 0.85,
+   "WearAmount": 0.15,
+   "Dirt": 0.5
+  },
+  "Camo": {
+   "ColorA": [
+    0.2,
+    0.18,
+    0.1
+   ],
+   "RoughA": 0.6,
+   "MetalA": 0.0,
+   "LabelRough": 0.6,
+   "WearAmount": 0.15,
+   "Dirt": 0.5
+  },
+  "Orange": {
+   "ColorA": [
+    0.85,
+    0.22,
+    0.02
+   ],
+   "RoughA": 0.45,
+   "MetalA": 0.0,
+   "LabelRough": 0.85,
+   "WearAmount": 0.15,
+   "Dirt": 0.5
+  },
+  "White": {
+   "ColorA": [
+    0.8,
+    0.8,
+    0.78
+   ],
+   "RoughA": 0.45,
+   "MetalA": 0.0,
+   "LabelRough": 0.85,
+   "WearAmount": 0.15,
+   "Dirt": 0.5
+  }
+ },
+ "collision": "UCX_SM_DuctTape_00"
+}
