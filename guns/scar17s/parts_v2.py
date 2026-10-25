@@ -204,6 +204,10 @@ def barrel(X, Y, Z):
     yb = bp(1745, 0)[0]
     prof = [(-4.0, 14.5), (60.0, 14.5), (75.0, 12.5), (photo[0][0] - 12, 11.5)] + photo + [(yb, 7.9), (413.0, 7.9)]
     d = V1.lathe(Y, Rr, prof)
+    ya, yb, za, zb = bx(1430, 892, 1482, 935)
+    gas = S.box(X, Y, Z, (-9.0, ya, za), (9.0, yb, zb), 2.0)                         # gas block / regulator seen in the window
+    gas = S.runion(gas, S.cyl(X, Y, Z, "x", ((ya + yb) / 2, zb - 5.0), 4.0, -10.5, 10.5, 0.8), 1.0)   # regulator plug
+    d = S.union(d, gas)
     d = S.diff(d, S.cyl(X, Y, Z, "y", (0, 0), 3.9, -10, 420))
     return d
 
@@ -394,7 +398,7 @@ def table():
     T["screws_s"] = (screws_stock, (-28, R.px2b(200, 0)[0], -60), (28, R.px2b(580, 0)[0], 40), 0.14, "steel")
     T["rsight"] = (rsight, *_bb("rsight", 4, 15), 0.15, "steel")
     T["fsight"] = (fsight, *_bb("fsight", 4, 13), 0.15, "steel")
-    T["barrel"] = (barrel, (-16, -6, -16), (16, 416, 16), 0.25, "steel")
+    T["barrel"] = (barrel, (-16, -6, -16), (16, 416, 20), 0.25, "steel")
     T["brake"] = (brake, (-16, R.px2b(1740, 0)[0], -16), (16, R.MUZZLE_Y + 3, 16), 0.15, "steel")
     T["bolt"] = (V1.bolt, (-15, -134, -18), (15, 3, 20), 0.25, "park")
     T["lower"] = (lower, *_bb("lower", 8, 26), 0.32, "poly")

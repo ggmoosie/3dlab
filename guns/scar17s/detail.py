@@ -71,7 +71,7 @@ HARDWARE = [("upper", 1.6)]
 RECESSES = [
     ("upper", 858, 860, 1102, 878, 7.0, 1.5),                                            # top charging slot, deep
     ("plate", 860, 908, 1010, 928, 3.5, 1.0),                                            # ejection-port window in the frame
-    ("upper", 1422, 856, 1460, 891, 4.0, 1.2),                                           # sling cup
+    ("upper", 1437, 857, 1478, 895, 9.0, 1.4),                                           # gas-regulator window (through the wall)
     ("stock", 215, 893, 255, 902, 30.0, 2.0),                                            # buttstock slot (through)
     ("mag", 892, 1202, 996, 1216, 4.0, 1.5),                                             # baseplate window
 ]

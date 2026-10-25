@@ -14,7 +14,7 @@ NO_MARK = [((685, 1158), 24), ((1408, 1082), 22), ((754, 955), 16), ((700, 1028)
 NO_MARK_BOX = [(260, 930, 455, 960)]
 # black hardware that sits proud of the receiver (traced outlines); screws are modelled separately as Torx heads
 HW_BOXES = [(616, 845, 634, 1000),            # hinge rear plate (black strip)
-            (1416, 850, 1464, 895)]           # sling-loop cup
+]
 LOWER_HW_BOXES = [(696, 950, 766, 992),         # ambi selector lever + hub
                   (798, 954, 874, 980),         # bolt-release lever
                   (834, 966, 884, 1014)]        # mag-release button (inside its bezel)
