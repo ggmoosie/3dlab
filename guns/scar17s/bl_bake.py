@@ -160,6 +160,25 @@ def compose(n, B, size):
     return out
 
 
+def asm_hash(o, size):
+    """fingerprint of everything a bake depends on: the low mesh (positions, UVs, faces), every high shell's geometry +
+    materials, the texture size and the bake settings -> unchanged assemblies reuse their cached bakes"""
+    import hashlib
+    hs = hashlib.sha1()
+
+    def mesh(me):
+        v = np.empty(len(me.vertices) * 3, np.float32); me.vertices.foreach_get("co", v); hs.update(np.round(v, 6).tobytes())
+        f = np.empty(len(me.polygons), np.int32); me.polygons.foreach_get("material_index", f); hs.update(f.tobytes())
+        lv = np.empty(len(me.loops), np.int32); me.loops.foreach_get("vertex_index", lv); hs.update(lv.tobytes())
+        if me.uv_layers:
+            uv = np.empty(len(me.loops) * 2, np.float32); me.uv_layers.active.data.foreach_get("uv", uv); hs.update(np.round(uv, 6).tobytes())
+    mesh(o.data)
+    for sh in o["shells"].split(","):
+        hi = bpy.data.objects["HI_" + sh]; mesh(hi.data); hs.update(np.array(hi.matrix_world, np.float32).tobytes())
+    hs.update(f"{size}|{FAST}|v1".encode())
+    return hs.hexdigest()
+
+
 def main():
     bpy.ops.wm.open_mainfile(filepath=os.path.join(HERE, "work", "scar_low.blend"))
     os.makedirs(BK, exist_ok=True)
@@ -171,7 +190,14 @@ def main():
             continue
         size = int(o["tex_size"])
         print("[bake]", n, size, flush=True)
-        B = do_bakes(o, size)
+        h = asm_hash(o, size)
+        cache, hp = os.path.join(BK, f"{n}.npz"), os.path.join(BK, f"{n}.hash")
+        if os.path.exists(cache) and os.path.exists(hp) and open(hp).read() == h:
+            print("[bake] unchanged -> cached bakes", n, flush=True)
+            B = dict(np.load(cache))
+        else:
+            B = do_bakes(o, size)
+            open(hp, "w").write(h)
         report[n] = compose(n, B, size)
         print("[bake] done", n, flush=True)
     json.dump(report, open(os.path.join(HERE, "work", "textures.json"), "w"), indent=1)
