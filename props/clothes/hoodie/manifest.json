@@ -1,0 +1,433 @@
+{
+ "item": "Hoodie",
+ "replaces_rows": [
+  "FleeceJacket"
+ ],
+ "category": "clothes",
+ "slot": "Shirt",
+ "clip": null,
+ "skeletal": true,
+ "real_object": "pullover fleece hoodie, men's L: chest ~112 cm, body length 68 cm from the high shoulder point, set-in sleeves 62 cm + 6.5 cm rib cuffs, 7 cm rib waistband, kangaroo pocket 32 x 21.5 cm, lined hood with drawstring channel, 2 metal eyelets, flat-ish cords (5 mm) with metal aglets and overhand knots",
+ "dims_cm": [
+  103.3,
+  31.4,
+  71.4
+ ],
+ "pivot": "skeletal: origin = root bone at the floor between the feet; Blender cm scene (scale_length 0.01), FBX in cm",
+ "skeleton": {
+  "source": "props/brief/skeleton_ue5_manny_rest.json (rig built with anim/pill_bottle/pill_bottle_anim.build_rig)",
+  "bones": 38,
+  "root": "root (parent of pelvis, non-deforming)",
+  "armature_object": "named 'Armature' so UE does not add the armature node as an extra bone",
+  "bone_rolls": "0 (the json carries positions only) - bind by name onto SK_Mannequin; same caveat as the pill-bottle clip",
+  "skinned_to": [
+   "pelvis",
+   "spine_01",
+   "spine_02",
+   "spine_03",
+   "spine_04",
+   "spine_05",
+   "neck_01",
+   "neck_02",
+   "head",
+   "clavicle_l",
+   "upperarm_l",
+   "upperarm_twist_01_l",
+   "upperarm_twist_02_l",
+   "lowerarm_l",
+   "lowerarm_twist_01_l",
+   "lowerarm_twist_02_l",
+   "hand_l",
+   "thigh_l",
+   "clavicle_r",
+   "upperarm_r",
+   "upperarm_twist_01_r",
+   "upperarm_twist_02_r",
+   "lowerarm_r",
+   "lowerarm_twist_01_r",
+   "lowerarm_twist_02_r",
+   "hand_r",
+   "thigh_r"
+  ],
+  "max_influences": 4,
+  "weights": "automatic bone-heat weights (Baran-Popovic: nearest visible bone segment, heat diffusion over the proxy surface, scripted with scipy because bpy's heat solver silently dropped pelvis/spine/thigh on the proxy) with limb-aligned segments (twist bones own their third of the limb), barycentric transfer to the outer cloth surface, caps (thigh 0.45, hand 0.18, head 0.12), 1x edge smoothing, <= 4 influences, crumbs < 0.01 pruned, normalised; inner shell copies the outer; pocket / eyelets / cords take the weights of the cloth under them (eyelets rigid)"
+ },
+ "fit": {
+  "proxy_body": "own SDF mannequin, ~180 cm, A-pose, never exported",
+  "gap_inner_face_to_body_cm": {
+   "min_cm": 0.35,
+   "torso_p5_p50_p95_cm": [
+    0.74,
+    1.25,
+    1.84
+   ]
+  },
+  "outer_envelope": "chest/back ~1.25 cm over the body (0.8 gap + 0.45 fleece), waist up to 2.6 cm (relaxed), rib band / cuffs 1.25 cm; hood lies on the upper back up to ~4.5 cm proud. Vests should clear body + 2 cm on the torso"
+ },
+ "tris": {
+  "SK_Hoodie": 14000,
+  "SK_Hoodie_LOD1": 7000,
+  "SK_Hoodie_LOD2": 3500
+ },
+ "textures": {
+  "size": 2048,
+  "normal": "OpenGL (flip green in UE)",
+  "maps": {
+   "BaseColor": "T_Hoodie_BaseColor.png",
+   "Normal": "T_Hoodie_Normal.png",
+   "ORM": "T_Hoodie_ORM.png",
+   "Mask": "T_Hoodie_Mask.png"
+  },
+  "variants": {
+   "HeatherGrey": null,
+   "Black": null,
+   "Olive": null,
+   "Navy": null,
+   "NavyPrint": "T_Hoodie_Label_Print.png"
+  },
+  "texel_density_px_per_cm": 12.9,
+  "density_factors": {
+   "inner": 0.4,
+   "pocket_in": 0.4,
+   "lining": 0.85,
+   "string": 1.3,
+   "knot": 1.3,
+   "aglet": 1.5,
+   "grommet": 1.8
+  }
+ },
+ "mask": "R fabric colour A (heathered 0.9-1.0; brushed inside 0.72; stitches lighter), G lining + drawstrings colour B, B chest print area (NavyPrint variant label), A wear (cuffs, hem, hood edge, pocket openings, elbows, fold ridges)",
+ "variant_params": {
+  "HeatherGrey": {
+   "ColorA": [
+    0.15592646598815918,
+    0.15292614698410034,
+    0.14126330614089966
+   ],
+   "RoughA": 0.93,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.5088814496994019,
+    0.48514997959136963,
+    0.4286905825138092
+   ],
+   "RoughB": 0.86,
+   "MetalB": 0.0,
+   "LabelRough": 0.7,
+   "WearAmount": 0.35,
+   "Dirt": 0.35
+  },
+  "Black": {
+   "ColorA": [
+    0.01228648703545332,
+    0.01228648703545332,
+    0.013702081516385078
+   ],
+   "RoughA": 0.93,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.07227186113595963,
+    0.07036010921001434,
+    0.06847818195819855
+   ],
+   "RoughB": 0.86,
+   "MetalB": 0.0,
+   "LabelRough": 0.7,
+   "WearAmount": 0.45,
+   "Dirt": 0.35
+  },
+  "Olive": {
+   "ColorA": [
+    0.07618539035320282,
+    0.08437621593475342,
+    0.036889441311359406
+   ],
+   "RoughA": 0.93,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.4677838385105133,
+    0.4125427007675171,
+    0.2704978287220001
+   ],
+   "RoughB": 0.86,
+   "MetalB": 0.0,
+   "LabelRough": 0.7,
+   "WearAmount": 0.35,
+   "Dirt": 0.35
+  },
+  "Navy": {
+   "ColorA": [
+    0.012983030639588833,
+    0.021219009533524513,
+    0.05126946419477463
+   ],
+   "RoughA": 0.93,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.36625269055366516,
+    0.3813261091709137,
+    0.4072403013706207
+   ],
+   "RoughB": 0.86,
+   "MetalB": 0.0,
+   "LabelRough": 0.7,
+   "WearAmount": 0.35,
+   "Dirt": 0.35
+  },
+  "NavyPrint": {
+   "ColorA": [
+    0.012983030639588833,
+    0.021219009533524513,
+    0.05126946419477463
+   ],
+   "RoughA": 0.93,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.36625269055366516,
+    0.3813261091709137,
+    0.4072403013706207
+   ],
+   "RoughB": 0.86,
+   "MetalB": 0.0,
+   "LabelRough": 0.7,
+   "WearAmount": 0.35,
+   "Dirt": 0.35
+  }
+ },
+ "materials": {
+  "slot": "M_Hoodie",
+  "instances": [
+   "MI_Hoodie_HeatherGrey",
+   "MI_Hoodie_Black",
+   "MI_Hoodie_Olive",
+   "MI_Hoodie_Navy",
+   "MI_Hoodie_NavyPrint"
+  ]
+ },
+ "qc": {
+  "clip_vs_proxy_body": {
+   "rest": {
+    "verts_inside_body": 0,
+    "max_depth_cm": 0.0,
+    "outer_surface_verts_inside": 0,
+    "outer_max_depth_cm": 0.0
+   },
+   "arms_up_90": {
+    "verts_inside_body": 13,
+    "max_depth_cm": 0.49,
+    "outer_surface_verts_inside": 1,
+    "outer_max_depth_cm": 0.05
+   },
+   "arms_forward": {
+    "verts_inside_body": 13,
+    "max_depth_cm": 0.78,
+    "outer_surface_verts_inside": 7,
+    "outer_max_depth_cm": 0.78
+   },
+   "crouch_twist": {
+    "verts_inside_body": 187,
+    "max_depth_cm": 1.95,
+    "outer_surface_verts_inside": 63,
+    "outer_max_depth_cm": 1.5
+   },
+   "elbow_120": {
+    "verts_inside_body": 6,
+    "max_depth_cm": 0.1,
+    "outer_surface_verts_inside": 4,
+    "outer_max_depth_cm": 0.1
+   }
+  },
+  "mesh_qc": {
+   "SK_Hoodie": {
+    "errors": 0,
+    "warnings": 3,
+    "summary": "QC SUMMARY objects=1 shells=10 tris=14000 errors=0 warnings=3 -> PASS"
+   },
+   "SK_Hoodie_LOD1": {
+    "errors": 0,
+    "warnings": 3,
+    "summary": "QC SUMMARY objects=1 shells=10 tris=7000 errors=0 warnings=3 -> PASS"
+   },
+   "SK_Hoodie_LOD2": {
+    "errors": 0,
+    "warnings": 3,
+    "summary": "QC SUMMARY objects=1 shells=10 tris=3500 errors=0 warnings=3 -> PASS"
+   }
+  },
+  "fbx_reimport": "PASS",
+  "fbx_report": {
+   "SK_Hoodie.fbx": {
+    "armatures": [
+     "Armature"
+    ],
+    "meshes": [
+     "SK_Hoodie"
+    ],
+    "bones": 38,
+    "names_match": true,
+    "parents_match": true,
+    "root": [
+     "root"
+    ],
+    "groups": [
+     "clavicle_l",
+     "clavicle_r",
+     "hand_l",
+     "hand_r",
+     "head",
+     "lowerarm_l",
+     "lowerarm_r",
+     "lowerarm_twist_01_l",
+     "lowerarm_twist_01_r",
+     "lowerarm_twist_02_l",
+     "lowerarm_twist_02_r",
+     "neck_01",
+     "neck_02",
+     "pelvis",
+     "spine_01",
+     "spine_02",
+     "spine_03",
+     "spine_04",
+     "spine_05",
+     "thigh_l",
+     "thigh_r",
+     "upperarm_l",
+     "upperarm_r",
+     "upperarm_twist_01_l",
+     "upperarm_twist_01_r",
+     "upperarm_twist_02_l",
+     "upperarm_twist_02_r"
+    ],
+    "groups_are_bones": true,
+    "weight_sum_min_max": [
+     1.0,
+     1.0
+    ],
+    "max_influences": 4,
+    "tris": 14000,
+    "materials": [
+     "M_Hoodie"
+    ],
+    "armature_modifier": true,
+    "ok": true
+   },
+   "SK_Hoodie_LOD1.fbx": {
+    "armatures": [
+     "Armature"
+    ],
+    "meshes": [
+     "SK_Hoodie_LOD1"
+    ],
+    "bones": 38,
+    "names_match": true,
+    "parents_match": true,
+    "root": [
+     "root"
+    ],
+    "groups": [
+     "clavicle_l",
+     "clavicle_r",
+     "hand_l",
+     "hand_r",
+     "head",
+     "lowerarm_l",
+     "lowerarm_r",
+     "lowerarm_twist_01_l",
+     "lowerarm_twist_01_r",
+     "lowerarm_twist_02_l",
+     "lowerarm_twist_02_r",
+     "neck_01",
+     "neck_02",
+     "pelvis",
+     "spine_01",
+     "spine_02",
+     "spine_03",
+     "spine_04",
+     "spine_05",
+     "thigh_l",
+     "thigh_r",
+     "upperarm_l",
+     "upperarm_r",
+     "upperarm_twist_01_l",
+     "upperarm_twist_01_r",
+     "upperarm_twist_02_l",
+     "upperarm_twist_02_r"
+    ],
+    "groups_are_bones": true,
+    "weight_sum_min_max": [
+     1.0,
+     1.0
+    ],
+    "max_influences": 4,
+    "tris": 7000,
+    "materials": [
+     "M_Hoodie"
+    ],
+    "armature_modifier": true,
+    "ok": true
+   },
+   "SK_Hoodie_LOD2.fbx": {
+    "armatures": [
+     "Armature"
+    ],
+    "meshes": [
+     "SK_Hoodie_LOD2"
+    ],
+    "bones": 38,
+    "names_match": true,
+    "parents_match": true,
+    "root": [
+     "root"
+    ],
+    "groups": [
+     "clavicle_l",
+     "clavicle_r",
+     "hand_l",
+     "hand_r",
+     "head",
+     "lowerarm_l",
+     "lowerarm_r",
+     "lowerarm_twist_01_l",
+     "lowerarm_twist_01_r",
+     "lowerarm_twist_02_l",
+     "lowerarm_twist_02_r",
+     "neck_01",
+     "neck_02",
+     "pelvis",
+     "spine_01",
+     "spine_02",
+     "spine_03",
+     "spine_04",
+     "spine_05",
+     "thigh_l",
+     "thigh_r",
+     "upperarm_l",
+     "upperarm_r",
+     "upperarm_twist_01_l",
+     "upperarm_twist_01_r",
+     "upperarm_twist_02_l",
+     "upperarm_twist_02_r"
+    ],
+    "groups_are_bones": true,
+    "weight_sum_min_max": [
+     1.0,
+     1.0
+    ],
+    "max_influences": 4,
+    "tris": 3500,
+    "materials": [
+     "M_Hoodie"
+    ],
+    "armature_modifier": true,
+    "ok": true
+   }
+  }
+ },
+ "renders": {
+  "sheet": "renders/_sheet.png",
+  "hero": "renders/hoodie.png",
+  "detail": "renders/hoodie_detail.png",
+  "variants": "renders/hoodie_variants.png"
+ },
+ "notes": "Sheen / cloth shading is not in M_Lab_Prop: the fleece fuzz lives in roughness + normal; a UE Cloth shading model would add it. The knit at 13 px/cm is a visible-scale jersey/rib pattern, not thread-accurate."
+}
