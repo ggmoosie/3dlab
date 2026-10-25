@@ -1,0 +1,161 @@
+{
+ "item": "Round556",
+ "replaces_rows": [
+  "556Round",
+  "556RoundAP",
+  "556RoundHP"
+ ],
+ "category": "ammo",
+ "clip": "AS_Machete_Attack_02 (pickup/use as in DT_Ammo)",
+ "real_object": "5.56x45 mm NATO, 62 gr (C.I.P.)",
+ "pivot": "base centre (head of the case on the ground), +Z toward the tip",
+ "meshes": {
+  "SM_Round556": {
+   "dims_cm": [
+    0.96,
+    0.95,
+    5.74
+   ],
+   "texture": 1024,
+   "low": "SM_Round556_Low",
+   "texture_low": 512,
+   "variants": [
+    "FMJ",
+    "GreenTip",
+    "AP"
+   ]
+  },
+  "SM_Round556_HP": {
+   "dims_cm": [
+    0.96,
+    0.95,
+    5.7
+   ],
+   "texture": 1024,
+   "low": "SM_Round556_HP_Low",
+   "texture_low": 512,
+   "variants": [
+    "HP"
+   ]
+  }
+ },
+ "tris": {
+  "SM_Round556": 1456,
+  "SM_Round556_Low": 240,
+  "SM_Round556_HP": 1560,
+  "SM_Round556_HP_Low": 264
+ },
+ "textures": {
+  "normal": "OpenGL (flip green in UE)",
+  "sets": "one per mesh: T_<Mesh>_{BaseColor,Normal,ORM,Mask} + T_<Mesh>_Label_<Variant>",
+  "detailed": 1024,
+  "low": 512
+ },
+ "variants": {
+  "FMJ": {
+   "mesh": "SM_Round556",
+   "params": {
+    "ColorA": [
+     0.74,
+     0.33,
+     0.15
+    ],
+    "RoughA": 0.3,
+    "MetalA": 1.0,
+    "ColorB": [
+     0.78,
+     0.55,
+     0.2
+    ],
+    "RoughB": 0.26,
+    "MetalB": 1.0,
+    "LabelRough": 0.5,
+    "WearAmount": 0.35,
+    "Dirt": 0.35
+   },
+   "label": null,
+   "label_low": null
+  },
+  "GreenTip": {
+   "mesh": "SM_Round556",
+   "params": {
+    "ColorA": [
+     0.03,
+     0.26,
+     0.05
+    ],
+    "RoughA": 0.5,
+    "MetalA": 0.0,
+    "ColorB": [
+     0.78,
+     0.55,
+     0.2
+    ],
+    "RoughB": 0.26,
+    "MetalB": 1.0,
+    "LabelRough": 0.5,
+    "WearAmount": 0.35,
+    "Dirt": 0.35
+   },
+   "label": "T_Round556_Label_GreenTip.png",
+   "label_low": "T_Round556_Low_Label_GreenTip.png"
+  },
+  "AP": {
+   "mesh": "SM_Round556",
+   "params": {
+    "ColorA": [
+     0.015,
+     0.015,
+     0.015
+    ],
+    "RoughA": 0.5,
+    "MetalA": 0.0,
+    "ColorB": [
+     0.78,
+     0.55,
+     0.2
+    ],
+    "RoughB": 0.26,
+    "MetalB": 1.0,
+    "LabelRough": 0.5,
+    "WearAmount": 0.35,
+    "Dirt": 0.35
+   },
+   "label": "T_Round556_Label_AP.png",
+   "label_low": "T_Round556_Low_Label_AP.png"
+  },
+  "HP": {
+   "mesh": "SM_Round556_HP",
+   "params": {
+    "ColorA": [
+     0.74,
+     0.33,
+     0.15
+    ],
+    "RoughA": 0.3,
+    "MetalA": 1.0,
+    "ColorB": [
+     0.78,
+     0.55,
+     0.2
+    ],
+    "RoughB": 0.26,
+    "MetalB": 1.0,
+    "LabelRough": 0.5,
+    "WearAmount": 0.35,
+    "Dirt": 0.35
+   },
+   "label": null,
+   "label_low": null
+  }
+ },
+ "mask": "R tip paint / hull \u00b7 G case / brass head \u00b7 B sealant ring or hull print \u00b7 A wear",
+ "collision": [
+  "UCX_SM_Round556_00",
+  "UCX_SM_Round556_HP_00",
+  "UCX_SM_Round556_Low_00",
+  "UCX_SM_Round556_HP_Low_00"
+ ],
+ "lods": "none (detailed < 2k tris); the _Low mesh is the world / in-magazine version with the detail baked in",
+ "notes": "detailed = hero / inspect / first person; _Low = world pickup and rounds shown in magazines or boxes"
+}

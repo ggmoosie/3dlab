@@ -1,0 +1,93 @@
+{
+ "item": "Round792",
+ "replaces_rows": [
+  "792Round (new)"
+ ],
+ "category": "ammo",
+ "clip": "AS_Machete_Attack_02 (pickup/use as in DT_Ammo)",
+ "real_object": "7.92x57 mm Mauser (8 mm Mauser), 198 gr s.S. spitzer",
+ "pivot": "base centre (head of the case on the ground), +Z toward the tip",
+ "meshes": {
+  "SM_Round792": {
+   "dims_cm": [
+    1.19,
+    1.19,
+    8.05
+   ],
+   "texture": 1024,
+   "low": "SM_Round792_Low",
+   "texture_low": 512,
+   "variants": [
+    "FMJ",
+    "AP"
+   ]
+  }
+ },
+ "tris": {
+  "SM_Round792": 1300,
+  "SM_Round792_Low": 240
+ },
+ "textures": {
+  "normal": "OpenGL (flip green in UE)",
+  "sets": "one per mesh: T_<Mesh>_{BaseColor,Normal,ORM,Mask} + T_<Mesh>_Label_<Variant>",
+  "detailed": 1024,
+  "low": 512
+ },
+ "variants": {
+  "FMJ": {
+   "mesh": "SM_Round792",
+   "params": {
+    "ColorA": [
+     0.74,
+     0.33,
+     0.15
+    ],
+    "RoughA": 0.3,
+    "MetalA": 1.0,
+    "ColorB": [
+     0.78,
+     0.55,
+     0.2
+    ],
+    "RoughB": 0.26,
+    "MetalB": 1.0,
+    "LabelRough": 0.5,
+    "WearAmount": 0.35,
+    "Dirt": 0.35
+   },
+   "label": null,
+   "label_low": null
+  },
+  "AP": {
+   "mesh": "SM_Round792",
+   "params": {
+    "ColorA": [
+     0.015,
+     0.015,
+     0.015
+    ],
+    "RoughA": 0.5,
+    "MetalA": 0.0,
+    "ColorB": [
+     0.13,
+     0.14,
+     0.1
+    ],
+    "RoughB": 0.42,
+    "MetalB": 0.35,
+    "LabelRough": 0.5,
+    "WearAmount": 0.35,
+    "Dirt": 0.35
+   },
+   "label": "T_Round792_Label_AP.png",
+   "label_low": "T_Round792_Low_Label_AP.png"
+  }
+ },
+ "mask": "R tip paint / hull \u00b7 G case / brass head \u00b7 B sealant ring or hull print \u00b7 A wear",
+ "collision": [
+  "UCX_SM_Round792_00",
+  "UCX_SM_Round792_Low_00"
+ ],
+ "lods": "none (detailed < 2k tris); the _Low mesh is the world / in-magazine version with the detail baked in",
+ "notes": "detailed = hero / inspect / first person; _Low = world pickup and rounds shown in magazines or boxes"
+}
