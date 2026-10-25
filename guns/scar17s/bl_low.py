@@ -10,11 +10,13 @@ import bl_high
 ASM = {"Upper": ["upper", "upperhw", "rsight", "fsight", "screws_u"], "Barrel": ["barrel"], "Muzzle": ["brake"], "Bolt": ["bolt"],
        "Lower": ["lower", "trigger", "controls", "pins", "screws_l"], "Grip": ["grip"], "VGrip": ["vgrip"], "Stock": ["stock", "buttpad", "screws_s"],
        "Mag": ["magazine"], "Round": ["round"]}
-BUDGET = {"upper": 19000, "upperhw": 3200, "rsight": 1400, "fsight": 1300, "barrel": 1800, "brake": 2400, "bolt": 2600,
-          "lower": 7800, "trigger": 480, "controls": 2200, "pins": 500, "grip": 2600, "vgrip": 2000, "stock": 7000,
-          "buttpad": 1600, "screws_u": 2600, "screws_l": 700, "screws_s": 900, "magazine": 4200, "round": 520}
-TEX = {"Upper": 4096, "Lower": 2048, "Stock": 2048, "Barrel": 1024, "Mag": 2048, "Grip": 1024, "VGrip": 1024, "Muzzle": 1024,
-       "Bolt": 1024, "Round": 512}
+BUDGET = {"upper": 13500, "upperhw": 2000, "rsight": 900, "fsight": 900, "barrel": 1100, "brake": 1500, "bolt": 1400,
+          "lower": 5600, "trigger": 300, "controls": 1100, "pins": 0, "grip": 1700, "vgrip": 1100, "stock": 4800,
+          "buttpad": 800, "magazine": 2600, "round": 300, "screws_u": 0, "screws_l": 0, "screws_s": 0}
+# 0 = bake-only: the shell feeds the normal / AO / ID bakes of its assembly but adds no game geometry (user rule: detail in
+# textures, low tris). LOD0 target about 38k for the whole gun.
+TEX = {"Upper": 2048, "Lower": 2048, "Stock": 2048, "Barrel": 1024, "Mag": 1024, "Grip": 1024, "VGrip": 1024, "Muzzle": 1024,
+       "Bolt": 1024, "Round": 512}                         # user rule: 2K maximum
 
 
 def log(*a):
@@ -134,6 +136,9 @@ def main():
     for asm, shells in ASM.items():
         objs = []
         for s in shells:
+            if BUDGET[s] == 0:
+                log(f"{s:10s} bake-only (no game geometry)")
+                continue
             t = time.time()
             o = decimate_copy(highs[s], BUDGET[s], gcol)
             left = fix_slivers(o)
