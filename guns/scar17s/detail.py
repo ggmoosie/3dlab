@@ -68,13 +68,11 @@ HARDWARE = [("upper", 1.6)]
 # recessed windows inside hardware / surfaces: (part, x0, r0, x1, r1, depth mm, radius mm)
 RECESSES = [
     ("upper", 858, 860, 1102, 878, 7.0, 1.5),                                            # top charging slot, deep
-    ("plate", 860, 908, 1010, 928, 0.6, 1.0),                                            # ejection-port window in the frame
     ("upper", 1437, 857, 1478, 895, 9.0, 1.4),                                           # gas-regulator window (through the wall)
     ("stock", 215, 893, 255, 902, 30.0, 2.0),                                            # buttstock slot (through)
     ("mag", 892, 1202, 996, 1216, 4.0, 1.5),                                             # baseplate window
 ]
 BOSSES = [
-    ("plate", 884, 911, 891, 926, 0.5, 0.4),                                             # white tab in the port frame
     ("upper", 621, 945, 634, 976, 2.2, 0.6),                                             # hinge latch tab
 ]
 # engraved numbers / letters (part, text, x, row, height px)

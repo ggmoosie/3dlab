@@ -175,6 +175,9 @@ def upper(X, Y, Z):
     d = S.union(d, hb)
     # cavities: bolt raceway (receiver) and the free-float channel (handguard, open at the front)
     d = S.diff(d, S.box(X, Y, Z, (-17.5, bp(625, 0)[0], -14), (17.5, yb, 30), 2.5))
+    # ejection port (right side): open window through the wall into the raceway -- the bolt carrier shows through
+    ya, yb2, za, zb = bx(864, 910, 1021, 930)
+    d = S.rdiff(d, S.box(X, Y, Z, (-60.0, ya, za), (-14.0, yb2, zb), 1.6), 0.6)
     # thin-walled handguard shell, open at the front (inner = the outer section offset by the wall)
     _, zin = bp(0, 862)
     inner = np.maximum.reduce([upper_sec(X, Y, Z) + HG_WALL, Z - zin, yb - 30 - Y, np.hypot(X, Z) - 33.0])   # arched top
@@ -218,6 +221,7 @@ def side_plates(X, Y, Z, hw):
     fr2 = _rect_px(Y, Z, 858, 906, 1027, 933, 1.0)
     frame = S.extrude(fr2, ax, hw - 0.8, hw + 1.2, 0.6)
     frame = S.runion(frame, S.extrude(np.abs(fr2 + 0.9) - 0.9, ax, hw, hw + 2.0, 0.5), 0.4)   # raised border lip
+    frame = S.rdiff(frame, np.maximum(_rect_px(Y, Z, 864, 910, 1021, 930, 1.6), X + 0.0), 0.4)  # port opening (right)
     # brass deflector: rounded block, round rear end, raised pad at the port, pivot pin hole
     yd, zd = bp(820, 920)
     d2 = np.minimum(np.hypot(Y - yd, Z - zd) - 14.0 * R.S_MM, _rect_px(Y, Z, 820, 906, 858, 934, 1.2))
