@@ -9,15 +9,8 @@
   "pivot": "assembled pose",
   "linked_to": null
  },
- "SM_SCAR17S_ChargingHandle": {
-  "axis_ue": [
-   0,
-   -1,
-   0
-  ],
-  "travel_cm": 25.5,
-  "pivot": "assembled pose (forward)",
-  "linked_to": "SM_SCAR17S_Bolt (pulls it back; does not reciprocate when firing: NRCH)"
+ "SM_SCAR17S_Upper": {
+  "note": "the NRCH charging handle (left) is part of the Upper mesh: it stays forward when firing"
  },
  "SM_SCAR17S_Stock": {
   "axis_ue": "vertical through StockHinge",

@@ -29,10 +29,7 @@
     "ORM": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Barrel_ORM.png",
     "Mask": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Barrel_Mask.png"
    },
-   "lods": [
-    "SM_SCAR17S_Barrel_LOD1",
-    "SM_SCAR17S_Barrel_LOD2"
-   ],
+   "lods": [],
    "ucx": [
     "UCX_SM_SCAR17S_Barrel_00"
    ]
@@ -44,7 +41,10 @@
     "ORM": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Muzzle_ORM.png",
     "Mask": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Muzzle_Mask.png"
    },
-   "lods": [],
+   "lods": [
+    "SM_SCAR17S_Muzzle_LOD1",
+    "SM_SCAR17S_Muzzle_LOD2"
+   ],
    "ucx": [
     "UCX_SM_SCAR17S_Muzzle_00"
    ]
@@ -62,18 +62,6 @@
    ],
    "ucx": [
     "UCX_SM_SCAR17S_Bolt_00"
-   ]
-  },
-  "SM_SCAR17S_ChargingHandle": {
-   "tex": {
-    "BaseColor": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_ChargingHandle_BaseColor.png",
-    "Normal": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_ChargingHandle_Normal.png",
-    "ORM": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_ChargingHandle_ORM.png",
-    "Mask": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_ChargingHandle_Mask.png"
-   },
-   "lods": [],
-   "ucx": [
-    "UCX_SM_SCAR17S_ChargingHandle_00"
    ]
   },
   "SM_SCAR17S_Lower": {
@@ -111,6 +99,23 @@
     "UCX_SM_SCAR17S_Grip_00"
    ]
   },
+  "SM_SCAR17S_VGrip": {
+   "tex": {
+    "BaseColor": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_VGrip_BaseColor.png",
+    "Normal": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_VGrip_Normal.png",
+    "ORM": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_VGrip_ORM.png",
+    "Mask": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_VGrip_Mask.png",
+    "Label_Camo": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_VGrip_Label_Camo.png",
+    "Label_None": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_VGrip_Label_None.png"
+   },
+   "lods": [
+    "SM_SCAR17S_VGrip_LOD1",
+    "SM_SCAR17S_VGrip_LOD2"
+   ],
+   "ucx": [
+    "UCX_SM_SCAR17S_VGrip_00"
+   ]
+  },
   "SM_SCAR17S_Stock": {
    "tex": {
     "BaseColor": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Stock_BaseColor.png",
@@ -134,7 +139,9 @@
     "BaseColor": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Mag_BaseColor.png",
     "Normal": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Mag_Normal.png",
     "ORM": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Mag_ORM.png",
-    "Mask": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Mag_Mask.png"
+    "Mask": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Mag_Mask.png",
+    "Label_Camo": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Mag_Label_Camo.png",
+    "Label_None": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Mag_Label_None.png"
    },
    "lods": [
     "SM_SCAR17S_Mag_LOD1",
@@ -157,74 +164,82 @@
  },
  "item_mesh": "SM_SCAR17S (merged, no magazine)",
  "tris": {
-  "SM_SCAR17S_Upper": 15320,
-  "SM_SCAR17S_Upper_LOD1": 6894,
-  "SM_SCAR17S_Upper_LOD2": 2756,
-  "SM_SCAR17S_Barrel": 3660,
-  "SM_SCAR17S_Barrel_LOD1": 1646,
-  "SM_SCAR17S_Barrel_LOD2": 658,
-  "SM_SCAR17S_Muzzle": 1996,
-  "SM_SCAR17S_Bolt": 2600,
-  "SM_SCAR17S_Bolt_LOD1": 1170,
-  "SM_SCAR17S_Bolt_LOD2": 670,
-  "SM_SCAR17S_ChargingHandle": 1138,
-  "SM_SCAR17S_Lower": 8884,
-  "SM_SCAR17S_Lower_LOD1": 3996,
-  "SM_SCAR17S_Lower_LOD2": 1598,
-  "SM_SCAR17S_Grip": 2180,
-  "SM_SCAR17S_Grip_LOD1": 980,
-  "SM_SCAR17S_Grip_LOD2": 392,
-  "SM_SCAR17S_Stock": 7430,
-  "SM_SCAR17S_Stock_LOD1": 3342,
-  "SM_SCAR17S_Stock_LOD2": 1336,
-  "SM_SCAR17S_Mag": 3724,
-  "SM_SCAR17S_Mag_LOD1": 1674,
-  "SM_SCAR17S_Mag_LOD2": 670,
-  "SM_SCAR17S_Round": 520,
-  "SM_SCAR17S": 43208,
-  "SM_SCAR17S_LOD1": 19442,
-  "SM_SCAR17S_LOD2": 7776
+  "SM_SCAR17S_Upper": 16536,
+  "SM_SCAR17S_Upper_LOD1": 7440,
+  "SM_SCAR17S_Upper_LOD2": 2976,
+  "SM_SCAR17S_Barrel": 1064,
+  "SM_SCAR17S_Muzzle": 1500,
+  "SM_SCAR17S_Muzzle_LOD1": 674,
+  "SM_SCAR17S_Muzzle_LOD2": 270,
+  "SM_SCAR17S_Bolt": 1400,
+  "SM_SCAR17S_Bolt_LOD1": 630,
+  "SM_SCAR17S_Bolt_LOD2": 420,
+  "SM_SCAR17S_Lower": 6484,
+  "SM_SCAR17S_Lower_LOD1": 2916,
+  "SM_SCAR17S_Lower_LOD2": 1166,
+  "SM_SCAR17S_Grip": 1700,
+  "SM_SCAR17S_Grip_LOD1": 764,
+  "SM_SCAR17S_Grip_LOD2": 306,
+  "SM_SCAR17S_VGrip": 1098,
+  "SM_SCAR17S_VGrip_LOD1": 494,
+  "SM_SCAR17S_VGrip_LOD2": 196,
+  "SM_SCAR17S_Stock": 5446,
+  "SM_SCAR17S_Stock_LOD1": 2450,
+  "SM_SCAR17S_Stock_LOD2": 980,
+  "SM_SCAR17S_Mag": 1976,
+  "SM_SCAR17S_Mag_LOD1": 888,
+  "SM_SCAR17S_Mag_LOD2": 354,
+  "SM_SCAR17S_Round": 300,
+  "SM_SCAR17S": 35228,
+  "SM_SCAR17S_LOD1": 15852,
+  "SM_SCAR17S_LOD2": 6340
  },
- "lod0_total": 47452,
+ "lod0_total": 37504,
  "variants": {
   "FDE": {
    "Upper": "MI_SCAR17S_Upper_FDE",
    "Lower": "MI_SCAR17S_Lower_FDE",
    "Grip": "MI_SCAR17S_Grip_FDE",
-   "Stock": "MI_SCAR17S_Stock_FDE"
+   "VGrip": "MI_SCAR17S_VGrip_FDE",
+   "Stock": "MI_SCAR17S_Stock_FDE",
+   "Mag": "MI_SCAR17S_Mag_FDE"
   },
   "Black": {
    "Upper": "MI_SCAR17S_Upper_Black",
    "Lower": "MI_SCAR17S_Lower_Black",
    "Grip": "MI_SCAR17S_Grip_Black",
-   "Stock": "MI_SCAR17S_Stock_Black"
+   "VGrip": "MI_SCAR17S_VGrip_Black",
+   "Stock": "MI_SCAR17S_Stock_Black",
+   "Mag": "MI_SCAR17S_Mag_Black"
   },
   "Camo": {
    "Upper": "MI_SCAR17S_Upper_Camo",
    "Lower": "MI_SCAR17S_Lower_Camo",
    "Grip": "MI_SCAR17S_Grip_Camo",
-   "Stock": "MI_SCAR17S_Stock_Camo"
+   "VGrip": "MI_SCAR17S_VGrip_Camo",
+   "Stock": "MI_SCAR17S_Stock_Camo",
+   "Mag": "MI_SCAR17S_Mag_Camo"
   }
  },
  "variant_params": {
   "FDE": {
    "ColorA": [
-    0.4,
-    0.31,
-    0.19
+    0.144,
+    0.0868,
+    0.0288
    ],
-   "RoughA": 0.52,
+   "RoughA": 0.5,
    "MetalA": 0.0,
    "ColorB": [
-    0.33,
-    0.265,
-    0.17
+    0.3639,
+    0.1948,
+    0.0458
    ],
-   "RoughB": 0.64,
+   "RoughB": 0.62,
    "MetalB": 0.0,
    "LabelRough": 0.6,
-   "WearAmount": 0.35,
-   "Dirt": 0.45
+   "WearAmount": 0.12,
+   "Dirt": 0.15
   },
   "Black": {
    "ColorA": [
@@ -247,16 +262,16 @@
   },
   "Camo": {
    "ColorA": [
-    0.4,
-    0.31,
-    0.19
+    0.34,
+    0.243,
+    0.141
    ],
-   "RoughA": 0.52,
+   "RoughA": 0.5,
    "MetalA": 0.0,
    "ColorB": [
-    0.33,
-    0.265,
-    0.17
+    0.32,
+    0.192,
+    0.083
    ],
    "RoughB": 0.64,
    "MetalB": 0.0,
@@ -290,5 +305,8 @@
   "normal": "OpenGL (flip green in UE)",
   "ORM": "linear",
   "Mask": "linear RGBA (R anodised, G polymer, B print, A wear)"
- }
+ },
+ "qc_notes": [
+  "2026-10-25: mesh_qc 0 errors on Upper/Barrel/Muzzle/Bolt/Grip/VGrip/Stock/Mag; Lower + merged SM_SCAR17S report coplanar faces only at internal joints (trigger top inside its slot, grip top inside the lower's collar, upper/lower parting line ~11 mm inboard) - hidden inside the assembly, no visible z-fighting. To clean up in the next pass."
+ ]
 }
