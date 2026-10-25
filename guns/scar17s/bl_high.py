@@ -10,7 +10,7 @@ import scar_spec as P
 PREVIEW = {0: ((0.40, 0.31, 0.19), 0.45, 0.0), 1: ((0.34, 0.27, 0.17), 0.65, 0.0), 2: ((0.03, 0.03, 0.03), 0.38, 1.0),
            3: ((0.05, 0.05, 0.05), 0.55, 0.6), 4: ((0.02, 0.02, 0.02), 0.8, 0.0), 5: ((0.75, 0.48, 0.20), 0.3, 1.0),
            6: ((0.025, 0.025, 0.027), 0.5, 0.4), 7: ((0.72, 0.36, 0.22), 0.3, 1.0)}
-ASSEMBLY = {"upper": "Upper", "upperhw": "Upper", "rsight": "Upper", "fsight": "Upper", "barrel": "Barrel", "brake": "Muzzle",
+ASSEMBLY = {"upper": "Upper", "upperhw": "Upper", "chandle": "Upper", "rsight": "Upper", "fsight": "Upper", "barrel": "Barrel", "brake": "Muzzle",
             "bolt": "Bolt", "lower": "Lower", "trigger": "Lower", "controls": "Lower", "pins": "Lower", "grip": "Grip",
             "vgrip": "VGrip", "screws_u": "Upper", "screws_l": "Lower", "screws_s": "Stock", "magazine": "Magazine", "round": "Round", "stock": "Stock", "buttpad": "Stock"}
 

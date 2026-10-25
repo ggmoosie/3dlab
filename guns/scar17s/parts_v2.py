@@ -54,17 +54,69 @@ HG_X = 1140.0                                         # handguard proud of the r
 lerp = S.lerp
 
 
-def upper_hw(Y, Z):
-    """receiver cross-section read off the photo's shading: the wall drafts out under the rail (dark band, rows 845-878),
-    a rounded ridge at rows 880-900 (highlight), then the lower band steps in 1.2 mm; the handguard stands proud"""
+def _tube_arc(x0, r0, x1, r1, n=24):
+    """arc of a circle centred on the bore plane (x = 0) from (x0, row r0) up to (x1, row r1): the upper's tube shoulder"""
+    z0, z1 = bp(0, r0)[1], bp(0, r1)[1]
+    zc = (x1 * x1 + z1 * z1 - x0 * x0 - z0 * z0) / (2 * (z1 - z0))
+    rad = math.hypot(x0, z0 - zc)
+    a0, a1 = math.atan2(z0 - zc, x0), math.atan2(z1 - zc, x1)
+    return [(rad * math.cos(a), zc + rad * math.sin(a)) for a in np.linspace(a0, a1, n)]
+
+
+def _section(pts):
+    """right-half outline [(x mm, z mm)] bottom-centre -> top-centre; returns (Field2D sdf of the mirrored section in
+    (X, Z), half-width-at-z polyline)"""
+    full = pts + [(-x, z) for x, z in pts[::-1]]
+    res, pad = 0.1, 15.0
+    xs, zs = [p[0] for p in full], [p[1] for p in full]
+    x0, z1 = min(xs) - pad, max(zs) + pad
+    W, H = int((max(xs) + pad - x0) / res), int((z1 - min(zs) + pad) / res)
+    from PIL import Image as _I, ImageDraw as _D
+    im = _I.new("L", (W, H), 0)
+    _D.Draw(im).polygon([((x - x0) / res, (z1 - z) / res) for x, z in full], fill=255)
+    m = np.asarray(im) > 127
+    from scipy import ndimage as _nd
+    dd = (_nd.distance_transform_edt(~m) - _nd.distance_transform_edt(m)) * res
+    half = sorted((z, x) for x, z in pts if x > 0)
+    return S.Field2D(dd.astype(np.float32), x0, z1, res, outside=20.0), ([h[0] for h in half], [h[1] for h in half])
+
+
+def _rows(pts):
+    return [(x, bp(0, r)[1]) for x, r in pts]
+
+
+_SEC = {}
+
+
+def sections():
+    """receiver: square top under the rail, tube shoulder (coaxial arc) down to the stepped body line, flat side.
+    handguard: same square top + tube shoulder down to the crease above the upper M-LOK row, vertical slot band,
+    45 deg lower facet (lower slot row), flat bottom = the octagon"""
+    if not _SEC:
+        rec = _rows([(0, 945), (25.4, 945), (25.4, 901)]) + _tube_arc(26.8, 899, 12.5, 846) + _rows([(0, 846)])
+        hg = _rows([(0, 967), (27.8 - HG_FACET, 967), (27.8, 944), (27.8, 906)]) + _tube_arc(27.8, 905, 13.5, 846) + \
+            _rows([(0, 846)])
+        _SEC["rec"], _SEC["hg"] = _section(rec), _section(hg)
+    return _SEC
+
+
+def _blend(Y):
     yb, _ = bp(HG_X, 0)
-    zr = lambda rows: [-bp(0, r)[1] for r in rows]
-    rec = np.interp(-Z, zr([845, 896, 899, 945]), [24.0, 26.8, 25.4, 25.4])          # receiver: sharp stepped body line
-    t = S.sstep(yb - 22, yb + 45, Y)                                                  # facet sweeps in from the receiver
-    f = np.clip((Z - bp(0, 905)[1]) / (bp(0, 846)[1] - bp(0, 905)[1]), 0, 1)         # 0 at the crease (row 905), 1 at the top
-    hg = 27.8 - f * (27.8 - lerp(25.4, 18.0, t))                                      # octagon: upper facet, crease at 905
-    hg = hg + 1.4 * (Y > R.extent("upper")[1] - HG_BEZEL)                             # proud front bezel ring
-    return np.where(Y > yb - 22, hg, rec)
+    return S.sstep(yb - 22, yb + 45, Y)                                              # handguard sweeps out of the receiver
+
+
+def upper_sec(X, Y, Z):
+    """signed distance of the blended cross-section (bezel ring 1.4 proud at the nose)"""
+    sc = sections(); t = _blend(Y)
+    d = lerp(sc["rec"][0](X, Z), sc["hg"][0](X, Z), t)
+    return d - 1.4 * (Y > R.extent("upper")[1] - HG_BEZEL)
+
+
+def upper_hw(Y, Z):
+    """side half-width at (Y, Z) of the blended section (hardware, screws and cuts sit on this surface)"""
+    sc = sections(); t = _blend(Y)
+    hr, hh = np.interp(Z, *sc["rec"][1]), np.interp(Z, *sc["hg"][1])
+    return lerp(hr, hh, t) + 1.4 * (Y > R.extent("upper")[1] - HG_BEZEL)
 
 
 def rail_xs(X, Z, z_top, z_base):
@@ -92,15 +144,12 @@ def facet_slot(X, Y, Z, x0, x1, zhb, w=4.6):
 def upper(X, Y, Z):
     hw = upper_hw(Y, Z)
     P2 = R.prof("upper")(Y, Z)
-    d = S.rinter(P2, np.abs(X) - hw, 4.5)
-    _, ztop = bp(0, 845)
-    d = np.maximum(d, (np.abs(X) + Z - (hw + ztop - 4.5)) * 0.7071)                 # 45 deg top chamfers
+    d = S.rinter(P2, upper_sec(X, Y, Z), 2.0)
     yb, _ = bp(HG_X, 0)
     _, zhb = bp(0, 967)
     ax = np.abs(X)
     # handguard section (3/4 photos): vertical upper walls, a big 45 deg lower facet carrying the lower M-LOK row,
     # narrow flat bottom; the front outer edge is bevelled
-    d = np.maximum(d, np.where(Y > yb, (ax - (Z - zhb) - (hw - HG_FACET)) * 0.7071, -1e3))
     yfr = R.extent("upper")[1]
     d = S.rdiff(d, np.maximum(np.abs(Y - (yfr - HG_BEZEL)) - 0.5, hw - 0.7 - ax), 0.3)   # groove behind the bezel
     d = np.maximum(d, np.where(Y > yb, (Y - yfr) + (ax - hw) + 3.0, -1e3) * 0.7071)
@@ -119,8 +168,7 @@ def upper(X, Y, Z):
     d = S.diff(d, S.box(X, Y, Z, (-17.5, bp(625, 0)[0], -14), (17.5, yb, 30), 2.5))
     # thin-walled handguard shell, open at the front (inner = the outer section offset by the wall)
     _, zin = bp(0, 862)
-    inner = np.maximum.reduce([ax - (hw - HG_WALL), zhb + 3.2 - Z, Z - zin,
-                               (ax - (Z - zhb) - (27.8 - HG_FACET - HG_WALL * 1.414)) * 0.7071, yb - 30 - Y])
+    inner = np.maximum.reduce([upper_sec(X, Y, Z) + HG_WALL, Z - zin, yb - 30 - Y])
     d = S.rdiff(d, inner, 1.5)
     # charging-handle slot (top, blind), port / charging track under the traced hardware (both sides)
     d = side_cut(d, X, Y, Z, 828, 905, 1042, 928, 25.6, 1.6, 1.2)
@@ -136,12 +184,22 @@ def upper(X, Y, Z):
     return d
 
 
+def _teardrop(Y, Z, c0, r0, c1, r1):
+    """2-D uneven capsule (iq): circle r0 at c0 hulled with circle r1 at c1 -- the QD plates' fat-teardrop outline"""
+    ay, az = c1[0] - c0[0], c1[1] - c0[1]; h = math.hypot(ay, az); ay, az = ay / h, az / h
+    u = (Y - c0[0]) * ay + (Z - c0[1]) * az
+    v = np.abs(-(Y - c0[0]) * az + (Z - c0[1]) * ay)
+    bb = (r0 - r1) / h; aa = math.sqrt(1 - bb * bb)
+    k = -bb * v + aa * u
+    return np.where(k < 0, np.hypot(v, u) - r0, np.where(k > aa * h, np.hypot(v, u - h) - r1, aa * v + bb * u - r0))
+
+
 def _qd_plate(Y, Z, x0, x1, r0, r1, tip):
-    """QD sling plate: round rear end, flat top/bottom, tapering to a forward tip (photo px)"""
-    h = (r1 - r0) / 2; xm = x1 - (r1 - r0)
-    body = _poly2(Y, Z, [(x0 + h, r1), (x0 + h, r0), (xm, r0), tip, (xm, r1)])
-    yc, zc = bp(x0 + h, (r0 + r1) / 2)
-    return np.minimum(body, np.hypot(Y - yc, Z - zc) - h * R.S_MM) - 1.1                # 1.1 mm grow = rounded tips
+    """QD sling plate (close-up refs): fat teardrop, big round end at the rear, rounded narrow nose forward"""
+    h = (r1 - r0) / 2 * R.S_MM
+    c0 = bp(x0 + (r1 - r0) / 2, (r0 + r1) / 2)
+    c1 = bp(tip[0] - (r1 - r0) * 0.22, tip[1])
+    return _teardrop(Y, Z, c0, h, c1, h * 0.45)
 
 
 def side_plates(X, Y, Z, hw):
@@ -156,24 +214,28 @@ def side_plates(X, Y, Z, hw):
     return np.minimum.reduce([frame, defl, qr, qf])
 
 
+def chandle(X, Y, Z):
+    """NRCH charging handle (left close-up ref), built UNSCALED so the turned shape stays round: thin neck + flange in
+    the slot, cone flaring to a fat ringed knob with a hollow end, pointing out and back"""
+    y, z = bp(1100, 869)
+    o = np.array([(float(upper_hw(np.array(y), np.array(z))) - 3.0) * WK, y, z])
+    dv = np.array([1.0, -0.38, -0.32]); dv /= np.linalg.norm(dv)
+    px, py, pz = X - o[0], Y - o[1], Z - o[2]
+    sa = px * dv[0] + py * dv[1] + pz * dv[2]
+    rho = np.sqrt(np.maximum(px * px + py * py + pz * pz - sa * sa, 0))
+    rs = np.interp(sa, [0, 6, 6.2, 8.2, 8.4, 11.5, 13.0, 27, 27.3, 38.0], [3.2, 3.2, 5.2, 5.2, 3.6, 3.6, 4.4, 7.8, 8.6, 8.6])
+    ch = S.rinter(rho - rs, np.maximum(-sa, sa - 38.0), 1.2)
+    rings = np.maximum(np.abs(((sa - 27.8) % 1.4) - 0.7) - 0.3, np.maximum(8.2 - rho, np.maximum(27.8 - sa, sa - 35.6)))
+    ch = S.diff(ch, rings)
+    return S.rdiff(ch, np.maximum(rho - 4.6, 32.0 - sa), 0.8)                         # hollow knob end
+
+
 def upper_hw_parts(X, Y, Z):
     """black hardware traced from the photo (port frame + folded charging handle, QD plates, hinge plate, sling cup)"""
     hw = upper_hw(Y, Z)
     d = S.union(DT.hardware(X, Y, Z, hw, 1.6), side_plates(X, Y, Z, hw))
     d = DT.apply(d, X, Y, Z, "plate", hw + 1.6)                                       # plate screws, port window, tab
-    # NRCH charging handle on the LEFT: rounded base on the slot, pivot drum, lever swept back-up to a knurled paddle
-    y, z = bp(1100, 869)
-    hwl = 26.6
-    base = S.extrude(S.capsule2(Y, Z, (y - 12, z), (y + 6, z), 5.0), X, hwl - 2.0, hwl + 4.0, 1.6)
-    piv = S.cyl(X, Y, Z, "x", (y, z), 5.6, hwl, hwl + 9.5, 1.2)
-    ang = math.radians(150)
-    ye, ze = y + 24 * math.cos(ang), z + 24 * math.sin(ang)
-    arm = S.extrude(S.capsule2(Y, Z, (y, z), (ye, ze), 3.4), X, hwl + 5.0, hwl + 9.5, 1.4)
-    pad = S.extrude(np.hypot((Y - ye) / 1.35, Z - ze) - 6.0, X, hwl + 3.0, hwl + 11.5, 2.4)
-    knurl = np.maximum(np.abs((((Y - ye) * 0.8 + (Z - ze) * 0.6) % 1.6) - 0.8) - 0.3,
-                       np.maximum(np.hypot((Y - ye) / 1.35, Z - ze) - 5.0, hwl + 10.9 - X))
-    ch = S.rdiff(S.runion(S.runion(base, piv, 1.2), S.runion(arm, pad, 2.0), 1.0), knurl, 0.15)
-    return S.union(d, ch)
+    return d
 
 
 def _poly2(Y, Z, pts_px):
@@ -437,7 +499,7 @@ def _bb(name, pad=6.0, xhw=32.0):
 
 
 WK = 0.75          # width scale measured on the 3/4 photo (silfit.py: IoU peak at k 0.75, 2026-10-25)
-UNSCALED = {"barrel", "brake", "bolt", "round"}
+UNSCALED = {"barrel", "brake", "bolt", "round", "chandle"}
 
 
 def widthscaled(fn):
@@ -470,6 +532,8 @@ def table():
     T["upper"] = (upper, (lo[0], R.extent("hinge")[0] - 6, lo[2]), hi, 0.4, "anod")
     lo, hi = _bb("upper", 10, 34)
     T["upperhw"] = (upper_hw_parts, (-34, lo[1], -40), (62, hi[1], 50), 0.18, "steel")
+    ych, zch = bp(1100, 869)
+    T["chandle"] = (chandle, (8, ych - 30, zch - 25), (62, ych + 12, zch + 12), 0.15, "steel")
     T["screws_u"] = (screws_upper, (-34, R.px2b(600, 0)[0], -30), (34, R.px2b(1610, 0)[0], 90), 0.14, "steel")
     T["screws_l"] = (screws_lower, (-28, R.px2b(700, 0)[0], -45), (28, R.px2b(1060, 0)[0], -10), 0.14, "steel")
     T["screws_s"] = (screws_stock, (-28, R.px2b(200, 0)[0], -60), (28, R.px2b(580, 0)[0], 40), 0.14, "steel")

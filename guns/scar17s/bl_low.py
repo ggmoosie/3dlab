@@ -7,10 +7,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, "../.."))
 import bl_high
 
-ASM = {"Upper": ["upper", "upperhw", "rsight", "fsight", "screws_u"], "Barrel": ["barrel"], "Muzzle": ["brake"], "Bolt": ["bolt"],
+ASM = {"Upper": ["upper", "upperhw", "chandle", "rsight", "fsight", "screws_u"], "Barrel": ["barrel"], "Muzzle": ["brake"], "Bolt": ["bolt"],
        "Lower": ["lower", "trigger", "controls", "pins", "screws_l"], "Grip": ["grip"], "VGrip": ["vgrip"], "Stock": ["stock", "buttpad", "screws_s"],
        "Mag": ["magazine"], "Round": ["round"]}
-BUDGET = {"upper": 13500, "upperhw": 2000, "rsight": 900, "fsight": 900, "barrel": 1100, "brake": 1500, "bolt": 1400,
+BUDGET = {"upper": 13500, "upperhw": 2000, "chandle": 500, "rsight": 900, "fsight": 900, "barrel": 1100, "brake": 1500, "bolt": 1400,
           "lower": 5600, "trigger": 300, "controls": 1100, "pins": 0, "grip": 1700, "vgrip": 1100, "stock": 4800,
           "buttpad": 800, "magazine": 2600, "round": 300, "screws_u": 0, "screws_l": 0, "screws_s": 0}
 # 0 = bake-only: the shell feeds the normal / AO / ID bakes of its assembly but adds no game geometry (user rule: detail in
