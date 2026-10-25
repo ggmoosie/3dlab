@@ -34,8 +34,6 @@ SCREWS = [
     ("upper", 920, 868, 3.0, "pin"),                                                     # pin inside the CH slot
     ("upper", 1345, 866, 6.5, "torx"), ("upper", 1370, 866, 6.5, "torx"),                # handguard screws (top)
     ("plate", 1037, 920, 6.0, "torx"), ("plate", 1083, 920, 6.0, "torx"),                # rear QD plate
-    ("plate", 1060, 920, 2.6, "pin"),
-    ("plate", 1527, 866, 6.0, "torx"), ("plate", 1557, 866, 6.0, "torx"),                # front QD plate
     ("plate", 873, 918, 5.0, "torx"),                                                    # port frame screw
     ("plate", 822, 920, 3.6, "pin"),                                                     # deflector pivot
     ("lower", 722, 952, 4.0, "pin"), ("lower", 790, 1000, 4.0, "pin"),                   # FCG pins
@@ -77,7 +75,6 @@ RECESSES = [
 ]
 BOSSES = [
     ("plate", 884, 911, 891, 926, 0.5, 0.4),                                             # white tab in the port frame
-    ("lower", 828, 958, 902, 1016, 1.4, 1.8),                                            # bezel ring around the mag release (ring)
     ("upper", 621, 945, 634, 976, 2.2, 0.6),                                             # hinge latch tab
 ]
 # engraved numbers / letters (part, text, x, row, height px)

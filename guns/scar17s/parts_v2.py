@@ -63,6 +63,14 @@ def _tube_arc(x0, r0, x1, r1, n=24):
     return [(rad * math.cos(a), zc + rad * math.sin(a)) for a in np.linspace(a0, a1, n)]
 
 
+def _roll(xb, rb, xt, rt, n=16):
+    """the body line (user + refs): the wall comes straight down from the square top, then rolls out round to its
+    widest at the crease -- quarter-sine from (xt, row rt) at the top down to (xb, row rb), listed bottom -> top"""
+    zb, zt = bp(0, rb)[1], bp(0, rt)[1]
+    u = np.linspace(0, 1, n)                                                          # 0 at the crease, 1 at the top
+    return [(xt + (xb - xt) * math.cos(v * math.pi / 2), zb + (zt - zb) * v) for v in u]
+
+
 def _section(pts):
     """right-half outline [(x mm, z mm)] bottom-centre -> top-centre; returns (Field2D sdf of the mirrored section in
     (X, Z), half-width-at-z polyline)"""
@@ -74,8 +82,8 @@ def _section(pts):
     from PIL import Image as _I, ImageDraw as _D
     im = _I.new("L", (W, H), 0)
     _D.Draw(im).polygon([((x - x0) / res, (z1 - z) / res) for x, z in full], fill=255)
-    m = np.asarray(im) > 127
     from scipy import ndimage as _nd
+    m = _nd.gaussian_filter(np.asarray(im).astype(np.float32), 0.6 / res) > 127         # soften kinks ~0.6 mm
     dd = (_nd.distance_transform_edt(~m) - _nd.distance_transform_edt(m)) * res
     half = sorted((z, x) for x, z in pts if x > 0)
     return S.Field2D(dd.astype(np.float32), x0, z1, res, outside=20.0), ([h[0] for h in half], [h[1] for h in half])
@@ -93,9 +101,10 @@ def sections():
     handguard: same square top + tube shoulder down to the crease above the upper M-LOK row, vertical slot band,
     45 deg lower facet (lower slot row), flat bottom = the octagon"""
     if not _SEC:
-        rec = _rows([(0, 945), (25.4, 945), (25.4, 901)]) + _tube_arc(26.8, 899, 12.5, 846) + _rows([(0, 846)])
-        hg = _rows([(0, 967), (27.8 - HG_FACET, 967), (27.8, 944), (27.8, 906)]) + _tube_arc(27.8, 905, 13.5, 846) + \
-            _rows([(0, 846)])
+        rec = _rows([(0, 945), (25.4, 945), (25.4, 901), (26.8, 899)]) + _roll(26.8, 897, 23.4, 874) + \
+            _rows([(23.4, 849), (21.0, 846), (0, 846)])
+        hg = _rows([(0, 967), (HG_SIDE - HG_FACET, 967), (HG_SIDE, 944), (HG_SIDE, 907), (27.8, 905)]) + \
+            _roll(27.8, 903, 24.0, 878) + _rows([(24.0, 849), (21.5, 846), (0, 846)])
         _SEC["rec"], _SEC["hg"] = _section(rec), _section(hg)
     return _SEC
 
@@ -127,17 +136,17 @@ def rail_xs(X, Z, z_top, z_base):
     return np.minimum(neck, dove)
 
 
-HG_FACET, HG_WALL, HG_BEZEL = 13.0, 4.6, 14.0                        # lower facet size (side-view rows 944-967), wall (pre-width-scale)
+HG_FACET, HG_WALL, HG_BEZEL, HG_SIDE = 13.0, 4.6, 14.0, 27.2                        # lower facet size (side-view rows 944-967), wall (pre-width-scale)
 
 
 def facet_slot(X, Y, Z, x0, x1, zhb, w=4.6):
     """M-LOK slot cut square to the 45 deg lower facet, through the wall"""
     u = (np.abs(X) + (Z - zhb)) * 0.7071                                             # along the facet (up-out)
     n = (np.abs(X) - (Z - zhb)) * 0.7071                                             # facet normal (down-out)
-    u0 = 27.8 * 0.7071                                                               # facet midpoint
+    u0 = HG_SIDE * 0.7071                                                              # facet midpoint
     y0, y1, _, _ = bx(x0, 0, x1, 0)
     cap = S.capsule2(Y, u, (y0 + w / 2, u0), (y1 - w / 2, u0), w / 2)
-    n0 = (27.8 - HG_FACET) * 0.7071
+    n0 = (HG_SIDE - HG_FACET) * 0.7071
     return np.maximum(cap, np.abs(n - n0) - 8.0)
 
 
@@ -207,10 +216,22 @@ def side_plates(X, Y, Z, hw):
     ejection-port frame, the brass deflector ramp, rear + front QD plates"""
     ax = np.abs(X)
     frame = S.extrude(_poly2(Y, Z, [(858, 933), (858, 906), (1027, 906), (1027, 933)]) + 0.0, ax, hw - 0.8, hw + 1.2, 0.6)
-    defl = S.extrude(_poly2(Y, Z, [(806, 926), (818, 906), (857, 906), (857, 934), (820, 936)]), ax, hw - 0.8, hw + 2.8, 1.0)
-    defl = np.maximum(defl, (ax - (hw + 2.8)) + (Y - bp(857, 0)[0]) * -0.05)         # ramp: thickest at the port
-    qr = S.extrude(_qd_plate(Y, Z, 1032, 1121, 908, 930, (1121, 916)), ax, hw - 0.8, hw + 1.8, 0.8)
-    qf = S.extrude(_qd_plate(Y, Z, 1520, 1589, 855, 876, (1589, 867)), ax, hw - 0.8, hw + 1.8, 0.8)
+    # brass deflector: rounded block, round rear end, raised pad at the port, pivot pin hole
+    yd, zd = bp(820, 920)
+    d2 = np.minimum(np.hypot(Y - yd, Z - zd) - 14.0 * R.S_MM, _rect_px(Y, Z, 820, 906, 858, 934, 1.2))
+    defl = S.extrude(d2, ax, hw - 0.8, hw + 2.6, 1.4)
+    defl = S.runion(defl, S.extrude(_rect_px(Y, Z, 841, 908, 858, 932, 1.5), ax, hw, hw + 3.4, 1.0), 0.6)
+    defl = S.diff(defl, S.extrude(np.hypot(Y - bp(824, 920)[0], Z - bp(824, 920)[1]) - 2.6 * R.S_MM, ax, hw + 1.0, hw + 5))
+    # QD plates: thick pillowed teardrops; sockets are real holes with a counterbore ring
+    qr = S.extrude(_qd_plate(Y, Z, 1032, 1121, 908, 930, (1121, 916)), ax, hw - 0.8, hw + 2.8, 1.4)
+    qf = S.extrude(_qd_plate(Y, Z, 1520, 1589, 855, 876, (1589, 867)), ax, hw - 0.8, hw + 2.8, 1.4)
+    for x, row, pl in ((1060, 920, "r"), (1527, 866, "f"), (1557, 866, "f")):
+        ys, zs = bp(x, row); rr = np.hypot(Y - ys, Z - zs)
+        cut = np.minimum(np.maximum(rr - 2.9, hw + 0.4 - ax), np.maximum(rr - 4.4, hw + 2.2 - ax))
+        if pl == "r":
+            qr = S.rdiff(qr, cut, 0.3)
+        else:
+            qf = S.rdiff(qf, cut, 0.3)
     return np.minimum.reduce([frame, defl, qr, qf])
 
 
@@ -233,7 +254,9 @@ def chandle(X, Y, Z):
 def upper_hw_parts(X, Y, Z):
     """black hardware traced from the photo (port frame + folded charging handle, QD plates, hinge plate, sling cup)"""
     hw = upper_hw(Y, Z)
-    d = S.union(DT.hardware(X, Y, Z, hw, 1.6), side_plates(X, Y, Z, hw))
+    # rear hinge strip (black, both sides): clean plate with rounded ends instead of the traced outline
+    strip = S.extrude(_rect_px(Y, Z, 617, 849, 627, 998, 1.2), np.abs(X), hw - 0.8, hw + 1.0, 0.6)
+    d = S.union(strip, side_plates(X, Y, Z, hw))
     d = DT.apply(d, X, Y, Z, "plate", hw + 1.6)                                       # plate screws, port window, tab
     return d
 
@@ -377,12 +400,17 @@ def lower(X, Y, Z):
     r = np.where(Y < yt, 5.0, 3.5)                                                    # rounded rear tang into the grip
     d = S.rinter(R.prof("lower")(Y, Z), np.abs(X) - hw, r)
     _, zgt = bp(0, 993)
-    collar = np.maximum(_rounded(R.prof("grip")(Y, Z), X, 15.0, 8.5), zgt - 9.0 - Z)     # the lower wraps the grip top
+    collar = np.maximum(_rounded(R.prof("grip")(Y, Z), X, 15.0, 8.5) - 0.4, zgt - 9.0 - Z)   # wraps the grip top, 0.4 proud
     d = S.runion(d, collar, 4.0)
     _, ztop = bp(0, 943)
     d = S.diff(d, np.maximum(mag_box(X, Y, Z, 0.5 + 1.5 * S.sstep(zf + 4, zf - 6, Z)), S.slab(Z, -200, ztop - 6)))
     y0, y1, z0, z1 = bx(800, 990, 845, 1010)
     d = S.diff(d, S.box(X, Y, Z, (-3.8, y0, z0 - 10), (3.8, y1, z1 + 4), 1.0))         # trigger slot
+    # raised C bezel guarding the mag release (open at the upper-left where the bolt release passes)
+    ring = np.abs(_cap(Y, Z, (843, 1004), (863, 986), 17.0)) - 2.2
+    ybz, zbz = bp(838, 984)
+    ring = np.maximum(ring, -np.maximum(ybz - Y, zbz - Z))
+    d = S.runion(d, S.extrude(ring, np.abs(X), hw - 1.0, hw + 1.4, 0.7), 0.8)
     # magwell-front stipple, catalogue (pins, bezel ring, markings, seams)
     d = DT.stipple(d, X, Y, Z, hw, 0.4)
     return DT.apply(d, X, Y, Z, "lower", hw)
@@ -392,15 +420,37 @@ def trigger(X, Y, Z):
     return S.rinter(R.prof("trigger")(Y, Z), np.abs(X) - 3.3, 0.8)
 
 
+def _cap(Y, Z, p0, p1, rpx):
+    return S.capsule2(Y, Z, bp(*p0), bp(*p1), rpx * R.S_MM)
+
+
 def controls(X, Y, Z):
-    """ambi selector, bolt release, mag release: outlines traced from the photo, proud of the lower; knurled release"""
-    hw = 22.6
-    f = RL.field("lower_hardware")(Y, Z)
-    d = S.extrude(f, np.abs(X), hw - 1.0, hw + 2.2, 0.6)
-    ym, zm = bp(860, 992)
-    knurl = np.maximum(np.maximum(np.abs(((Y + Z) % 1.4) - 0.7) - 0.25, np.sqrt((Y - ym) ** 2 + (Z - zm) ** 2) - 9.5),
-                       hw + 1.7 - np.abs(X))
-    return S.rdiff(d, knurl, 0.12)
+    """ambi controls measured off the photo (clean parts, not traced pixels): selector = hub ring + tapered paddle,
+    bolt release = paddle + long thin arm + tab, mag release = tilted knurled oval (its C bezel is part of the lower)"""
+    ym, _ = bp(866, 0)
+    hw = np.where(Y > ym, 22.6, 21.6)
+    ax = np.abs(X)
+    yc, zc = bp(752, 980)
+    hub = S.extrude(np.hypot(Y - yc, Z - zc) - 13.0 * R.S_MM, ax, hw - 0.6, hw + 2.6, 0.9)
+    hub = S.rdiff(hub, np.maximum(np.hypot(Y - yc, Z - zc) - 5.5 * R.S_MM, hw + 1.6 - ax), 0.4)      # centre bore
+    pad = S.extrude(np.minimum(_cap(Y, Z, (726, 975), (745, 977), 5.0), _cap(Y, Z, (745, 977), (752, 980), 7.0)),
+                    ax, hw - 0.6, hw + 1.9, 0.8)
+    sel = S.runion(hub, pad, 1.0)
+    br = np.minimum.reduce([_cap(Y, Z, (799, 974), (816, 973), 4.5), _cap(Y, Z, (816, 973), (864, 962), 2.6),
+                            _rect_px(Y, Z, 862, 956, 871, 967)])
+    brl = S.extrude(br, ax, hw - 0.6, hw + 1.7, 0.6)
+    mr = _cap(Y, Z, (843, 1004), (863, 986), 9.5)
+    mag = S.extrude(mr, ax, hw - 0.6, hw + 1.6, 1.0)
+    u, w = S.rot2(Y, Z, 45)
+    knurl = np.maximum(np.minimum(np.abs((u % 1.3) - 0.65), np.abs((w % 1.3) - 0.65)) - 0.22,
+                       np.maximum(mr + 1.2, hw + 1.3 - ax))
+    mag = S.rdiff(mag, knurl, 0.1)
+    return np.minimum.reduce([sel, brl, mag])
+
+
+def _rect_px(Y, Z, x0, r0, x1, r1, r=0.6):
+    (ya, za), (yb, zb) = bp(x0, r1), bp(x1, r0)
+    return S.rect2(Y, Z, (ya, za), (yb, zb), r)
 
 
 def pins(X, Y, Z):
