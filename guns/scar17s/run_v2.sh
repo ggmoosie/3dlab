@@ -18,4 +18,5 @@ $PY tools/ref_compare.py guns/scar17s/refs_user/nrch_left34.jpg guns/scar17s/rev
 $PY guns/scar17s/bl_bake.py > $L/scar_bake.log 2>&1; grep -E "BAKE_DONE|Traceback" $L/scar_bake.log
 $PY guns/scar17s/bl_final.py stage=all samples=64 > $L/scar_final.log 2>&1; grep -E "TRIS|Traceback" $L/scar_final.log | tail -2
 $PY guns/scar17s/compare.py src=game samples=48 tag=v3 2>&1 | grep COMPARE
+$PY guns/scar17s/showcase.py shots=hero34,fieldstrip samples=128 > $L/showcase.log 2>&1; grep -E "Saved: .*showcase|Traceback" $L/showcase.log
 echo CHAIN_DONE

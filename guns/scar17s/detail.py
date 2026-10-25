@@ -232,11 +232,7 @@ def hardware(X, Y, Z, hw, standoff=1.6):
 
 
 def stipple(d, X, Y, Z, hw, recess=0.7):
-    """recess the traced stipple panels and raise ~1 mm bumps inside them (both sides)"""
+    """recess the traced stipple panels (clay shape only); the stipple pattern itself is a material layer (bl_bake)"""
     f = relief.field("stipple")(Y, Z)
-    inside = np.clip(-f / 0.6, 0, 1)                                                     # 0 at the panel edge -> 1 inside
-    s = np.abs(X)
-    pan = np.maximum(f, hw - recess - s)
-    d = S.rdiff(d, pan, 0.35)
-    near = np.clip(1 - np.abs(s - (hw - recess)) / 1.2, 0, 1)
-    return d - bumps(Y, Z) * inside * near
+    pan = np.maximum(f, hw - recess - np.abs(X))
+    return S.rdiff(d, pan, 0.35)

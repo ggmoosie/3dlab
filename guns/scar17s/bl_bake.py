@@ -119,8 +119,19 @@ def compose(n, B, size):
     # normal: baked + polymer stipple on the grip, rubber texture on the buttpad, fine cast texture on polymer
     nrm = B["NORMAL"].astype(np.float32)
     H = np.zeros((S, S), np.float32)
-    if n in ("Grip", "VGrip"):
-        H += (nz(2600, 11, 2) - 0.5) * 1.2 * poly
+    # stipple: a material layer inside the traced panels (the clay only carries the panel recess). Texel world position ->
+    # B frame -> relief stipple field (photo-traced) -> fine stipple height, extra cavity, slightly darker
+    stip = np.zeros((S, S), np.float32)
+    if n in ("Grip", "VGrip", "Lower"):
+        import relief, scar_spec as SP
+        o = np.array(SP.ORIGIN_B)
+        Pw = B["POS"].reshape(-1, 3).astype(np.float64)
+        yb, zb = -Pw[:, 1] * 1000 + o[1], Pw[:, 2] * 1000 + o[2]
+        f = relief.field("stipple")(yb, zb).reshape(S, S)
+        stip = (np.clip(-f / 0.5, 0, 1) * B["MASK"] * (np.abs(Pw[:, 0]).reshape(S, S) > 0.003)).astype(np.float32)
+        dots = np.clip((nz(1300, 41, 2) - 0.45) * 3.5, 0, 1) ** 1.5
+        H += (dots - 0.4) * 2.2 * stip
+        ao = ao * (1 - 0.35 * stip * (1 - dots))
     H += (nz(1800, 12, 2) - 0.5) * 0.25 * (poly | rub)
     H += (nz(3000, 13, 1) - 0.5) * 0.08 * anod
     if H.any():

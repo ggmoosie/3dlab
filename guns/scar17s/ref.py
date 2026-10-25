@@ -35,8 +35,14 @@ def image():
     return _IMG
 
 
+_MASKS = None
+
+
 def masks():
-    """foreground (anything not paper-white), dark (black steel / rubber), tan (FDE)"""
+    """foreground (anything not paper-white), dark (black steel / rubber), tan (FDE); computed once"""
+    global _MASKS
+    if _MASKS is not None:
+        return _MASKS
     a = image()
     mn, mx = a.min(-1), a.max(-1)
     fg = ~((mn > 228) & (mx - mn < 18))
@@ -45,7 +51,8 @@ def masks():
     size = ndimage.sum(fg, lab, range(1, n + 1))
     fg = np.isin(lab, 1 + np.nonzero(size > 400)[0])
     dark = fg & (mx < 105) & (mx - mn < 40)
-    return fg, dark
+    _MASKS = (fg, dark)
+    return _MASKS
 
 
 # partition polygons in photo px (generous: the silhouette decides the outline)
