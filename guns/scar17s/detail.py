@@ -44,8 +44,8 @@ SCREWS = [
     ("stock", 243, 918, 12.0, "socket"),                                                 # buttstock QD socket (through)
     ("stock", 217, 1010, 6.0, "pin"),
     ("stock", 560, 882, 8.0, "pin"),
-    ("stock", 447, 933, 10.0, "button"),                                                 # stock latch button
-    ("rsight", 680, 825, 9.0, "knob"), ("fsight", 1500, 840, 6.0, "hex"),
+    ("stock", 377, 921, 7.5, "button"),                                                  # stock latch button
+    ("fsight", 1549, 836, 6.0, "hex"),
 ]
 # grooves (part, [polyline px], width mm, depth mm)
 GROOVES = [
@@ -54,8 +54,8 @@ GROOVES = [
     ("upper", [(1048, 963), (1135, 963), (1135, 935), (1124, 916), (1136, 905)], 0.6, 0.8),  # handguard rear junction
     ("upper", [(612, 857), (612, 990)], 0.5, 0.6),                                       # hinge plate seam
     ("stock", [(292, 893), (306, 992)], 0.6, 0.7),                                       # rear piece / tube
-    ("stock", [(300, 893), (385, 893)], 0.5, 0.5), ("stock", [(300, 990), (385, 990)], 0.5, 0.5),
-    ("stock", [(382, 868), (382, 998)], 0.6, 0.7),                                       # front body rear edge
+    ("stock", [(300, 893), (348, 893)], 0.5, 0.5), ("stock", [(300, 990), (348, 990)], 0.5, 0.5),
+    ("stock", [(349, 878), (349, 936)], 0.6, 0.7),                                       # front body rear edge
     ("stock", [(470, 935), (566, 935)], 0.6, 0.6),                                       # front body panel line
     ("stock", [(566, 860), (566, 998)], 0.6, 0.7),                                       # front body / hinge knuckle
     ("butt", [(196, 885), (196, 1118)], 0.6, 0.7),                                       # buttpad rim lip
@@ -73,7 +73,6 @@ RECESSES = [
     ("plate", 860, 908, 1010, 928, 3.5, 1.0),                                            # ejection-port window in the frame
     ("upper", 1422, 856, 1460, 891, 4.0, 1.2),                                           # sling cup
     ("stock", 215, 893, 255, 902, 30.0, 2.0),                                            # buttstock slot (through)
-    ("stock", 372, 878, 468, 934, 6.0, 3.5),                                             # latch pocket (deep)
     ("mag", 892, 1202, 996, 1216, 4.0, 1.5),                                             # baseplate window
 ]
 BOSSES = [

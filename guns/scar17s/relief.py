@@ -14,8 +14,6 @@ NO_MARK = [((685, 1158), 24), ((1408, 1082), 22), ((754, 955), 16), ((700, 1028)
 NO_MARK_BOX = [(260, 930, 455, 960)]
 # black hardware that sits proud of the receiver (traced outlines); screws are modelled separately as Torx heads
 HW_BOXES = [(616, 845, 634, 1000),            # hinge rear plate (black strip)
-            (804, 898, 1116, 941),            # port frame + brass deflector + rear QD plate
-            (1512, 848, 1598, 884),           # front QD plate
             (1416, 850, 1464, 895)]           # sling-loop cup
 LOWER_HW_BOXES = [(696, 950, 766, 992),         # ambi selector lever + hub
                   (798, 954, 874, 980),         # bolt-release lever
@@ -82,6 +80,7 @@ def masks():
 
 
 _F = {}
+SMOOTH = dict(hardware=1.6, lower_hardware=1.2)                    # px sigma; stipple stays as traced (bake uses it)
 
 
 def field(name, grow_px=0.0):
@@ -97,7 +96,10 @@ def field(name, grow_px=0.0):
     c = m[r0:r1, x0:x1].astype(np.float32)
     up = 3
     im = Image.fromarray((c * 255).astype(np.uint8)).resize(((x1 - x0) * up, (r1 - r0) * up), Image.BILINEAR)
-    hi = np.asarray(im) > 127
+    a = np.asarray(im).astype(np.float32) / 255
+    if SMOOTH.get(name):                                          # traced pixel stairs -> clean machined outlines
+        a = ndimage.gaussian_filter(a, SMOOTH[name] * up)
+    hi = a > 0.5
     res = R.S_MM / up
     d = (ndimage.distance_transform_edt(~hi) - ndimage.distance_transform_edt(hi)) * res
     y0, _ = R.px2b(x0, 0); _, z1 = R.px2b(0, r0)

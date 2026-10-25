@@ -82,6 +82,9 @@ def poly_mask(pts, shape):
 _FIELDS = {}
 
 
+BLUR = dict(stock=1.4, butt=1.0)
+
+
 def prof(name, grow=0.0):
     """signed-distance Field2D (y, z mm) of the silhouette inside the part's polygon; grow (mm) inflates it"""
     if name in _FIELDS:
@@ -95,7 +98,7 @@ def prof(name, grow=0.0):
     x0, x1, r0, r1 = xs.min() - 12, xs.max() + 13, ys.min() - 12, ys.max() + 13
     c = m[r0:r1, x0:x1].astype(np.float32)
     im = Image.fromarray((c * 255).astype(np.uint8)).resize(((x1 - x0) * UP, (r1 - r0) * UP), Image.BILINEAR)
-    im = im.filter(ImageFilter.GaussianBlur(UP * 0.6))
+    im = im.filter(ImageFilter.GaussianBlur(UP * BLUR.get(name, 0.6)))           # jpeg edge noise -> clean outline
     hi = np.asarray(im) > 127
     res = S_MM / UP
     d = (ndimage.distance_transform_edt(~hi) - ndimage.distance_transform_edt(hi)) * res

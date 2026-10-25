@@ -73,12 +73,14 @@ def rail_xs(X, Z, z_top, z_base):
 def upper(X, Y, Z):
     hw = upper_hw(Y, Z)
     P2 = R.prof("upper")(Y, Z)
-    d = S.rinter(P2, np.abs(X) - hw, 3.0)
+    d = S.rinter(P2, np.abs(X) - hw, 4.5)
     _, ztop = bp(0, 845)
     d = np.maximum(d, (np.abs(X) + Z - (hw + ztop - 4.5)) * 0.7071)                 # 45 deg top chamfers
     yb, _ = bp(HG_X, 0)
     _, zhb = bp(0, 967)
-    d = np.maximum(d, np.where(Y > yb, (np.abs(X) - Z - (hw - zhb - 4.0)) * 0.7071, -1e3))   # handguard bottom chamfers
+    rr = 9.0                                                                          # handguard: U-section bottom
+    qx, qz = np.maximum(np.abs(X) - (hw - rr), 0), np.maximum(zhb + rr - Z, 0)
+    d = np.maximum(d, np.where(Y > yb, np.hypot(qx, qz) - rr, -1e3))
     # top rail (teeth = the photo's)
     _, zrt = bp(0, 826); _, zrb = bp(0, 846)
     rl = np.maximum(rail_xs(X, Z, zrt, zrb), R.prof("rail")(Y, Z))
@@ -107,10 +109,30 @@ def upper(X, Y, Z):
     return d
 
 
+def _qd_plate(Y, Z, x0, x1, r0, r1, tip):
+    """QD sling plate: round rear end, flat top/bottom, tapering to a forward tip (photo px)"""
+    h = (r1 - r0) / 2; xm = x1 - (r1 - r0)
+    body = _poly2(Y, Z, [(x0 + h, r1), (x0 + h, r0), (xm, r0), tip, (xm, r1)])
+    yc, zc = bp(x0 + h, (r0 + r1) / 2)
+    return np.minimum(body, np.hypot(Y - yc, Z - zc) - h * R.S_MM) - 1.1                # 1.1 mm grow = rounded tips
+
+
+def side_plates(X, Y, Z, hw):
+    """machined black plates on both receiver sides, measured off the photo (clean edges, not traced pixels):
+    ejection-port frame, the brass deflector ramp, rear + front QD plates"""
+    ax = np.abs(X)
+    frame = S.extrude(_poly2(Y, Z, [(858, 933), (858, 906), (1027, 906), (1027, 933)]) + 0.0, ax, hw - 0.8, hw + 1.2, 0.6)
+    defl = S.extrude(_poly2(Y, Z, [(806, 926), (818, 906), (857, 906), (857, 934), (820, 936)]), ax, hw - 0.8, hw + 2.8, 1.0)
+    defl = np.maximum(defl, (ax - (hw + 2.8)) + (Y - bp(857, 0)[0]) * -0.05)         # ramp: thickest at the port
+    qr = S.extrude(_qd_plate(Y, Z, 1032, 1121, 908, 930, (1121, 916)), ax, hw - 0.8, hw + 1.8, 0.8)
+    qf = S.extrude(_qd_plate(Y, Z, 1520, 1589, 855, 876, (1589, 867)), ax, 27.8 - 0.8, 27.8 + 1.8, 0.8)
+    return np.minimum.reduce([frame, defl, qr, qf])
+
+
 def upper_hw_parts(X, Y, Z):
     """black hardware traced from the photo (port frame + folded charging handle, QD plates, hinge plate, sling cup)"""
     hw = upper_hw(Y, Z)
-    d = DT.hardware(X, Y, Z, hw, 1.6)
+    d = S.union(DT.hardware(X, Y, Z, hw, 1.6), side_plates(X, Y, Z, hw))
     d = DT.apply(d, X, Y, Z, "plate", hw + 1.6)                                       # plate screws, port window, tab
     # NRCH charging handle on the LEFT (FN product shots): stem out of the top-slot front, T-bar angled down and back
     y, z = bp(1100, 869)
@@ -123,26 +145,56 @@ def upper_hw_parts(X, Y, Z):
     return S.union(d, ch)
 
 
+def _poly2(Y, Z, pts_px):
+    """2-D SDF of a convex photo-px polygon (clockwise in the photo) in the (Y, Z) plane"""
+    P = [bp(*q) for q in pts_px]
+    d = np.full_like(Y, -1e3)
+    for (y0, z0), (y1, z1) in zip(P, P[1:] + P[:1]):
+        ny, nz = -(z1 - z0), y1 - y0; n = math.hypot(ny, nz)
+        d = np.maximum(d, ((Y - y0) * ny + (Z - z0) * nz) / n)
+    return d
+
+
+def _sight(X, Y, Z, base_px, leaf_px, leaf_hw, base_hw=10.5):
+    """folding sight measured off the photo (clean machined shapes, not the traced outline): chamfered clamp base
+    straddling the rail + thin flip leaf with a rounded top"""
+    base = S.extrude(_poly2(Y, Z, base_px), np.abs(X), -base_hw, base_hw, 1.0)
+    _, zt = bp(0, max(r for _, r in base_px)); _, zb = bp(0, min(r for _, r in base_px))
+    base = np.maximum(base, (np.abs(X) + Z - (base_hw + zb - 2.0)) * 0.7071)          # top chamfers
+    (y0, z1), (y1, z0) = bp(leaf_px[0], leaf_px[1]), bp(leaf_px[2], leaf_px[3])
+    leaf = S.box(X, Y, Z, (-leaf_hw, y0, z0 - 2), (leaf_hw, y1, z1), 1.4)
+    return S.runion(base, leaf, 0.8)
+
+
+def _drum(X, Y, Z, x, row, rpx, x0, x1, knurl=True):
+    y, z = bp(x, row); r = rpx * R.S_MM
+    d = S.cyl(X, Y, Z, "x", (y, z), r, x0, x1, 0.8)
+    if knurl:
+        th = np.arctan2(Z - z, Y - y)
+        g = np.maximum(np.abs(((th * 20 / (2 * math.pi)) % 1.0) - 0.5) * 2 * math.pi * r / 20 - 0.35,
+                       np.maximum(r - 0.5 - np.hypot(Y - y, Z - z), X - (x0 + 3.0)))
+        d = S.diff(d, g)
+        d = S.diff(d, np.maximum(np.hypot(Y - y, Z - z) - r * 0.32, X - (x0 + 1.4)))   # hex-key bore in the knob
+    return d
+
+
 def rsight(X, Y, Z):
-    p = R.prof("rsight")(Y, Z)
-    _, zr = bp(0, 830)
-    hw = np.where(Z > zr, 7.5, 11.0)
-    d = S.rinter(p, np.abs(X) - hw, 0.8)
-    y, z = bp(664, 774)
+    d = _sight(X, Y, Z, [(660, 841), (660, 826), (672, 815), (690, 820), (703, 834), (703, 841)], (662, 762, 679, 818), 4.2)
+    d = S.union(d, _drum(X, Y, Z, 670, 826, 10.5, -13.8, 10.5))                    # windage / hinge drum, knob right
+    d = S.union(d, _drum(X, Y, Z, 689, 837, 6.0, -12.0, 12.0, knurl=False))         # cross-bolt boss
+    y, z = bp(670, 775)
     d = S.diff(d, S.cyl(X, Y, Z, "y", (0, z), 1.3, y - 30, y + 30))                 # peep aperture
-    d = S.rdiff(d, S.box(X, Y, Z, (-4.5, y - 3, z - 12), (4.5, y + 3, z - 4), 1.0), 0.4)   # lightening window
-    return DT.apply(d, X, Y, Z, "rsight", 11.0, mirror=False)
+    d = S.rdiff(d, S.box(X, Y, Z, (-2.0, y - 3, z - 12), (2.0, y + 3, z - 4), 1.0), 0.4)   # lightening window
+    return d
 
 
 def fsight(X, Y, Z):
-    p = R.prof("fsight")(Y, Z)
-    _, zr = bp(0, 830)
-    hw = np.where(Z > zr, 8.0, 11.0)
-    d = S.rinter(p, np.abs(X) - hw, 0.8)
-    _, zp = bp(0, 790)
-    gap = np.maximum(np.maximum(np.abs(X) - 5.2, zp - Z), -(np.abs(X) - 1.2))     # ears around a 2.4 mm post
-    d = S.rdiff(d, gap, 0.4)
-    return DT.apply(d, X, Y, Z, "fsight", 11.0, mirror=False)
+    d = _sight(X, Y, Z, [(1532, 842), (1532, 830), (1545, 818), (1576, 818), (1583, 830), (1583, 842)], (1554, 767, 1573, 820), 5.6)
+    _, zp = bp(0, 776)
+    gap = np.maximum(np.maximum(np.abs(X) - 3.8, zp - Z), -(np.abs(X) - 1.1))     # protective ears around the post
+    d = S.rdiff(d, gap, 0.3)
+    d = S.union(d, _drum(X, Y, Z, 1563, 818, 5.0, -8.0, 8.0, knurl=False))         # leaf hinge pin
+    return DT.apply(d, X, Y, Z, "fsight", 10.5, mirror=False)
 
 
 # ------------------------------------------------------------------ barrel + muzzle brake
@@ -241,7 +293,7 @@ def grip(X, Y, Z):
 
 def vgrip(X, Y, Z):
     hw = 14.0
-    d = _rounded(R.prof("vgrip")(Y, Z), X, hw, 7.5)
+    d = _rounded(R.prof("vgrip")(Y, Z), X, hw, 10.0)
     return DT.stipple(d, X, Y, Z, hw, 0.5)
 
 
@@ -270,7 +322,7 @@ def magazine(X, Y, Z):
 
 # ------------------------------------------------------------------ stock (+ buttpad)
 def stock(X, Y, Z):
-    yr, _ = bp(300, 0); yf, _ = bp(385, 0)
+    yr, _ = bp(300, 0); yf, _ = bp(349, 0)
     _, zleg = bp(0, 1000)
     hw = np.where(Y > yf, 22.0, np.where(Y > yr, 17.0, 21.0))
     _, zc = bp(0, 930)
@@ -278,11 +330,13 @@ def stock(X, Y, Z):
     hw = np.where((Z < zleg) & (Y < yr + 10), 12.5, hw)                               # the serrated leg is thin
     d = S.rinter(R.prof("stock")(Y, Z), np.abs(X) - hw, 4.0)
     # catalogue: latch pocket + button, slot, QD socket, pins, panel lines, numbers (detail.py)
-    tri = [bp(392, 884), bp(454, 884), bp(428, 929)]                                 # latch wedge, pivot at the top
+    tri = [bp(355, 887), bp(379, 887), bp(368, 910)]                                 # latch lever in its pocket
     e = [(tri[i], tri[(i + 1) % 3]) for i in range(3)]
     dtri = np.max([((Y - a[0]) * (b[1] - a[1]) - (Z - a[1]) * (b[0] - a[0])) / math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in e], axis=0)
-    wedge = S.extrude(dtri + 1.5, np.abs(X), hw - 6.0, hw - 0.4, 1.2)
-    d = S.union(DT.apply(d, X, Y, Z, "stock", hw), wedge)
+    wedge = S.extrude(dtri + 0.6, np.abs(X), hw - 6.0, hw - 1.2, 1.0)
+    pocket = S.extrude(_poly2(Y, Z, [(354, 905), (353, 883), (383, 878), (382, 901), (367, 911)]) + 1.0 - 1.6,
+                       np.abs(X), hw - 6.0, hw + 5, 1.2)                               # rounded-triangle latch pocket
+    d = S.union(DT.apply(S.rdiff(d, pocket, 0.8), X, Y, Z, "stock", hw), wedge)
     _, zb = bp(0, 998)
     yleg, _ = bp(300, 0)
     d = np.maximum(d, np.where((Y > yleg) & (Z > zb - 1.0), (np.abs(X) - (Z - zb) - hw + 4.0) * 0.7071, -1e3))  # body underside
@@ -316,7 +370,7 @@ def screws_upper(X, Y, Z):
     """steel heads on the receiver, its plates and the sights (one shell per assembly so the stock can fold)"""
     hw = upper_hw(Y, Z)
     return np.minimum.reduce([DT.heads(X, Y, Z, "upper", hw), DT.heads(X, Y, Z, "plate", hw + 1.6),
-                              DT.heads(X, Y, Z, "rsight", 11.0, mirror=False), DT.heads(X, Y, Z, "fsight", 11.0, mirror=False)])
+                              DT.heads(X, Y, Z, "fsight", 10.5, mirror=False)])
 
 
 def screws_lower(X, Y, Z):
@@ -325,7 +379,7 @@ def screws_lower(X, Y, Z):
 
 
 def screws_stock(X, Y, Z):
-    yr, _ = bp(300, 0); yf, _ = bp(385, 0)
+    yr, _ = bp(300, 0); yf, _ = bp(349, 0)
     return DT.heads(X, Y, Z, "stock", np.where(Y > yf, 22.0, np.where(Y > yr, 17.0, 21.0)))
 
 
@@ -338,7 +392,7 @@ def table():
     T["screws_u"] = (screws_upper, (-34, R.px2b(600, 0)[0], -30), (34, R.px2b(1610, 0)[0], 90), 0.14, "steel")
     T["screws_l"] = (screws_lower, (-28, R.px2b(700, 0)[0], -45), (28, R.px2b(1060, 0)[0], -10), 0.14, "steel")
     T["screws_s"] = (screws_stock, (-28, R.px2b(200, 0)[0], -60), (28, R.px2b(580, 0)[0], 40), 0.14, "steel")
-    T["rsight"] = (rsight, *_bb("rsight", 4, 13), 0.15, "steel")
+    T["rsight"] = (rsight, *_bb("rsight", 4, 15), 0.15, "steel")
     T["fsight"] = (fsight, *_bb("fsight", 4, 13), 0.15, "steel")
     T["barrel"] = (barrel, (-16, -6, -16), (16, 416, 16), 0.25, "steel")
     T["brake"] = (brake, (-16, R.px2b(1740, 0)[0], -16), (16, R.MUZZLE_Y + 3, 16), 0.15, "steel")
@@ -357,7 +411,7 @@ def table():
 
 
 def main():
-    out = os.path.join(HERE, "work", "high.npz")
+    out = next((a.split("=")[1] for a in sys.argv[1:] if a.startswith("out=")), os.path.join(HERE, "work", "high.npz"))
     old = dict(np.load(out)) if (ONLY and os.path.exists(out)) else {}
     parts = {}
     for name, (fn, lo, hi, h, mat) in table().items():
