@@ -1,0 +1,58 @@
+{
+ "verdict": "PASS",
+ "reasons": [],
+ "rms_px": 9.129859025043281,
+ "rms_pct": 1.0144287805603647,
+ "focal_mm": 116.56542261375098,
+ "x0": [
+  1.6389964844769036,
+  -0.4707547453640705,
+  -0.5595070723652377,
+  -1.1600171413946407,
+  -1.7692893666652598,
+  -0.18931028650185472,
+  116.56542261375098
+ ],
+ "points": [
+  {
+   "name": "muzzle_face",
+   "check": false,
+   "error_px": 8.897432693572538
+  },
+  {
+   "name": "front_sight_top",
+   "check": false,
+   "error_px": 4.656969784817802
+  },
+  {
+   "name": "rear_sight_top",
+   "check": false,
+   "error_px": 8.299792917543611
+  },
+  {
+   "name": "butt_top_rear_R",
+   "check": false,
+   "error_px": 8.29085388535438
+  },
+  {
+   "name": "butt_bottom_rear_R",
+   "check": false,
+   "error_px": 6.435569452270533
+  },
+  {
+   "name": "mag_base_front_R",
+   "check": false,
+   "error_px": 8.02905793067561
+  },
+  {
+   "name": "vgrip_bot_front_R",
+   "check": false,
+   "error_px": 8.008034794630131
+  },
+  {
+   "name": "hg_front_bot_R",
+   "check": false,
+   "error_px": 16.07318148657577
+  }
+ ]
+}
