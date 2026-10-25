@@ -56,6 +56,35 @@ def silhouette(path):
     return np.asarray(Image.open(path))[..., 3] > 127
 
 
+REGIONS = [("stock + buttpad", (165, 840, 600, 1130)), ("hinge + rear receiver", (560, 830, 880, 1010)),
+           ("receiver middle / port / charging", (790, 840, 1150, 1000)), ("handguard", (1100, 830, 1610, 975)),
+           ("front end + sight + brake", (1440, 745, 1880, 975)), ("lower + grip", (610, 930, 1060, 1220)),
+           ("magazine + vertical grip", (860, 960, 1470, 1230))]
+
+
+def regions(photo, model, tag, src):
+    """photo | model crops per region at 2x, for the detail diff list"""
+    fdir = os.path.join(HERE, "../../fonts")
+    fb = ImageFont.truetype(os.path.join(fdir, "WorkSans-Bold.ttf"), 26)
+    rows = []
+    for name, (x0, y0, x1, y1) in REGIONS:
+        a = Image.fromarray(np.clip(photo, 0, 255).astype(np.uint8)).crop((x0, y0, x1, y1))
+        b = Image.fromarray(np.clip(model, 0, 255).astype(np.uint8)).crop((x0, y0, x1, y1))
+        k = min(2.0, 900 / a.width)
+        a = a.resize((int(a.width * k), int(a.height * k)), Image.LANCZOS); b = b.resize(a.size, Image.LANCZOS)
+        rows.append((name, a, b))
+    W = max(r[1].width for r in rows) * 2 + 30
+    H = sum(r[1].height + 44 for r in rows) + 60
+    sh = Image.new("RGB", (W, H), (22, 23, 26)); d = ImageDraw.Draw(sh)
+    d.text((14, 14), f"SCAR 17S detail check - photo (left) vs model (right), same camera ({tag})", font=fb, fill=(235, 235, 235))
+    y = 60
+    for name, a, b in rows:
+        d.text((14, y + 6), name, font=fb, fill=(230, 230, 230))
+        sh.paste(a, (10, y + 40)); sh.paste(b, (20 + a.width, y + 40))
+        y += a.height + 44
+    sh.save(os.path.join(REV, f"regions_{tag}_{src}.jpg"), quality=88)
+
+
 def main():
     if SRC == "high":
         scene.reset()
@@ -105,6 +134,7 @@ def main():
     out = os.path.join(REV, f"compare_{TAG}_{SRC}.jpg")
     sheet.save(out, quality=90)
     json.dump(dict(iou=float(iou), photo_only=float(only_photo), model_only=float(only_model)), open(os.path.join(REV, f"compare_{TAG}_{SRC}.json"), "w"))
+    regions(photo, model, TAG, SRC)
     print(f"COMPARE IoU {iou:.4f} photo_only {only_photo:.4f} model_only {only_model:.4f} -> {out}")
     print("COMPARE VERDICT", "PASS" if iou >= 0.95 else "FAIL")
     if iou < 0.95:

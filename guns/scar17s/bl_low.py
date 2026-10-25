@@ -7,12 +7,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, "../.."))
 import bl_high
 
-ASM = {"Upper": ["upper", "upperhw", "rsight", "fsight"], "Barrel": ["barrel"], "Muzzle": ["brake"], "Bolt": ["bolt"],
-       "Lower": ["lower", "trigger", "controls", "pins"], "Grip": ["grip"], "VGrip": ["vgrip"], "Stock": ["stock", "buttpad"],
+ASM = {"Upper": ["upper", "upperhw", "rsight", "fsight", "screws_u"], "Barrel": ["barrel"], "Muzzle": ["brake"], "Bolt": ["bolt"],
+       "Lower": ["lower", "trigger", "controls", "pins", "screws_l"], "Grip": ["grip"], "VGrip": ["vgrip"], "Stock": ["stock", "buttpad", "screws_s"],
        "Mag": ["magazine"], "Round": ["round"]}
-BUDGET = {"upper": 17500, "upperhw": 3200, "rsight": 1400, "fsight": 1300, "barrel": 1800, "brake": 2400, "bolt": 2600,
+BUDGET = {"upper": 19000, "upperhw": 3200, "rsight": 1400, "fsight": 1300, "barrel": 1800, "brake": 2400, "bolt": 2600,
           "lower": 7800, "trigger": 480, "controls": 2200, "pins": 500, "grip": 2600, "vgrip": 2000, "stock": 7000,
-          "buttpad": 1600, "magazine": 4200, "round": 520}
+          "buttpad": 1600, "screws_u": 2600, "screws_l": 700, "screws_s": 900, "magazine": 4200, "round": 520}
 TEX = {"Upper": 4096, "Lower": 2048, "Stock": 2048, "Barrel": 1024, "Mag": 2048, "Grip": 1024, "VGrip": 1024, "Muzzle": 1024,
        "Bolt": 1024, "Round": 512}
 
