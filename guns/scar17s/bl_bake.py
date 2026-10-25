@@ -13,7 +13,7 @@ from lab import bake, tex
 ARGS = dict((a.split("=", 1) + [""])[:2] for a in sys.argv[1:])
 FAST = "fast" in ARGS
 BK, TEXD = os.path.join(HERE, "work", "bake"), os.path.join(HERE, "textures")
-RECEIVER = ("Upper", "Lower", "Grip", "Stock")             # FDE / Black / Camo variants
+RECEIVER = ("Upper", "Lower", "Grip", "VGrip", "Stock", "Mag")             # FDE / Black / Camo variants
 
 
 def noise3(P, scale, seed=0, octaves=4):
@@ -119,7 +119,7 @@ def compose(n, B, size):
     # normal: baked + polymer stipple on the grip, rubber texture on the buttpad, fine cast texture on polymer
     nrm = B["NORMAL"].astype(np.float32)
     H = np.zeros((S, S), np.float32)
-    if n == "Grip":
+    if n in ("Grip", "VGrip"):
         H += (nz(2600, 11, 2) - 0.5) * 1.2 * poly
     H += (nz(1800, 12, 2) - 0.5) * 0.25 * (poly | rub)
     H += (nz(3000, 13, 1) - 0.5) * 0.08 * anod

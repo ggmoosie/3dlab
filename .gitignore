@@ -2,3 +2,6 @@
 work/
 __pycache__/
 *.blend1
+refs_user/
+guns/*/review/compare_*.jpg
+guns/*/review/cmp_*_sil.png

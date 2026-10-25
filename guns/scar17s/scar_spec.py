@@ -44,3 +44,19 @@ HINGE = (-24.0, -196.0)                # (x, y) of the vertical hinge axis, fold
 STOCK_Y0 = -200.0
 
 ORIGIN_B = (0.0, GRIP_TOP[0], GRIP_TOP[1])   # game origin = grip top
+
+
+# ---- v2: measured on the profile master (ref.py, 0.5605 mm/px, bolt face = front of the ejection port) ----
+MUZZLE_Y = 463.0                       # brake face
+RAIL_TOP = 53.0
+MAG_Y = (-98.1, -21.9)                 # magazine body rear / front
+MAG_TOP = -21.0
+BUTT_Y = -490.5
+HINGE = (-23.0, -257.3)
+SIDE_RAIL_Z = -3.6                     # side M-LOK row centre
+FE_BOT = -26.1                         # handguard bottom
+GRIP_TOP = (-194.5, -39.0)
+ORIGIN_B = (0.0, -194.5, -39.0)
+FRONT_SIGHT_TOP = (279.1, 84.4)
+REAR_APERTURE = (-214.7, 82.1)
+VGRIP = (195.1, -27.7)

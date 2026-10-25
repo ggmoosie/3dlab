@@ -15,19 +15,21 @@ ARGS = dict((a.split("=", 1) + [""])[:2] for a in sys.argv[1:])
 STAGE = ARGS.get("stage", "all")
 SMP = int(ARGS.get("samples", 64) or 64)
 FBXD, REV = os.path.join(HERE, "fbx"), os.path.join(HERE, "review")
-PARTS = ["Upper", "Barrel", "Muzzle", "Bolt", "ChargingHandle", "Lower", "Grip", "Stock", "Mag", "Round"]
-RECEIVER = ("Upper", "Lower", "Grip", "Stock")
+PARTS = ["Upper", "Barrel", "Muzzle", "Bolt", "Lower", "Grip", "VGrip", "Stock", "Mag", "Round"]
+RECEIVER = ("Upper", "Lower", "Grip", "VGrip", "Stock", "Mag")
+# FDE measured on the profile master (photo ratios: anodised R/G 1.40 B/G 0.58; polymer R/G 1.7 B/G 0.43; grips paler)
 VARIANTS = {
-    "FDE": dict(ColorA=(0.40, 0.31, 0.19), RoughA=0.52, MetalA=0.0, ColorB=(0.33, 0.265, 0.17), RoughB=0.64, MetalB=0.0,
-                LabelRough=0.6, WearAmount=0.35, Dirt=0.45),
+    "FDE": dict(ColorA=(0.34, 0.243, 0.141), RoughA=0.5, MetalA=0.0, ColorB=(0.32, 0.192, 0.083), RoughB=0.62, MetalB=0.0,
+                LabelRough=0.6, WearAmount=0.3, Dirt=0.45),
     "Black": dict(ColorA=(0.030, 0.030, 0.032), RoughA=0.46, MetalA=0.0, ColorB=(0.032, 0.031, 0.030), RoughB=0.62, MetalB=0.0,
                   LabelRough=0.6, WearAmount=0.42, Dirt=0.35),
-    "Camo": dict(ColorA=(0.40, 0.31, 0.19), RoughA=0.52, MetalA=0.0, ColorB=(0.33, 0.265, 0.17), RoughB=0.64, MetalB=0.0,
+    "Camo": dict(ColorA=(0.34, 0.243, 0.141), RoughA=0.5, MetalA=0.0, ColorB=(0.32, 0.192, 0.083), RoughB=0.64, MetalB=0.0,
                  LabelRough=0.62, WearAmount=0.3, Dirt=0.45),
 }
+GRIP_FDE = dict(ColorB=(0.46, 0.37, 0.27))                               # FN grips are a paler tan than the lower
 NEUTRAL = dict(ColorA=(0.5, 0.5, 0.5), RoughA=0.4, MetalA=0.0, ColorB=(0.5, 0.5, 0.5), RoughB=0.4, MetalB=0.0,
                LabelRough=0.5, WearAmount=0.55, Dirt=0.4)
-LOD = {"Upper", "Barrel", "Bolt", "Lower", "Grip", "Stock", "Mag"}
+LOD = {"Upper", "Bolt", "Lower", "Grip", "VGrip", "Stock", "Mag", "Muzzle"}
 
 
 def g2bl(y, z, x=0.0):
@@ -43,23 +45,22 @@ def b2g(x, y, z):
 # sockets in the B frame (mm); converted to UE cm (= G mm / 10) with pitch/yaw/roll in degrees
 SOCKETS_B = {
     "Muzzle": ((0, P.MUZZLE_Y, 0), (0, 0, 0)),
-    "Aim": ((0, -133.5, P.RAIL_TOP + 9.5 + 3.0), (0, 0, 0)),           # stowed rear-sight leaf top: re-measure on the optic
-    "FrontSight": ((0, 269.0, P.RAIL_TOP + 12.5), (0, 0, 0)),
-    "Optic_Socket": ((0, -40.0, P.RAIL_TOP), (0, 0, 0)),
-    "Grip_Socket": ((0, 200.0, -42.9), (0, 0, 0)),                     # bottom rail, foregrip
-    "TacticalSocket": ((-34.8, 240.0, P.SIDE_RAIL_Z), (0, 0, -90)),    # right side rail
+    "Aim": ((0, P.REAR_APERTURE[0], P.REAR_APERTURE[1]), (0, 0, 0)),     # deployed rear aperture centre
+    "FrontSight": ((0, P.FRONT_SIGHT_TOP[0], P.FRONT_SIGHT_TOP[1]), (0, 0, 0)),
+    "Optic_Socket": ((0, -60.0, P.RAIL_TOP), (0, 0, 0)),
+    "Grip_Socket": ((0, P.VGRIP[0], P.FE_BOT), (0, 0, 0)),             # bottom M-LOK, where the vertical grip sits
+    "TacticalSocket": ((-27.8, 240.0, P.SIDE_RAIL_Z), (0, 0, -90)),     # right side M-LOK
     "MagazineSocket": ((0, (P.MAG_Y[0] + P.MAG_Y[1]) / 2, P.MAG_TOP), (0, 0, 0)),
     "Chamber": ((0, 20.0, 0), (0, 0, 0)),
-    "EjectionPort": ((-26.0, 2.5, 5.0), (0, 0, -90)),
-    "HandPose_R": ((0, -180.0, -80.0), (0, 0, 0)),
-    "HandPose_L": ((0, 190.0, -48.0), (0, 0, 0)),
-    "Stock": ((0, P.BUTT_Y, -30.0), (0, 0, 0)),
-    "StockHinge": ((P.HINGE[0], P.HINGE[1], -10.0), (0, 0, 0)),
+    "EjectionPort": ((-27.8, -25.0, 7.0), (0, 0, -90)),
+    "HandPose_R": ((0, P.GRIP_TOP[0] - 10, P.GRIP_TOP[1] - 45), (0, 0, 0)),
+    "HandPose_L": ((0, P.VGRIP[0], P.FE_BOT - 45), (0, 0, 0)),
+    "Stock": ((0, P.BUTT_Y, -40.0), (0, 0, 0)),
+    "StockHinge": ((P.HINGE[0], P.HINGE[1], 0.0), (0, 0, 0)),
 }
 MECH = {
     "SM_SCAR17S_Bolt": dict(axis_ue=(0, -1, 0), travel_cm=P.BOLT_TRAVEL / 10, pivot="assembled pose", linked_to=None),
-    "SM_SCAR17S_ChargingHandle": dict(axis_ue=(0, -1, 0), travel_cm=P.CH_TRAVEL / 10, pivot="assembled pose (forward)",
-                                       linked_to="SM_SCAR17S_Bolt (pulls it back; does not reciprocate when firing: NRCH)"),
+    "SM_SCAR17S_Upper": dict(note="the NRCH charging handle (left) is part of the Upper mesh: it stays forward when firing"),
     "SM_SCAR17S_Stock": dict(axis_ue="vertical through StockHinge", angle_deg=-180, pivot="StockHinge",
                              note="folds to the gun's right; rotate about +Z (UE) at StockHinge"),
     "SM_SCAR17S_Mag": dict(socket="MagazineSocket", note="drops along -Z (UE)"),
@@ -74,6 +75,7 @@ def materials():
         if n in RECEIVER:
             for v, prm in VARIANTS.items():
                 lab = T[n]["Label_Camo"] if v == "Camo" else T[n]["Label_None"]
+                prm = dict(prm, **GRIP_FDE) if (n in ("Grip", "VGrip") and v != "Black") else prm
                 m = master.material(f"MI_SCAR17S_{n}_{v}", t, prm, label=lab)
                 m.use_fake_user = True
                 mats[(n, v)] = m
@@ -105,9 +107,9 @@ def region_hull(o, name, sel):
 def hulls(objs):
     oz, oy = P.ORIGIN_B[2], P.ORIGIN_B[1]
     by = lambda G: G[:, 1] + oy                                           # G y -> B y
-    U = {"SM_SCAR17S_Upper": [("00", lambda G: by(G) < 100), ("01", lambda G: by(G) >= 90)],
-         "SM_SCAR17S_Lower": [("00", lambda G: by(G) > -98), ("01", lambda G: by(G) <= -90)],
-         "SM_SCAR17S_Stock": [("00", lambda G: by(G) > -330), ("01", lambda G: by(G) <= -320)]}
+    U = {"SM_SCAR17S_Upper": [("00", lambda G: by(G) < 60), ("01", lambda G: by(G) >= 50)],
+         "SM_SCAR17S_Lower": [("00", lambda G: by(G) > -110), ("01", lambda G: by(G) <= -100)],
+         "SM_SCAR17S_Stock": [("00", lambda G: by(G) > -390), ("01", lambda G: by(G) <= -380)]}
     out = {}
     for n, o in objs.items():
         key = "SM_SCAR17S_" + n
@@ -184,14 +186,14 @@ def export_all(objs, mats):
     return tri
 
 
-EXPLODE = {"Upper": (0, 0, 0.0), "Barrel": (0, -0.20, 0.0), "Muzzle": (0, -0.30, 0.0), "Bolt": (0, 0.04, 0.13),
-           "ChargingHandle": (0.0, -0.10, 0.15), "Lower": (0, 0.0, -0.12), "Grip": (0, 0.06, -0.24), "Stock": (0, 0.16, 0.0),
-           "Mag": (0, -0.08, -0.30), "Round": (0, -0.08, -0.43)}
-LABELS = {"Upper": "Monolithic upper receiver (1913 rails 3/6/9/12)", "Barrel": "16.25 in barrel + gas block / 2-pos regulator",
-          "Muzzle": "Flash hider (5 slots, closed bottom)", "Bolt": "Bolt carrier + 7-lug rotating bolt",
-          "ChargingHandle": "Non-reciprocating charging handle", "Lower": "Polymer lower: trigger, ambi safety + mag release, bolt catch, pins",
-          "Grip": "A2-style grip (stippled, hollow butt)", "Stock": "Side-folding telescoping stock + cheek riser + buttpad",
-          "Mag": "20-round steel magazine", "Round": "7.62x51 cartridge"}
+EXPLODE = {"Upper": (0, 0, 0.0), "Barrel": (0, -0.22, 0.0), "Muzzle": (0, -0.32, 0.0), "Bolt": (0, 0.04, 0.15),
+           "Lower": (0, 0.0, -0.13), "Grip": (0, 0.07, -0.27), "VGrip": (0, 0.0, -0.13), "Stock": (0, 0.16, 0.0),
+           "Mag": (0, -0.06, -0.33), "Round": (0, -0.20, -0.33)}
+LABELS = {"Upper": "Upper: 1913 top rail, M-LOK handguard, NRCH charging handle, QD cups, folding sights",
+          "Barrel": "16.25 in barrel", "Muzzle": "Muzzle brake (2 side ports, top vents)", "Bolt": "Bolt carrier + 7-lug rotating bolt",
+          "Lower": "Polymer lower: trigger, ambi selector + mag release, bolt catch, pins",
+          "Grip": "Pistol grip (stipple panels)", "VGrip": "M-LOK vertical grip", "Stock": "Side-folding telescoping stock + buttpad",
+          "Mag": "20-round magazine", "Round": "7.62x51 cartridge"}
 
 
 def annotate(path, cam, objs, title):
@@ -247,7 +249,7 @@ def renders(objs, mats):
         scene.render(f"{REV}/hero_{v.lower()}.png", 1800, SMP, res_y=1008)
     assign(objs, mats, "FDE")
     # close-ups: receiver/port, muzzle + regulator, grip + controls
-    for nm, tgt, yaw, pitch, lens in (("close_receiver", ["Upper", "Bolt", "Lower"], -75, 10, 70),
+    for nm, tgt, yaw, pitch, lens in (("close_receiver", ["Lower", "Grip"], -75, 10, 70),
                                       ("close_muzzle", ["Muzzle", "Barrel"], -120, 12, 85),
                                       ("close_grip", ["Grip", "Lower"], -60, 8, 70)):
         sel = [objs[t] for t in tgt]
