@@ -70,6 +70,20 @@ def rail_xs(X, Z, z_top, z_base):
     return np.minimum(neck, dove)
 
 
+HG_FACET, HG_WALL = 13.0, 4.6                         # lower facet size (side-view rows 944-967), wall (pre-width-scale)
+
+
+def facet_slot(X, Y, Z, x0, x1, zhb, w=4.6):
+    """M-LOK slot cut square to the 45 deg lower facet, through the wall"""
+    u = (np.abs(X) + (Z - zhb)) * 0.7071                                             # along the facet (up-out)
+    n = (np.abs(X) - (Z - zhb)) * 0.7071                                             # facet normal (down-out)
+    u0 = 27.8 * 0.7071                                                               # facet midpoint
+    y0, y1, _, _ = bx(x0, 0, x1, 0)
+    cap = S.capsule2(Y, u, (y0 + w / 2, u0), (y1 - w / 2, u0), w / 2)
+    n0 = (27.8 - HG_FACET) * 0.7071
+    return np.maximum(cap, np.abs(n - n0) - 8.0)
+
+
 def upper(X, Y, Z):
     hw = upper_hw(Y, Z)
     P2 = R.prof("upper")(Y, Z)
@@ -78,9 +92,12 @@ def upper(X, Y, Z):
     d = np.maximum(d, (np.abs(X) + Z - (hw + ztop - 4.5)) * 0.7071)                 # 45 deg top chamfers
     yb, _ = bp(HG_X, 0)
     _, zhb = bp(0, 967)
-    rr = 9.0                                                                          # handguard: U-section bottom
-    qx, qz = np.maximum(np.abs(X) - (hw - rr), 0), np.maximum(zhb + rr - Z, 0)
-    d = np.maximum(d, np.where(Y > yb, np.hypot(qx, qz) - rr, -1e3))
+    ax = np.abs(X)
+    # handguard section (3/4 photos): vertical upper walls, a big 45 deg lower facet carrying the lower M-LOK row,
+    # narrow flat bottom; the front outer edge is bevelled
+    d = np.maximum(d, np.where(Y > yb, (ax - (Z - zhb) - (hw - HG_FACET)) * 0.7071, -1e3))
+    yfr = R.extent("upper")[1]
+    d = np.maximum(d, np.where(Y > yb, (Y - yfr) + (ax - hw) + 3.0, -1e3) * 0.7071)
     # top rail (teeth = the photo's)
     _, zrt = bp(0, 826); _, zrb = bp(0, 846)
     rl = np.maximum(rail_xs(X, Z, zrt, zrb), R.prof("rail")(Y, Z))
@@ -94,14 +111,18 @@ def upper(X, Y, Z):
     d = S.union(d, hb)
     # cavities: bolt raceway (receiver) and the free-float channel (handguard, open at the front)
     d = S.diff(d, S.box(X, Y, Z, (-17.5, bp(625, 0)[0], -14), (17.5, yb, 30), 2.5))
-    d = S.diff(d, S.cyl(X, Y, Z, "y", (0, 0), 19.0, yb - 30, 400))
+    # thin-walled handguard shell, open at the front (inner = the outer section offset by the wall)
+    _, zin = bp(0, 862)
+    inner = np.maximum.reduce([ax - (27.8 - HG_WALL), zhb + 3.2 - Z, Z - zin,
+                               (ax - (Z - zhb) - (27.8 - HG_FACET - HG_WALL * 1.414)) * 0.7071, yb - 30 - Y])
+    d = S.rdiff(d, inner, 1.5)
     # charging-handle slot (top, blind), port / charging track under the traced hardware (both sides)
     d = side_cut(d, X, Y, Z, 828, 905, 1042, 928, 25.6, 1.6, 1.2)
     # M-LOK: 6 slots per row, 2 rows a side, plus the bottom row; chamfered edges
     xs = [(1178, 1230), (1250, 1302), (1320, 1372), (1392, 1445), (1463, 1516), (1535, 1590)]
     for x0, x1 in xs:
         d = side_cut(d, X, Y, Z, x0, 920, x1, 934, 27.8, 7.0, 2.6)
-        d = side_cut(d, X, Y, Z, x0, 950, x1, 958, 27.8, 4.0, 1.8)
+        d = S.rdiff(d, facet_slot(X, Y, Z, x0, x1, zhb), 0.6)
         y0, y1, _, _ = bx(x0, 0, x1, 0)
         d = S.rdiff(d, S.box(X, Y, Z, (-3.6, y0, zhb - 3), (3.6, y1, zhb + 9), 1.6), 0.9)
     # catalogue: screws, sockets, pins, seams, knuckle gaps, recesses, bosses (detail.py)
