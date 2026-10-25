@@ -1,0 +1,61 @@
+{
+ "item": "Spoon",
+ "replaces_rows": [],
+ "category": "food",
+ "clip": "A_Consume_Eat_CanSpoon (right hand)",
+ "dims_cm": [
+  1.39,
+  3.02,
+  17.0
+ ],
+ "real_object": "dessert spoon, 170 mm",
+ "pivot": "pinch point 5 cm from the handle end; +Z toward the bowl; +X = concave side",
+ "tris": {
+  "SM_Spoon": 1868
+ },
+ "textures": {
+  "size": 1024,
+  "normal": "OpenGL (flip green in UE)",
+  "variants": {
+   "Steel": null,
+   "RationTan": null,
+   "BlackPlastic": null
+  }
+ },
+ "variant_params": {
+  "Steel": {
+   "ColorA": [
+    0.62,
+    0.6,
+    0.57
+   ],
+   "RoughA": 0.16,
+   "MetalA": 1.0,
+   "WearAmount": 0.0,
+   "Dirt": 0.25
+  },
+  "RationTan": {
+   "ColorA": [
+    0.42,
+    0.33,
+    0.21
+   ],
+   "RoughA": 0.48,
+   "MetalA": 0.0,
+   "WearAmount": 0.0,
+   "Dirt": 0.3
+  },
+  "BlackPlastic": {
+   "ColorA": [
+    0.025,
+    0.025,
+    0.027
+   ],
+   "RoughA": 0.42,
+   "MetalA": 0.0,
+   "WearAmount": 0.0,
+   "Dirt": 0.3
+  }
+ },
+ "collision": "UCX_SM_Spoon_00"
+}

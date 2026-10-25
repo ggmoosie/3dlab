@@ -1,0 +1,159 @@
+{
+ "item": "FlatBar",
+ "replaces_rows": [
+  "Chocolate"
+ ],
+ "category": "food",
+ "clip": "A_Consume_Eat_BarFlat",
+ "dims_cm": [
+  5.42,
+  0.44,
+  12.8
+ ],
+ "real_object": "44 g flow-wrapped bar",
+ "pivot": "centre, +Z = bite end",
+ "parts": {
+  "SM_FlatBar_TearEnd": {
+   "pivot": "on the tear line (z 4.6 cm)",
+   "opens": "pull off along +Z, twist ~20 deg"
+  }
+ },
+ "material_slots": [
+  "MI_FlatBar_<V> (wrapper print + bar)",
+  "M_FlatBar_Foil (film inside)"
+ ],
+ "tris": {
+  "SM_FlatBar": 3132,
+  "SM_FlatBar_TearEnd": 784
+ },
+ "textures": {
+  "size": 2048,
+  "normal": "OpenGL (flip green in UE)",
+  "variants": {
+   "BrooklynMilk": "T_FlatBar_Label_BrooklynMilk.png",
+   "BrooklynDark": "T_FlatBar_Label_BrooklynDark.png",
+   "BrooklynAlmond": "T_FlatBar_Label_BrooklynAlmond.png",
+   "TrailMix": "T_FlatBar_Label_TrailMix.png",
+   "Max30": "T_FlatBar_Label_Max30.png",
+   "Survival400": "T_FlatBar_Label_Survival400.png"
+  }
+ },
+ "variant_params": {
+  "BrooklynMilk": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughB": 0.4,
+   "MetalB": 0.0,
+   "LabelRough": 0.25,
+   "WearAmount": 0.3,
+   "Dirt": 0.25
+  },
+  "BrooklynDark": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughB": 0.4,
+   "MetalB": 0.0,
+   "LabelRough": 0.4,
+   "WearAmount": 0.3,
+   "Dirt": 0.25
+  },
+  "BrooklynAlmond": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughB": 0.4,
+   "MetalB": 0.0,
+   "LabelRough": 0.25,
+   "WearAmount": 0.3,
+   "Dirt": 0.25
+  },
+  "TrailMix": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughB": 0.4,
+   "MetalB": 0.0,
+   "LabelRough": 0.5,
+   "WearAmount": 0.3,
+   "Dirt": 0.25
+  },
+  "Max30": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughB": 0.4,
+   "MetalB": 0.0,
+   "LabelRough": 0.5,
+   "WearAmount": 0.3,
+   "Dirt": 0.25
+  },
+  "Survival400": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughB": 0.4,
+   "MetalB": 0.0,
+   "LabelRough": 0.7,
+   "WearAmount": 0.3,
+   "Dirt": 0.25
+  }
+ },
+ "collision": "UCX_SM_FlatBar_00",
+ "qc_notes": "film inner faces reuse the outer UVs in the foil slot (--uv-overlap-ok); the bar rides loose inside (--allow-float SM_FlatBar)"
+}

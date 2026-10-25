@@ -1,0 +1,267 @@
+{
+ "item": "GlassBottle",
+ "replaces_rows": [
+  "Lemonade",
+  "SauceBottle",
+  "WhiskeyBottle",
+  "WineBottle"
+ ],
+ "category": "drinks",
+ "clip": "A_Consume_Drink_Beer",
+ "dims_cm": [
+  6.3,
+  6.3,
+  28.35
+ ],
+ "real_object": "longneck glass bottle, 26 mm crown finish (scaled to the 28.15 cm contract)",
+ "pivot": "base centre, +Z up",
+ "parts": {
+  "SM_GlassBottle_Cap": {
+   "pivot": "crown bottom centre on the neck axis",
+   "rest_location_cm": [
+    0,
+    0,
+    27.4
+   ],
+   "opens": "about local Z 3 x 60 deg while lifting 0.9 cm (contract)"
+  },
+  "SM_GlassBottle_Liquid": {
+   "note": "fill to 21.4 cm (shoulder)"
+  }
+ },
+ "material_slots": {
+  "SM_GlassBottle": [
+   "M_Lab_Glass \u2192 MI_GlassBottle_Glass_<V>",
+   "MI_GlassBottle_<V> (front label + neck foil decals)"
+  ],
+  "SM_GlassBottle_Cap": [
+   "MI_GlassBottle_<V> (layer A = crown paint, print = crown top)"
+  ],
+  "SM_GlassBottle_Liquid": [
+   "M_Lab_Liquid \u2192 MI_GlassBottle_Liquid_<V>"
+  ]
+ },
+ "tris": {
+  "SM_GlassBottle": 2240,
+  "SM_GlassBottle_Label": 288,
+  "SM_GlassBottle_NeckLabel": 640,
+  "SM_GlassBottle_Liquid": 832,
+  "SM_GlassBottle_Cap": 1512,
+  "SM_GlassBottle_LOD1": 1120,
+  "SM_GlassBottle_LOD2": 560
+ },
+ "textures": {
+  "size": 2048,
+  "normal": "OpenGL (flip green in UE)",
+  "variants": {
+   "GowanusPale": "T_GlassBottle_Label_GowanusPale.png",
+   "IronworksStout": "T_GlassBottle_Label_IronworksStout.png",
+   "ConeyLager": "T_GlassBottle_Label_ConeyLager.png",
+   "GrandmaJoLemonade": "T_GlassBottle_Label_GrandmaJoLemonade.png",
+   "KolossalGlass": "T_GlassBottle_Label_KolossalGlass.png",
+   "HudsonCider": "T_GlassBottle_Label_HudsonCider.png"
+  }
+ },
+ "variant_params": {
+  "GowanusPale": {
+   "ColorA": [
+    0.12,
+    0.25,
+    0.1
+   ],
+   "RoughA": 0.32,
+   "MetalA": 0.6,
+   "ColorB": [
+    0.75,
+    0.6,
+    0.3
+   ],
+   "RoughB": 0.28,
+   "MetalB": 1.0,
+   "LabelRough": 0.6,
+   "WearAmount": 0.4,
+   "Dirt": 0.3
+  },
+  "IronworksStout": {
+   "ColorA": [
+    0.03,
+    0.03,
+    0.03
+   ],
+   "RoughA": 0.32,
+   "MetalA": 0.4,
+   "ColorB": [
+    0.72,
+    0.4,
+    0.18
+   ],
+   "RoughB": 0.28,
+   "MetalB": 1.0,
+   "LabelRough": 0.6,
+   "WearAmount": 0.4,
+   "Dirt": 0.3
+  },
+  "ConeyLager": {
+   "ColorA": [
+    0.6,
+    0.06,
+    0.08
+   ],
+   "RoughA": 0.32,
+   "MetalA": 0.5,
+   "ColorB": [
+    0.12,
+    0.22,
+    0.55
+   ],
+   "RoughB": 0.28,
+   "MetalB": 1.0,
+   "LabelRough": 0.6,
+   "WearAmount": 0.4,
+   "Dirt": 0.3
+  },
+  "GrandmaJoLemonade": {
+   "ColorA": [
+    0.95,
+    0.78,
+    0.1
+   ],
+   "RoughA": 0.32,
+   "MetalA": 0.3,
+   "ColorB": [
+    0.95,
+    0.85,
+    0.4
+   ],
+   "RoughB": 0.28,
+   "MetalB": 1.0,
+   "LabelRough": 0.55,
+   "WearAmount": 0.4,
+   "Dirt": 0.3
+  },
+  "KolossalGlass": {
+   "ColorA": [
+    0.75,
+    0.05,
+    0.06
+   ],
+   "RoughA": 0.32,
+   "MetalA": 0.5,
+   "ColorB": [
+    0.75,
+    0.05,
+    0.06
+   ],
+   "RoughB": 0.28,
+   "MetalB": 0.6,
+   "LabelRough": 0.45,
+   "WearAmount": 0.4,
+   "Dirt": 0.3
+  },
+  "HudsonCider": {
+   "ColorA": [
+    0.8,
+    0.62,
+    0.25
+   ],
+   "RoughA": 0.32,
+   "MetalA": 1.0,
+   "ColorB": [
+    0.8,
+    0.62,
+    0.25
+   ],
+   "RoughB": 0.28,
+   "MetalB": 1.0,
+   "LabelRough": 0.6,
+   "WearAmount": 0.4,
+   "Dirt": 0.3
+  }
+ },
+ "glass_liquid_params": {
+  "GowanusPale": {
+   "GlassTint": [
+    0.55,
+    0.3,
+    0.07
+   ],
+   "LiquidTint": [
+    0.85,
+    0.55,
+    0.15
+   ],
+   "LiquidMurk": 0.12
+  },
+  "IronworksStout": {
+   "GlassTint": [
+    0.55,
+    0.3,
+    0.07
+   ],
+   "LiquidTint": [
+    0.07,
+    0.035,
+    0.02
+   ],
+   "LiquidMurk": 0.0
+  },
+  "ConeyLager": {
+   "GlassTint": [
+    0.3,
+    0.55,
+    0.28
+   ],
+   "LiquidTint": [
+    0.9,
+    0.7,
+    0.3
+   ],
+   "LiquidMurk": 0.08
+  },
+  "GrandmaJoLemonade": {
+   "GlassTint": [
+    0.95,
+    0.97,
+    0.96
+   ],
+   "LiquidTint": [
+    0.97,
+    0.92,
+    0.6
+   ],
+   "LiquidMurk": 0.45
+  },
+  "KolossalGlass": {
+   "GlassTint": [
+    0.95,
+    0.97,
+    0.96
+   ],
+   "LiquidTint": [
+    0.22,
+    0.07,
+    0.03
+   ],
+   "LiquidMurk": 0.05
+  },
+  "HudsonCider": {
+   "GlassTint": [
+    0.3,
+    0.55,
+    0.28
+   ],
+   "LiquidTint": [
+    0.92,
+    0.66,
+    0.25
+   ],
+   "LiquidMurk": 0.2
+  }
+ },
+ "collision": "UCX_SM_GlassBottle_00",
+ "lods": [
+  "SM_GlassBottle_LOD1 (50%)",
+  "SM_GlassBottle_LOD2 (25%)"
+ ],
+ "qc_notes": "label + neck foil are declared one-sided decals (qc_open), 0.2 mm off the glass"
+}

@@ -160,3 +160,79 @@ def fix_zero_uv(o, rect, eps=1e-10):
                 l[uv].uv = (cu + cw * 0.1 + 0.8 * cw * (x - lo1) / sp, cv + ch * 0.1 + 0.8 * ch * (y - lo2) / sp)
     bm.to_mesh(o.data); bm.free()
     return len(bad)
+
+
+def rounded_box(name, w, d, h, r, z0=0.0, bevel=0.0, segs=6, center=(0.0, 0.0)):
+    """Box w × d × h (mm) from z0 up, vertical edges rounded to r, optional small bevel on the flat edges."""
+    import bmesh
+    MM = 0.001
+    bpy.ops.mesh.primitive_cube_add(size=1)
+    o = bpy.context.object
+    o.name = name
+    o.scale = (w * MM, d * MM, h * MM)
+    o.location = (center[0] * MM, center[1] * MM, (z0 + h / 2) * MM)
+    bpy.ops.object.transform_apply(scale=True, location=True)
+    bm = bmesh.new(); bm.from_mesh(o.data)
+    if r > 0:
+        ve = [e for e in bm.edges if abs(e.verts[0].co.z - e.verts[1].co.z) > 1e-6]
+        bmesh.ops.bevel(bm, geom=ve, offset=r * MM, segments=segs, affect="EDGES", profile=0.5)
+    if bevel:
+        fe = [e for e in bm.edges if abs(e.verts[0].co.z - e.verts[1].co.z) < 1e-6]
+        bmesh.ops.bevel(bm, geom=fe, offset=bevel * MM, segments=2, affect="EDGES", profile=0.5)
+    bm.to_mesh(o.data); bm.free()
+    return o
+
+
+def boolean(target, cutter, op="DIFFERENCE", keep_cutter=False):
+    import bmesh
+    m = target.modifiers.new("Bool", "BOOLEAN")
+    m.operation, m.object, m.solver = op, cutter, "EXACT"
+    apply_mods(target)
+    if not keep_cutter:
+        bpy.data.objects.remove(cutter)
+    bm = bmesh.new(); bm.from_mesh(target.data)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-6)
+    bmesh.ops.dissolve_degenerate(bm, dist=1e-6, edges=bm.edges)
+    bm.to_mesh(target.data); bm.free()
+    return target
+
+
+def bake_xform(o):
+    """Apply the object transform into the mesh (pivot stays at the world origin)."""
+    from mathutils import Matrix
+    bpy.context.view_layer.update()
+    o.data.transform(o.matrix_world)
+    o.matrix_world = Matrix()
+    return o
+
+
+def box_uv(o, rects, center, inner_rect, units=0.001):
+    """Dieline-style UVs for box-like meshes. rects: {"+X"|"-X"|"+Y"|"-Y"|"+Z"|"-Z": (rect, (lo_a, hi_a), (lo_b, hi_b))}
+    where (lo, hi) are the world ranges (in `units`) mapped across u and v (a = first remaining axis, b = second).
+    Outer faces (normal pointing away from `center`) are box-projected; inner faces keep a smart-projected layout
+    squeezed into inner_rect, so nothing overlaps. Several objects can share one dieline (print continues across)."""
+    import bmesh
+    from mathutils import Vector
+    unwrap_into(o, inner_rect)
+    bm = bmesh.new(); bm.from_mesh(o.data)
+    uv = bm.loops.layers.uv.active
+    c = Vector(center)
+    for f in bm.faces:
+        n = f.normal
+        if (f.calc_center_median() - c).dot(n) <= 0:
+            continue
+        ax = max(range(3), key=lambda i: abs(n[i]))
+        key = ("+" if n[ax] > 0 else "-") + "XYZ"[ax]
+        if key not in rects:
+            continue
+        (u0, v0, u1, v1), (la, ha), (lb, hb) = rects[key]
+        a, b = [i for i in range(3) if i != ax]
+        flip = key in ("+Y", "-X", "-Z")             # u must follow the viewer's right when seen from outside
+        for l in f.loops:
+            p = l.vert.co / units
+            ta = (p[a] - la) / (ha - la)
+            tb = (p[b] - lb) / (hb - lb)
+            if flip:
+                ta = 1 - ta
+            l[uv].uv = (u0 + (u1 - u0) * ta, v0 + (v1 - v0) * tb)
+    bm.to_mesh(o.data); bm.free()

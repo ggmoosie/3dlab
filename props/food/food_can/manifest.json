@@ -1,0 +1,194 @@
+{
+ "item": "FoodCan",
+ "replaces_rows": [
+  "CannedBeans",
+  "Meatballs",
+  "TunaCan",
+  "Sardines",
+  "Sprats"
+ ],
+ "category": "food",
+ "clip": "A_Consume_Eat_CanSpoon",
+ "dims_cm": [
+  7.8,
+  7.8,
+  11.2
+ ],
+ "real_object": "15 oz (300x407) three-piece food can, full-aperture easy-open end",
+ "pivot": "base centre, +Z up (left hand)",
+ "parts": {
+  "SM_FoodCan_Lid": {
+   "pivot": "hinge on the rim at +Y (UE -Y), axis = local X",
+   "rest_location_cm_ue": [
+    0,
+    -3.66,
+    10.66
+   ],
+   "opens": "lift ring first, then peel: rotate about local X to -115 deg"
+  },
+  "SM_FoodCan_Ring": {
+   "pivot": "rivet",
+   "rest_location_cm_ue": [
+    0,
+    2.4,
+    10.71
+   ],
+   "opens": "about local X +50 deg; rides on the lid"
+  }
+ },
+ "tris": {
+  "SM_FoodCan": 1840,
+  "SM_FoodCan_Lid": 800,
+  "SM_FoodCan_Ring": 336
+ },
+ "textures": {
+  "size": 2048,
+  "normal": "OpenGL (flip green in UE)",
+  "variants": {
+   "BaysideBeans": "T_FoodCan_Label_BaysideBeans.png",
+   "LoneStarChili": "T_FoodCan_Label_LoneStarChili.png",
+   "MamaRosaSoup": "T_FoodCan_Label_MamaRosaSoup.png",
+   "SunvalePeaches": "T_FoodCan_Label_SunvalePeaches.png",
+   "NonnaMeatballs": "T_FoodCan_Label_NonnaMeatballs.png",
+   "GoodBoyDogFood": "T_FoodCan_Label_GoodBoyDogFood.png",
+   "Mystery": "T_FoodCan_Label_Mystery.png"
+  }
+ },
+ "variant_params": {
+  "BaysideBeans": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.78,
+    0.62,
+    0.32
+   ],
+   "RoughB": 0.3,
+   "MetalB": 0.85,
+   "LabelRough": 0.7,
+   "WearAmount": 0.45,
+   "Dirt": 0.3
+  },
+  "LoneStarChili": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.78,
+    0.62,
+    0.32
+   ],
+   "RoughB": 0.3,
+   "MetalB": 0.85,
+   "LabelRough": 0.7,
+   "WearAmount": 0.45,
+   "Dirt": 0.3
+  },
+  "MamaRosaSoup": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.85,
+    0.83,
+    0.78
+   ],
+   "RoughB": 0.3,
+   "MetalB": 0.85,
+   "LabelRough": 0.65,
+   "WearAmount": 0.45,
+   "Dirt": 0.3
+  },
+  "SunvalePeaches": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.78,
+    0.62,
+    0.32
+   ],
+   "RoughB": 0.3,
+   "MetalB": 0.85,
+   "LabelRough": 0.7,
+   "WearAmount": 0.45,
+   "Dirt": 0.3
+  },
+  "NonnaMeatballs": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.78,
+    0.62,
+    0.32
+   ],
+   "RoughB": 0.3,
+   "MetalB": 0.85,
+   "LabelRough": 0.7,
+   "WearAmount": 0.45,
+   "Dirt": 0.3
+  },
+  "GoodBoyDogFood": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.8,
+    0.8,
+    0.8
+   ],
+   "RoughB": 0.3,
+   "MetalB": 0.85,
+   "LabelRough": 0.7,
+   "WearAmount": 0.45,
+   "Dirt": 0.3
+  },
+  "Mystery": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.65,
+    0.6,
+    0.5
+   ],
+   "RoughB": 0.3,
+   "MetalB": 0.85,
+   "LabelRough": 0.8,
+   "WearAmount": 0.75,
+   "Dirt": 0.6
+  }
+ },
+ "notes": "the contents surface is printed per variant (food art) over a shared chunky relief; spoon is its own prop (props/food/spoon)",
+ "collision": "UCX_SM_FoodCan_00"
+}

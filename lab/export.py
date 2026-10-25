@@ -4,7 +4,7 @@ from mathutils import Vector
 
 FBX = dict(use_selection=True, apply_unit_scale=True, apply_scale_options="FBX_SCALE_NONE", axis_forward="-Y",
            axis_up="Z", object_types={"MESH"}, path_mode="STRIP", bake_anim=False, mesh_smooth_type="FACE",
-           use_tspace=True, use_mesh_modifiers=True, add_leaf_bones=False, use_custom_props=False)
+           use_tspace=True, use_mesh_modifiers=True, add_leaf_bones=False, use_custom_props=True)
 
 
 def hull(src, name, max_verts=96):

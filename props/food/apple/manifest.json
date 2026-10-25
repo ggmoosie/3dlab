@@ -1,0 +1,146 @@
+{
+ "item": "Apple",
+ "replaces_rows": [
+  "Apple",
+  "Banapple"
+ ],
+ "category": "food",
+ "clip": "A_Consume_Eat_Apple",
+ "dims_cm": [
+  7.7,
+  7.7,
+  7.85
+ ],
+ "real_object": "medium apple (\u00d877 mm, 70 mm + stem)",
+ "pivot": "centre",
+ "parts": {
+  "SM_Apple_Bite1": {
+   "swap_on": "Bite1"
+  },
+  "SM_Apple_Bite2": {
+   "swap_on": "Bite2"
+  },
+  "SM_Apple_Bite3": {
+   "swap_on": "Bite3"
+  }
+ },
+ "material_slots": [
+  "MI_Apple_<V> (skin; stem = layer A)",
+  "MI_Apple_<V> (flesh = layer B on the bite faces)"
+ ],
+ "tris": {
+  "SM_Apple": 1740,
+  "SM_Apple_Bite1": 2184,
+  "SM_Apple_Bite2": 2570,
+  "SM_Apple_Bite3": 2962
+ },
+ "textures": {
+  "size": 2048,
+  "normal": "OpenGL (flip green in UE)",
+  "variants": {
+   "RedApple": "T_Apple_Label_RedApple.png",
+   "GreenApple": "T_Apple_Label_GreenApple.png",
+   "GoldenApple": "T_Apple_Label_GoldenApple.png",
+   "BruisedApple": "T_Apple_Label_BruisedApple.png",
+   "Banapple": "T_Apple_Label_Banapple.png"
+  }
+ },
+ "variant_params": {
+  "RedApple": {
+   "ColorA": [
+    0.12,
+    0.07,
+    0.03
+   ],
+   "RoughA": 0.7,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.82,
+    0.74,
+    0.5
+   ],
+   "RoughB": 0.25,
+   "MetalB": 0.0,
+   "LabelRough": 0.34,
+   "WearAmount": 0.0,
+   "Dirt": 0.2
+  },
+  "GreenApple": {
+   "ColorA": [
+    0.12,
+    0.07,
+    0.03
+   ],
+   "RoughA": 0.7,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.86,
+    0.82,
+    0.58
+   ],
+   "RoughB": 0.25,
+   "MetalB": 0.0,
+   "LabelRough": 0.34,
+   "WearAmount": 0.0,
+   "Dirt": 0.2
+  },
+  "GoldenApple": {
+   "ColorA": [
+    0.12,
+    0.07,
+    0.03
+   ],
+   "RoughA": 0.7,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.86,
+    0.8,
+    0.55
+   ],
+   "RoughB": 0.25,
+   "MetalB": 0.0,
+   "LabelRough": 0.34,
+   "WearAmount": 0.0,
+   "Dirt": 0.2
+  },
+  "BruisedApple": {
+   "ColorA": [
+    0.12,
+    0.07,
+    0.03
+   ],
+   "RoughA": 0.7,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.68,
+    0.55,
+    0.3
+   ],
+   "RoughB": 0.25,
+   "MetalB": 0.0,
+   "LabelRough": 0.34,
+   "WearAmount": 0.0,
+   "Dirt": 0.2
+  },
+  "Banapple": {
+   "ColorA": [
+    0.12,
+    0.07,
+    0.03
+   ],
+   "RoughA": 0.7,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.92,
+    0.88,
+    0.62
+   ],
+   "RoughB": 0.25,
+   "MetalB": 0.0,
+   "LabelRough": 0.34,
+   "WearAmount": 0.0,
+   "Dirt": 0.2
+  }
+ },
+ "collision": "UCX_SM_Apple*_00 hulls"
+}
