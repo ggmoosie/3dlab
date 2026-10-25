@@ -51,15 +51,20 @@ def stadium(X, Y, Z, x0, r0, x1, r1, xin, xout, sign):
 HG_X = 1140.0                                         # handguard proud of the receiver from here forward
 
 
+lerp = S.lerp
+
+
 def upper_hw(Y, Z):
     """receiver cross-section read off the photo's shading: the wall drafts out under the rail (dark band, rows 845-878),
     a rounded ridge at rows 880-900 (highlight), then the lower band steps in 1.2 mm; the handguard stands proud"""
     yb, _ = bp(HG_X, 0)
-    rows = [845, 878, 890, 902, 945]
-    hws = [24.6, 26.3, 26.8, 25.6, 25.6]
-    zz = [bp(0, r)[1] for r in rows]
-    hw = np.interp(-Z, [-z for z in zz], hws)
-    return np.where(Y > yb - 22, 27.8, hw)
+    zr = lambda rows: [-bp(0, r)[1] for r in rows]
+    rec = np.interp(-Z, zr([845, 896, 899, 945]), [24.0, 26.8, 25.4, 25.4])          # receiver: sharp stepped body line
+    t = S.sstep(yb - 22, yb + 45, Y)                                                  # facet sweeps in from the receiver
+    f = np.clip((Z - bp(0, 905)[1]) / (bp(0, 846)[1] - bp(0, 905)[1]), 0, 1)         # 0 at the crease (row 905), 1 at the top
+    hg = 27.8 - f * (27.8 - lerp(25.4, 18.0, t))                                      # octagon: upper facet, crease at 905
+    hg = hg + 1.4 * (Y > R.extent("upper")[1] - HG_BEZEL)                             # proud front bezel ring
+    return np.where(Y > yb - 22, hg, rec)
 
 
 def rail_xs(X, Z, z_top, z_base):
@@ -70,7 +75,7 @@ def rail_xs(X, Z, z_top, z_base):
     return np.minimum(neck, dove)
 
 
-HG_FACET, HG_WALL = 13.0, 4.6                         # lower facet size (side-view rows 944-967), wall (pre-width-scale)
+HG_FACET, HG_WALL, HG_BEZEL = 13.0, 4.6, 14.0                        # lower facet size (side-view rows 944-967), wall (pre-width-scale)
 
 
 def facet_slot(X, Y, Z, x0, x1, zhb, w=4.6):
@@ -97,6 +102,7 @@ def upper(X, Y, Z):
     # narrow flat bottom; the front outer edge is bevelled
     d = np.maximum(d, np.where(Y > yb, (ax - (Z - zhb) - (hw - HG_FACET)) * 0.7071, -1e3))
     yfr = R.extent("upper")[1]
+    d = S.rdiff(d, np.maximum(np.abs(Y - (yfr - HG_BEZEL)) - 0.5, hw - 0.7 - ax), 0.3)   # groove behind the bezel
     d = np.maximum(d, np.where(Y > yb, (Y - yfr) + (ax - hw) + 3.0, -1e3) * 0.7071)
     # top rail (teeth = the photo's)
     _, zrt = bp(0, 826); _, zrb = bp(0, 846)
@@ -113,7 +119,7 @@ def upper(X, Y, Z):
     d = S.diff(d, S.box(X, Y, Z, (-17.5, bp(625, 0)[0], -14), (17.5, yb, 30), 2.5))
     # thin-walled handguard shell, open at the front (inner = the outer section offset by the wall)
     _, zin = bp(0, 862)
-    inner = np.maximum.reduce([ax - (27.8 - HG_WALL), zhb + 3.2 - Z, Z - zin,
+    inner = np.maximum.reduce([ax - (hw - HG_WALL), zhb + 3.2 - Z, Z - zin,
                                (ax - (Z - zhb) - (27.8 - HG_FACET - HG_WALL * 1.414)) * 0.7071, yb - 30 - Y])
     d = S.rdiff(d, inner, 1.5)
     # charging-handle slot (top, blind), port / charging track under the traced hardware (both sides)
@@ -146,7 +152,7 @@ def side_plates(X, Y, Z, hw):
     defl = S.extrude(_poly2(Y, Z, [(806, 926), (818, 906), (857, 906), (857, 934), (820, 936)]), ax, hw - 0.8, hw + 2.8, 1.0)
     defl = np.maximum(defl, (ax - (hw + 2.8)) + (Y - bp(857, 0)[0]) * -0.05)         # ramp: thickest at the port
     qr = S.extrude(_qd_plate(Y, Z, 1032, 1121, 908, 930, (1121, 916)), ax, hw - 0.8, hw + 1.8, 0.8)
-    qf = S.extrude(_qd_plate(Y, Z, 1520, 1589, 855, 876, (1589, 867)), ax, 27.8 - 0.8, 27.8 + 1.8, 0.8)
+    qf = S.extrude(_qd_plate(Y, Z, 1520, 1589, 855, 876, (1589, 867)), ax, hw - 0.8, hw + 1.8, 0.8)
     return np.minimum.reduce([frame, defl, qr, qf])
 
 
@@ -155,14 +161,18 @@ def upper_hw_parts(X, Y, Z):
     hw = upper_hw(Y, Z)
     d = S.union(DT.hardware(X, Y, Z, hw, 1.6), side_plates(X, Y, Z, hw))
     d = DT.apply(d, X, Y, Z, "plate", hw + 1.6)                                       # plate screws, port window, tab
-    # NRCH charging handle on the LEFT (FN product shots): stem out of the top-slot front, T-bar angled down and back
+    # NRCH charging handle on the LEFT: rounded base on the slot, pivot drum, lever swept back-up to a knurled paddle
     y, z = bp(1100, 869)
     hwl = 26.6
-    stem = S.cyl(X, Y, Z, "x", (y, z), 4.2, hwl - 2.0, hwl + 9.0, 0.8)
-    u, w = S.rot2(Y - y, Z - z, 40)
-    bar = S.box(X - (hwl + 9.0), u, w, (-3.2, -15.0, -4.0), (3.2, 15.0, 4.0), 2.4)
-    knurl = np.maximum(np.abs((u % 2.0) - 1.0) - 0.35, np.maximum(np.abs(u) - 13.0, 2.6 - np.abs(X - (hwl + 9.0))))
-    ch = S.rdiff(S.runion(stem, bar, 1.8), knurl, 0.15)
+    base = S.extrude(S.capsule2(Y, Z, (y - 12, z), (y + 6, z), 5.0), X, hwl - 2.0, hwl + 4.0, 1.6)
+    piv = S.cyl(X, Y, Z, "x", (y, z), 5.6, hwl, hwl + 9.5, 1.2)
+    ang = math.radians(150)
+    ye, ze = y + 24 * math.cos(ang), z + 24 * math.sin(ang)
+    arm = S.extrude(S.capsule2(Y, Z, (y, z), (ye, ze), 3.4), X, hwl + 5.0, hwl + 9.5, 1.4)
+    pad = S.extrude(np.hypot((Y - ye) / 1.35, Z - ze) - 6.0, X, hwl + 3.0, hwl + 11.5, 2.4)
+    knurl = np.maximum(np.abs((((Y - ye) * 0.8 + (Z - ze) * 0.6) % 1.6) - 0.8) - 0.3,
+                       np.maximum(np.hypot((Y - ye) / 1.35, Z - ze) - 5.0, hwl + 10.9 - X))
+    ch = S.rdiff(S.runion(S.runion(base, piv, 1.2), S.runion(arm, pad, 2.0), 1.0), knurl, 0.15)
     return S.union(d, ch)
 
 
@@ -218,6 +228,38 @@ def fsight(X, Y, Z):
     return DT.apply(d, X, Y, Z, "fsight", 10.5, mirror=False)
 
 
+# ------------------------------------------------------------------ bolt carrier group
+def bcg(X, Y, Z):
+    """SCAR-pattern carrier: D-section body (flat sides, round top) on side guide rails, piston strike lug, cam slot +
+    cam pin, charging-handle notch, side flutes, hammer ramp; 7-lug rotating bolt with gas-ring grooves + extractor"""
+    sec = np.maximum.reduce([np.abs(X) - 12.8, -15.5 - Z, np.hypot(X, Z + 3.0) - 19.0])
+    c = S.rinter(sec, np.abs(Y + 73.0) - 59.0, 2.0)                                   # Y -132 .. -14
+    rails = S.box(X, Y, Z, (-14.6, -130, -13.5), (14.6, -16, -9.5), 0.8)
+    c = S.runion(c, rails, 0.8)
+    lug = S.rinter(np.maximum(np.abs(X) - 6.0, np.hypot(X, Z - 8.0) - 12.0), np.abs(Y + 30.0) - 16.0, 1.5)
+    c = S.runion(c, np.maximum(lug, 10.0 - Z), 1.5)                                   # piston strike lug on top front
+    u, w = S.rot2(Y + 41.0, X, 28)
+    c = S.rdiff(c, S.box(u, Z, w, (-11, 6, -3.2), (11, 30, 3.2), 1.6), 0.5)          # cam slot
+    c = S.rdiff(c, S.box(X, Y, Z, (9.5, -62, -1), (16, -46, 9), 1.2), 0.5)            # charging-handle notch (left)
+    for zf in (-4.0, 2.0):                                                            # side flutes
+        c = S.rdiff(c, S.extrude(S.capsule2(Y, Z, (-118, zf), (-62, zf), 1.4), np.abs(X), 12.0, 20.0), 0.3)
+    c = np.maximum(c, (8.0 - (Y + 132.0) - (Z + 15.5)) * 0.7071)                     # hammer ramp
+    c = S.diff(c, S.cyl(X, Y, Z, "y", (0, 0), 7.4, -60, 0))                            # bolt bore
+    body = S.cyl(X, Y, Z, "y", (0, 0), 7.0, -58, -0.2, 0.6)
+    for yg in (-52.0, -49.5, -47.0):                                                  # gas rings
+        body = S.diff(body, np.maximum(np.abs(Y - yg) - 0.45, 6.4 - np.hypot(X, Z)))
+    head = S.union(body, S.cyl(X, Y, Z, "y", (0, 0), 9.2, -6, -0.2, 0.3))
+    for k in range(7):                                                                  # 7 locking lugs
+        a = 2 * math.pi * (k + 0.5) / 7
+        uu = X * math.cos(a) + Z * math.sin(a)
+        vv = -X * math.sin(a) + Z * math.cos(a)
+        head = S.union(head, S.box(uu, Y, vv, (8.0, -6, -1.4), (10.8, -0.2, 1.4), 0.3))
+    head = S.diff(head, S.cyl(X, Y, Z, "y", (0, 0), 2.0, -2, 1))                       # firing pin hole
+    ext = S.box(X, Y, Z, (-11.5, -16, -2), (-8.5, 1.0, 2), 0.5)                         # extractor
+    pin = S.cyl(X, Y, Z, "z", (0, -41.0), 2.8, 0, 17.5, 0.6)                             # cam pin up through the slot
+    return S.union(c, head, ext, pin)
+
+
 # ------------------------------------------------------------------ barrel + muzzle brake
 def barrel(X, Y, Z):
     Rr = np.sqrt(X * X + Z * Z)
@@ -266,8 +308,15 @@ def lower(X, Y, Z):
     hw = np.where(Y > ym, 22.6, 21.6)
     hw = np.where((Z < zg) & (Y < ym), 7.0, hw)                                       # the trigger guard loop
     _, zf = bp(0, 1040)
-    hw = hw + 1.2 * S.sstep(zf + 3, zf - 3, Z) * (Y > ym)                             # magwell flare
-    d = S.rinter(R.prof("lower")(Y, Z), np.abs(X) - hw, 2.2)
+    hw = hw + 2.0 * S.sstep(zf + 1.0, zf - 1.0, Z) * (Y > ym)                         # magwell lip: a real ledge
+    yc, _ = bp(1012, 0)
+    hw = hw + 1.2 * S.sstep(yc - 1.0, yc + 1.0, Y)                                    # thick magwell-front column
+    yt, _ = bp(720, 0)
+    r = np.where(Y < yt, 5.0, 3.5)                                                    # rounded rear tang into the grip
+    d = S.rinter(R.prof("lower")(Y, Z), np.abs(X) - hw, r)
+    _, zgt = bp(0, 993)
+    collar = np.maximum(_rounded(R.prof("grip")(Y, Z), X, 15.0, 8.5), zgt - 9.0 - Z)     # the lower wraps the grip top
+    d = S.runion(d, collar, 4.0)
     _, ztop = bp(0, 943)
     d = S.diff(d, np.maximum(mag_box(X, Y, Z, 0.5 + 1.5 * S.sstep(zf + 4, zf - 6, Z)), S.slab(Z, -200, ztop - 6)))
     y0, y1, z0, z1 = bx(800, 990, 845, 1010)
@@ -352,8 +401,15 @@ def stock(X, Y, Z):
     hw = np.where(Y > yf, 22.0, np.where(Y > yr, 17.0, 21.0))
     _, zc = bp(0, 930)
     hw = hw - np.where(Y > yf, 2.2 * ((Z - zc) / 35.0) ** 2, 0)                      # front body bulges (photo shading)
-    hw = np.where((Z < zleg) & (Y < yr + 10), 12.5, hw)                               # the serrated leg is thin
-    d = S.rinter(R.prof("stock")(Y, Z), np.abs(X) - hw, 4.0)
+    # front body: the lower shell (rows 936-1000, rear edge slanting (380,940)->(400,1000)) stands 1.2 proud of the cheek
+    _, zp = bp(0, 936)
+    (ya, za), (yb2, zb2) = bp(380, 940), bp(400, 1000)
+    yl = ya + (Z - za) * (yb2 - ya) / (zb2 - za)
+    hw = hw - np.where(Y > yf, 1.2 * S.sstep(zp - 0.8, zp + 0.8, Z) + 1.2 * (Z < zp) * S.sstep(yl + 0.8, yl - 0.8, Y), 0)
+    leg = (Z < zleg) & (Y < yr + 10)
+    hw = np.where(leg, 12.5, hw)                                                      # the serrated leg is thin
+    r = np.where(leg, 9.0, np.where(Y > yf, 8.0, 7.0))                                # leg nearly round, bevelled body edges
+    d = S.rinter(R.prof("stock")(Y, Z), np.abs(X) - hw, r)
     # catalogue: latch pocket + button, slot, QD socket, pins, panel lines, numbers (detail.py)
     tri = [bp(355, 887), bp(379, 887), bp(368, 910)]                                 # latch lever in its pocket
     e = [(tri[i], tri[(i + 1) % 3]) for i in range(3)]
@@ -421,7 +477,7 @@ def table():
     T["fsight"] = (fsight, *_bb("fsight", 4, 13), 0.15, "steel")
     T["barrel"] = (barrel, (-16, -6, -16), (16, 416, 20), 0.25, "steel")
     T["brake"] = (brake, (-16, R.px2b(1740, 0)[0], -16), (16, R.MUZZLE_Y + 3, 16), 0.15, "steel")
-    T["bolt"] = (V1.bolt, (-15, -134, -18), (15, 3, 20), 0.25, "park")
+    T["bolt"] = (bcg, (-17, -134, -18), (17, 3, 25), 0.25, "park")
     T["lower"] = (lower, *_bb("lower", 8, 26), 0.32, "poly")
     T["trigger"] = (trigger, *_bb("trigger", 4, 6), 0.12, "steel")
     T["controls"] = (controls, (-27, R.px2b(700, 0)[0], R.px2b(0, 1010)[1]), (27, R.px2b(930, 0)[0], R.px2b(0, 930)[1]), 0.14, "steel")
