@@ -1,0 +1,89 @@
+{
+ "item": "Batteries",
+ "category": "crafting",
+ "clip": null,
+ "recipes": [
+  "Flashlight",
+  "Radio",
+  "NVG",
+  "KeycardBypass"
+ ],
+ "dims_cm": {
+  "SM_Batteries": [
+   8.5,
+   1.9,
+   14.0
+  ],
+  "SM_Battery_AA": [
+   1.45,
+   1.45,
+   5.05
+  ]
+ },
+ "pivot": "card bottom centre, print faces -Y; cell: - end, + toward +Z",
+ "tris": {
+  "SM_Batteries": 2464,
+  "SM_Batteries_Blister": 476,
+  "SM_Battery_AA": 576,
+  "SM_Batteries_LOD1": 1232,
+  "SM_Batteries_LOD2": 616
+ },
+ "textures": {
+  "size": 2048,
+  "normal": "OpenGL (flip green in UE)",
+  "variants": {
+   "KiloWatt": "T_Batteries_Label_KiloWatt.png",
+   "BodegaBasics": "T_Batteries_Label_BodegaBasics.png",
+   "Ironcell": "T_Batteries_Label_Ironcell.png"
+  }
+ },
+ "variant_params": {
+  "KiloWatt": {
+   "ColorA": [
+    0.62,
+    0.66,
+    0.72
+   ],
+   "RoughA": 0.22,
+   "MetalA": 0.9,
+   "LabelRough": 0.4,
+   "WearAmount": 0.2,
+   "Dirt": 0.4
+  },
+  "BodegaBasics": {
+   "ColorA": [
+    0.8,
+    0.8,
+    0.78
+   ],
+   "RoughA": 0.22,
+   "MetalA": 0.9,
+   "LabelRough": 0.4,
+   "WearAmount": 0.2,
+   "Dirt": 0.4
+  },
+  "Ironcell": {
+   "ColorA": [
+    0.75,
+    0.55,
+    0.2
+   ],
+   "RoughA": 0.22,
+   "MetalA": 0.9,
+   "LabelRough": 0.4,
+   "WearAmount": 0.2,
+   "Dirt": 0.4
+  }
+ },
+ "glass": {
+  "SM_Batteries_Blister": "M_Batteries_Blister"
+ },
+ "collision": [
+  "UCX_SM_Batteries_00",
+  "UCX_SM_Battery_AA_00"
+ ],
+ "lods": [
+  "SM_Batteries_LOD1 (50%)",
+  "SM_Batteries_LOD2 (25%)"
+ ]
+}
