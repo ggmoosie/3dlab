@@ -1,0 +1,110 @@
+{
+ "item": "KitBox",
+ "replaces_rows": [
+  "FirstAidTin",
+  "MedKitLarge"
+ ],
+ "category": "medical",
+ "clip": "A_Consume_Surgery_Kit",
+ "dims_cm": [
+  16.0,
+  10.0,
+  5.0
+ ],
+ "real_object": "hinged steel first-aid tin",
+ "pivot": "centre",
+ "parts": {
+  "SM_KitBox_Lid": {
+   "pivot": "hinge line on the far long edge (+Y Blender / -Y UE)",
+   "opens": "about local X to -110 deg"
+  },
+  "SM_Scalpel": {
+   "pivot": "pinch point, 4 cm from the tail",
+   "axis": "+Z toward the blade",
+   "dims_cm": [
+    0.8,
+    0.22,
+    13.2
+   ]
+  }
+ },
+ "tris": {
+  "SM_KitBox": 1672,
+  "SM_KitBox_Lid": 500,
+  "SM_Scalpel": 140
+ },
+ "textures": {
+  "size": 2048,
+  "normal": "OpenGL (flip green in UE)",
+  "variants": {
+   "FirstAid": "T_KitBox_Label_FirstAid.png",
+   "Surgical": "T_KitBox_Label_Surgical.png",
+   "Military": "T_KitBox_Label_Military.png",
+   "CookieTin": "T_KitBox_Label_CookieTin.png",
+   "Vintage": "T_KitBox_Label_Vintage.png"
+  }
+ },
+ "variant_params": {
+  "FirstAid": {
+   "ColorA": [
+    0.55,
+    0.03,
+    0.03
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.15,
+   "LabelRough": 0.45,
+   "WearAmount": 0.5,
+   "Dirt": 0.35
+  },
+  "Surgical": {
+   "ColorA": [
+    0.8,
+    0.8,
+    0.78
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.15,
+   "LabelRough": 0.45,
+   "WearAmount": 0.5,
+   "Dirt": 0.35
+  },
+  "Military": {
+   "ColorA": [
+    0.13,
+    0.15,
+    0.08
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.15,
+   "LabelRough": 0.45,
+   "WearAmount": 0.5,
+   "Dirt": 0.35
+  },
+  "CookieTin": {
+   "ColorA": [
+    0.08,
+    0.2,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.15,
+   "LabelRough": 0.45,
+   "WearAmount": 0.5,
+   "Dirt": 0.35
+  },
+  "Vintage": {
+   "ColorA": [
+    0.75,
+    0.7,
+    0.55
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.15,
+   "LabelRough": 0.45,
+   "WearAmount": 0.5,
+   "Dirt": 0.35
+  }
+ },
+ "collision": "UCX_SM_KitBox_00"
+}

@@ -1,0 +1,13 @@
+{
+ "fps": 30,
+ "events": [
+  {
+   "frame": 20,
+   "name": "UseItemStart"
+  },
+  {
+   "frame": 88,
+   "name": "UseItemEnd"
+  }
+ ]
+}

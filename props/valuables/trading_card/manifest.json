@@ -1,0 +1,280 @@
+{
+ "item": "TradingCard",
+ "set": "Stoopball Cards",
+ "category": "valuables",
+ "clip": null,
+ "dims_cm": {
+  "SM_TradingCard": [
+   6.35,
+   0.1,
+   8.89
+  ],
+  "SM_Toploader": [
+   7.6,
+   0.26,
+   10.16
+  ]
+ },
+ "pivot": "bottom centre (card), slides out of the toploader along +Z",
+ "tris": {
+  "SM_TradingCard": 248,
+  "SM_Toploader": 190
+ },
+ "textures": {
+  "size": 2048,
+  "normal": "OpenGL (flip green in UE)",
+  "variants": {
+   "01_Marino": "T_TradingCard_Label_01_Marino.png",
+   "02_Okafor": "T_TradingCard_Label_02_Okafor.png",
+   "03_Ruiz": "T_TradingCard_Label_03_Ruiz.png",
+   "04_Kowalczyk": "T_TradingCard_Label_04_Kowalczyk.png",
+   "05_Bianchi": "T_TradingCard_Label_05_Bianchi.png",
+   "06_Washington": "T_TradingCard_Label_06_Washington.png",
+   "07_Arai": "T_TradingCard_Label_07_Arai.png",
+   "08_Doyle": "T_TradingCard_Label_08_Doyle.png",
+   "09_Caruso": "T_TradingCard_Label_09_Caruso.png",
+   "10_Alvarez": "T_TradingCard_Label_10_Alvarez.png",
+   "11_Silverman": "T_TradingCard_Label_11_Silverman.png",
+   "12_Pike": "T_TradingCard_Label_12_Pike.png",
+   "13_MarinoHolo": "T_TradingCard_Label_13_MarinoHolo.png"
+  }
+ },
+ "variant_params": {
+  "01_Marino": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "LabelRough": 0.45,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  },
+  "02_Okafor": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "LabelRough": 0.45,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  },
+  "03_Ruiz": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "LabelRough": 0.45,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  },
+  "04_Kowalczyk": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "LabelRough": 0.45,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  },
+  "05_Bianchi": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "LabelRough": 0.45,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  },
+  "06_Washington": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "LabelRough": 0.45,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  },
+  "07_Arai": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "LabelRough": 0.45,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  },
+  "08_Doyle": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "LabelRough": 0.45,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  },
+  "09_Caruso": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "LabelRough": 0.45,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  },
+  "10_Alvarez": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "LabelRough": 0.45,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  },
+  "11_Silverman": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "LabelRough": 0.45,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  },
+  "12_Pike": {
+   "ColorA": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughA": 0.4,
+   "MetalA": 0.0,
+   "LabelRough": 0.45,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  },
+  "13_MarinoHolo": {
+   "ColorA": [
+    0.85,
+    0.75,
+    0.95
+   ],
+   "RoughA": 0.15,
+   "MetalA": 0.9,
+   "LabelRough": 0.25,
+   "WearAmount": 0.0,
+   "Dirt": 0.15
+  }
+ },
+ "collection": {
+  "01_Marino": {
+   "number": 1,
+   "player": "Sal 'The Spigot' Marino",
+   "team": "Gowanus Gulls",
+   "rarity": "rare"
+  },
+  "02_Okafor": {
+   "number": 2,
+   "player": "Dee Okafor",
+   "team": "Queens Comets",
+   "rarity": "common"
+  },
+  "03_Ruiz": {
+   "number": 3,
+   "player": "Manny Ruiz",
+   "team": "Harlem Hawks",
+   "rarity": "common"
+  },
+  "04_Kowalczyk": {
+   "number": 4,
+   "player": "Tommy Kowalczyk",
+   "team": "Bronx Iron",
+   "rarity": "common"
+  },
+  "05_Bianchi": {
+   "number": 5,
+   "player": "Lou 'Hot Corner' Bianchi",
+   "team": "Brooklyn Bridgers",
+   "rarity": "common"
+  },
+  "06_Washington": {
+   "number": 6,
+   "player": "Ray Washington",
+   "team": "Staten Ferrymen",
+   "rarity": "rare"
+  },
+  "07_Arai": {
+   "number": 7,
+   "player": "Kenji Arai",
+   "team": "Queens Comets",
+   "rarity": "common"
+  },
+  "08_Doyle": {
+   "number": 8,
+   "player": "Big Ed Doyle",
+   "team": "Bronx Iron",
+   "rarity": "common"
+  },
+  "09_Caruso": {
+   "number": 9,
+   "player": "Vinnie Caruso",
+   "team": "Gowanus Gulls",
+   "rarity": "common"
+  },
+  "10_Alvarez": {
+   "number": 10,
+   "player": "Hector 'Hex' Alvarez",
+   "team": "Harlem Hawks",
+   "rarity": "common"
+  },
+  "11_Silverman": {
+   "number": 11,
+   "player": "Abe Silverman",
+   "team": "Brooklyn Bridgers",
+   "rarity": "rare"
+  },
+  "12_Pike": {
+   "number": 12,
+   "player": "Jo Ellen Pike",
+   "team": "Staten Ferrymen",
+   "rarity": "common"
+  },
+  "13_MarinoHolo": {
+   "number": 13,
+   "player": "Sal Marino ROOKIE HOLO",
+   "team": "Gowanus Gulls",
+   "rarity": "legendary"
+  }
+ }
+}
