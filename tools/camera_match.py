@@ -109,7 +109,7 @@ if not cfg.get('fix_focal', False) and (x[6] <= FMIN + 1e-3 or x[6] >= FMAX - 1e
     fail.append('focal hit the focal_range bound - landmarks disagree; check each LM sits on the same feature as its pixel')
 print('CAM VERDICT %s%s' % ('FAIL: ' if fail else 'PASS', '; '.join(fail)))
 if cfg.get('result'):
-    json.dump({'verdict': 'FAIL' if fail else 'PASS', 'reasons': fail, 'rms_px': rms, 'rms_pct': 100 * rms / W, 'focal_mm': float(x[6]),
+    json.dump({'verdict': 'FAIL' if fail else 'PASS', 'reasons': fail, 'rms_px': rms, 'rms_pct': 100 * rms / W, 'focal_mm': float(x[6]), 'x0': [float(v) for v in x],
                'points': [{'name': p['name'], 'check': bool(p.get('check')), 'error_px': float(np.linalg.norm(a - b))} for p, a, b in zip(cfg['points'], uva, ALLUV)]},
               open(cfg['result'], 'w'), indent=1)
 

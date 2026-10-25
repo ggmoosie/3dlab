@@ -314,6 +314,17 @@ def _bb(name, pad=6.0, xhw=32.0):
     return (-xhw, y0 - pad, z0 - pad), (xhw, y1 + pad, z1 + pad)
 
 
+WK = 0.75          # width scale measured on the 3/4 photo (silfit.py: IoU peak at k 0.75, 2026-10-25)
+UNSCALED = {"barrel", "brake", "bolt", "round"}
+
+
+def widthscaled(fn):
+    """the gun's widths were estimated; the 3/4 photo fit says they are 0.75 x: compress the part about the bore plane"""
+    def f(X, Y, Z):
+        return fn(X / WK, Y, Z) * WK
+    return f
+
+
 def table():
     T = {}
     lo, hi = _bb("upper", 10, 34)
@@ -345,6 +356,9 @@ def main():
     for name, (fn, lo, hi, h, mat) in table().items():
         if ONLY and name not in ONLY:
             continue
+        if name not in UNSCALED:
+            fn = widthscaled(fn)
+            lo, hi = (lo[0] * WK, lo[1], lo[2]), (hi[0] * WK, hi[1], hi[2])
         off = h * HS * 0.3713
         V, F = S.mesh(fn, np.add(lo, -off), np.add(hi, off), h * HS, lip=3.5, name=name)
         m = V1.round_mat(V) if name == "round" else np.full(len(V), MAT[mat])

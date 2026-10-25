@@ -49,10 +49,10 @@ SOCKETS_B = {
     "FrontSight": ((0, P.FRONT_SIGHT_TOP[0], P.FRONT_SIGHT_TOP[1]), (0, 0, 0)),
     "Optic_Socket": ((0, -60.0, P.RAIL_TOP), (0, 0, 0)),
     "Grip_Socket": ((0, P.VGRIP[0], P.FE_BOT), (0, 0, 0)),             # bottom M-LOK, where the vertical grip sits
-    "TacticalSocket": ((-27.8, 240.0, P.SIDE_RAIL_Z), (0, 0, -90)),     # right side M-LOK
+    "TacticalSocket": ((-27.8 * 0.75, 240.0, P.SIDE_RAIL_Z), (0, 0, -90)),     # right side M-LOK
     "MagazineSocket": ((0, (P.MAG_Y[0] + P.MAG_Y[1]) / 2, P.MAG_TOP), (0, 0, 0)),
     "Chamber": ((0, 20.0, 0), (0, 0, 0)),
-    "EjectionPort": ((-27.8, -25.0, 7.0), (0, 0, -90)),
+    "EjectionPort": ((-27.8 * 0.75, -25.0, 7.0), (0, 0, -90)),
     "HandPose_R": ((0, P.GRIP_TOP[0] - 10, P.GRIP_TOP[1] - 45), (0, 0, 0)),
     "HandPose_L": ((0, P.VGRIP[0], P.FE_BOT - 45), (0, 0, 0)),
     "Stock": ((0, P.BUTT_Y, -40.0), (0, 0, 0)),
