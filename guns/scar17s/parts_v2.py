@@ -103,8 +103,8 @@ def sections():
     if not _SEC:
         rec = _rows([(0, 945), (25.4, 945), (25.4, 901), (26.8, 899)]) + _roll(26.8, 897, 23.4, 874) + \
             _rows([(23.4, 849), (21.0, 846), (0, 846)])
-        hg = _rows([(0, 967), (HG_SIDE - HG_FACET, 967), (HG_SIDE, 944), (HG_SIDE, 907), (27.8, 905)]) + \
-            _roll(27.8, 903, 24.0, 878) + _rows([(24.0, 849), (21.5, 846), (0, 846)])
+        hg = _rows([(0, 967), (HG_SIDE - HG_FACET, 967), (HG_SIDE, 944), (HG_SIDE, 907), (28.0, 905)]) + \
+            _roll(28.0, 903, 22.0, 872) + _rows([(22.0, 849), (20.0, 846), (0, 846)])
         _SEC["rec"], _SEC["hg"] = _section(rec), _section(hg)
     return _SEC
 
@@ -177,7 +177,7 @@ def upper(X, Y, Z):
     d = S.diff(d, S.box(X, Y, Z, (-17.5, bp(625, 0)[0], -14), (17.5, yb, 30), 2.5))
     # thin-walled handguard shell, open at the front (inner = the outer section offset by the wall)
     _, zin = bp(0, 862)
-    inner = np.maximum.reduce([upper_sec(X, Y, Z) + HG_WALL, Z - zin, yb - 30 - Y])
+    inner = np.maximum.reduce([upper_sec(X, Y, Z) + HG_WALL, Z - zin, yb - 30 - Y, np.hypot(X, Z) - 33.0])   # arched top
     d = S.rdiff(d, inner, 1.5)
     # charging-handle slot (top, blind), port / charging track under the traced hardware (both sides)
     d = side_cut(d, X, Y, Z, 828, 905, 1042, 928, 25.6, 1.6, 1.2)
@@ -215,7 +215,9 @@ def side_plates(X, Y, Z, hw):
     """machined black plates on both receiver sides, measured off the photo (clean edges, not traced pixels):
     ejection-port frame, the brass deflector ramp, rear + front QD plates"""
     ax = np.abs(X)
-    frame = S.extrude(_poly2(Y, Z, [(858, 933), (858, 906), (1027, 906), (1027, 933)]) + 0.0, ax, hw - 0.8, hw + 1.2, 0.6)
+    fr2 = _rect_px(Y, Z, 858, 906, 1027, 933, 1.0)
+    frame = S.extrude(fr2, ax, hw - 0.8, hw + 1.2, 0.6)
+    frame = S.runion(frame, S.extrude(np.abs(fr2 + 0.9) - 0.9, ax, hw, hw + 2.0, 0.5), 0.4)   # raised border lip
     # brass deflector: rounded block, round rear end, raised pad at the port, pivot pin hole
     yd, zd = bp(820, 920)
     d2 = np.minimum(np.hypot(Y - yd, Z - zd) - 14.0 * R.S_MM, _rect_px(Y, Z, 820, 906, 858, 934, 1.2))
@@ -235,12 +237,8 @@ def side_plates(X, Y, Z, hw):
     return np.minimum.reduce([frame, defl, qr, qf])
 
 
-def chandle(X, Y, Z):
-    """NRCH charging handle (left close-up ref), built UNSCALED so the turned shape stays round: thin neck + flange in
-    the slot, cone flaring to a fat ringed knob with a hollow end, pointing out and back"""
-    y, z = bp(1100, 869)
-    o = np.array([(float(upper_hw(np.array(y), np.array(z))) - 3.0) * WK, y, z])
-    dv = np.array([1.0, -0.38, -0.32]); dv /= np.linalg.norm(dv)
+def _turned_handle(X, Y, Z, o, dv):
+    dv = np.array(dv, float); dv /= np.linalg.norm(dv)
     px, py, pz = X - o[0], Y - o[1], Z - o[2]
     sa = px * dv[0] + py * dv[1] + pz * dv[2]
     rho = np.sqrt(np.maximum(px * px + py * py + pz * pz - sa * sa, 0))
@@ -251,12 +249,29 @@ def chandle(X, Y, Z):
     return S.rdiff(ch, np.maximum(rho - 4.6, 32.0 - sa), 0.8)                         # hollow knob end
 
 
+def chandle(X, Y, Z):
+    """NRCH charging handle, built UNSCALED so the turned shape stays round: thin neck + flange in the slot, cone
+    flaring to a fat ringed knob with a hollow end. Left: swept out and back (close-up ref); right: straight out
+    (the right-side photo sees it end-on as a ring at the slot front)"""
+    out = []
+    for x, sg, dv in ((1100, 1, (1.0, -0.38, -0.32)), (1108, -1, (-1.0, 0.05, -0.12))):
+        y, z = bp(x, 869)
+        k = float(wk_at(np.array(y)))
+        o = np.array([sg * (float(upper_hw(np.array(y), np.array(z))) - 3.0) * k, y, z])
+        out.append(_turned_handle(X, Y, Z, o, dv))
+    return np.minimum(*out)
+
+
 def upper_hw_parts(X, Y, Z):
     """black hardware traced from the photo (port frame + folded charging handle, QD plates, hinge plate, sling cup)"""
     hw = upper_hw(Y, Z)
     # rear hinge strip (black, both sides): clean plate with rounded ends instead of the traced outline
     strip = S.extrude(_rect_px(Y, Z, 617, 849, 627, 998, 1.2), np.abs(X), hw - 0.8, hw + 1.0, 0.6)
     d = S.union(strip, side_plates(X, Y, Z, hw))
+    # inside the side slot (refs): the black charging rail, round rear end, a pin dot, recessed in the slot
+    rail = S.extrude(_cap(Y, Z, (864, 869), (1098, 869), 6.5), np.abs(X), hw - 6.5, hw - 2.6, 0.8)
+    rail = S.rdiff(rail, np.maximum(np.hypot(Y - bp(920, 868)[0], Z - bp(920, 868)[1]) - 1.6, hw - 3.2 - np.abs(X)), 0.2)
+    d = S.union(d, rail)
     d = DT.apply(d, X, Y, Z, "plate", hw + 1.6)                                       # plate screws, port window, tab
     return d
 
@@ -559,6 +574,24 @@ def widthscaled(fn):
     return f
 
 
+WK_HG = 0.92                                          # handguard width scale (user: wider, a real tube body line)
+
+
+def wk_at(Y):
+    return WK + (WK_HG - WK) * _blend(Y)
+
+
+def widthscaled_y(fn):
+    """upper group: receiver at WK (flush with the lower), handguard flares out to WK_HG along the same sweep"""
+    def f(X, Y, Z):
+        k = wk_at(Y)
+        return fn(X / k, Y, Z) * k
+    return f
+
+
+UPPER_GROUP = {"upper", "upperhw", "screws_u", "rsight", "fsight"}
+
+
 def screws_upper(X, Y, Z):
     """steel heads on the receiver, its plates and the sights (one shell per assembly so the stock can fold)"""
     hw = upper_hw(Y, Z)
@@ -583,7 +616,7 @@ def table():
     lo, hi = _bb("upper", 10, 34)
     T["upperhw"] = (upper_hw_parts, (-34, lo[1], -40), (62, hi[1], 50), 0.18, "steel")
     ych, zch = bp(1100, 869)
-    T["chandle"] = (chandle, (8, ych - 30, zch - 25), (62, ych + 12, zch + 12), 0.15, "steel")
+    T["chandle"] = (chandle, (-62, ych - 30, zch - 25), (62, ych + 18, zch + 12), 0.15, "steel")
     T["screws_u"] = (screws_upper, (-34, R.px2b(600, 0)[0], -30), (34, R.px2b(1610, 0)[0], 90), 0.14, "steel")
     T["screws_l"] = (screws_lower, (-28, R.px2b(700, 0)[0], -45), (28, R.px2b(1060, 0)[0], -10), 0.14, "steel")
     T["screws_s"] = (screws_stock, (-28, R.px2b(200, 0)[0], -60), (28, R.px2b(580, 0)[0], 40), 0.14, "steel")
@@ -612,7 +645,10 @@ def main():
     for name, (fn, lo, hi, h, mat) in table().items():
         if ONLY and name not in ONLY:
             continue
-        if name not in UNSCALED:
+        if name in UPPER_GROUP:
+            fn = widthscaled_y(fn)
+            lo, hi = (lo[0] * WK_HG, lo[1], lo[2]), (hi[0] * WK_HG, hi[1], hi[2])
+        elif name not in UNSCALED:
             fn = widthscaled(fn)
             lo, hi = (lo[0] * WK, lo[1], lo[2]), (hi[0] * WK, hi[1], hi[2])
         off = h * HS * 0.3713
