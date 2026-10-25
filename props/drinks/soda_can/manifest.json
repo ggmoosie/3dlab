@@ -1,0 +1,191 @@
+{
+ "item": "SodaCan",
+ "replaces_rows": [
+  "SodaCan",
+  "Cola",
+  "Coffee",
+  "SpiritsBottle"
+ ],
+ "category": "drinks",
+ "clip": "A_Consume_Drink_Can",
+ "dims_cm": [
+  6.62,
+  6.62,
+  12.22
+ ],
+ "real_object": "355 mL 211/202 aluminium can, 202 stay-on-tab end",
+ "pivot": "base centre, +Z up",
+ "mouth_local_cm_ue": [
+  0,
+  1.24,
+  11.6
+ ],
+ "parts": {
+  "SM_SodaCan_Tab": {
+   "pivot": "rivet",
+   "rest_location_cm": [
+    0,
+    0,
+    11.6
+   ],
+   "rest_rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "opens": "about local X, lift to -55 deg (ring end up), then back"
+  },
+  "SM_SodaCan_Flap": {
+   "pivot": "score hinge near the rivet",
+   "rest_location_cm_ue": [
+    0,
+    0.26,
+    11.6
+   ],
+   "opens": "about local X, +70 deg (pushes down into the can) on TabPop"
+  }
+ },
+ "tris": {
+  "SM_SodaCan": 2590,
+  "SM_SodaCan_Tab": 180,
+  "SM_SodaCan_Flap": 108,
+  "SM_SodaCan_LOD1": 1294,
+  "SM_SodaCan_LOD2": 646
+ },
+ "textures": {
+  "size": 2048,
+  "normal": "OpenGL (flip green in UE)",
+  "set": "T_SodaCan_{BaseColor,Normal,ORM,Mask}",
+  "variants": {
+   "Kolossal": "T_SodaCan_Label_Kolossal.png",
+   "Zing": "T_SodaCan_Label_Zing.png",
+   "Volt": "T_SodaCan_Label_Volt.png",
+   "FiveBoroughs": "T_SodaCan_Label_FiveBoroughs.png",
+   "Fizz": "T_SodaCan_Label_Fizz.png",
+   "FrontStoop": "T_SodaCan_Label_FrontStoop.png"
+  }
+ },
+ "material": "M_Lab_Prop (universal mask) \u2192 MI_SodaCan_<Variant>",
+ "variant_params": {
+  "Kolossal": {
+   "ColorA": [
+    0.55,
+    0.05,
+    0.06
+   ],
+   "RoughA": 0.26,
+   "MetalA": 1.0,
+   "ColorB": [
+    0.86,
+    0.86,
+    0.87
+   ],
+   "RoughB": 0.3,
+   "MetalB": 1.0,
+   "LabelRough": 0.2,
+   "WearAmount": 0.45,
+   "Dirt": 0.35
+  },
+  "Zing": {
+   "ColorA": [
+    0.8,
+    0.78,
+    0.3
+   ],
+   "RoughA": 0.26,
+   "MetalA": 1.0,
+   "ColorB": [
+    0.86,
+    0.86,
+    0.87
+   ],
+   "RoughB": 0.3,
+   "MetalB": 1.0,
+   "LabelRough": 0.22,
+   "WearAmount": 0.45,
+   "Dirt": 0.35
+  },
+  "Volt": {
+   "ColorA": [
+    0.03,
+    0.03,
+    0.035
+   ],
+   "RoughA": 0.26,
+   "MetalA": 1.0,
+   "ColorB": [
+    0.035,
+    0.035,
+    0.04
+   ],
+   "RoughB": 0.45,
+   "MetalB": 1.0,
+   "LabelRough": 0.55,
+   "WearAmount": 0.45,
+   "Dirt": 0.35
+  },
+  "FiveBoroughs": {
+   "ColorA": [
+    0.8,
+    0.58,
+    0.26
+   ],
+   "RoughA": 0.26,
+   "MetalA": 1.0,
+   "ColorB": [
+    0.86,
+    0.86,
+    0.87
+   ],
+   "RoughB": 0.3,
+   "MetalB": 1.0,
+   "LabelRough": 0.32,
+   "WearAmount": 0.45,
+   "Dirt": 0.35
+  },
+  "Fizz": {
+   "ColorA": [
+    0.86,
+    0.86,
+    0.87
+   ],
+   "RoughA": 0.26,
+   "MetalA": 1.0,
+   "ColorB": [
+    0.86,
+    0.86,
+    0.87
+   ],
+   "RoughB": 0.3,
+   "MetalB": 1.0,
+   "LabelRough": 0.18,
+   "WearAmount": 0.45,
+   "Dirt": 0.35
+  },
+  "FrontStoop": {
+   "ColorA": [
+    0.62,
+    0.38,
+    0.16
+   ],
+   "RoughA": 0.26,
+   "MetalA": 1.0,
+   "ColorB": [
+    0.86,
+    0.86,
+    0.87
+   ],
+   "RoughB": 0.3,
+   "MetalB": 1.0,
+   "LabelRough": 0.28,
+   "WearAmount": 0.45,
+   "Dirt": 0.35
+  }
+ },
+ "collision": "UCX_SM_SodaCan_00 (convex hull, 64 extreme points)",
+ "lods": [
+  "SM_SodaCan_LOD1 (50%)",
+  "SM_SodaCan_LOD2 (25%)"
+ ],
+ "qc_notes": "WARN texel spread: vertical countersink/stand-ring walls inside planar disc islands (tiny, unseen); WARN 2 slivers on the flat lid panel (planar, no shading effect)."
+}
