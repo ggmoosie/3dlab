@@ -1,0 +1,171 @@
+{
+ "Muzzle": {
+  "location_cm": [
+   0.0,
+   62.2,
+   4.2
+  ],
+  "rotation_pyr": [
+   0,
+   0,
+   0
+  ],
+  "mesh": "SM_SCAR17S"
+ },
+ "Aim": {
+  "location_cm": [
+   0.0,
+   3.25,
+   8.64
+  ],
+  "rotation_pyr": [
+   0,
+   0,
+   0
+  ],
+  "mesh": "SM_SCAR17S"
+ },
+ "FrontSight": {
+  "location_cm": [
+   0.0,
+   43.5,
+   8.64
+  ],
+  "rotation_pyr": [
+   0,
+   0,
+   0
+  ],
+  "mesh": "SM_SCAR17S"
+ },
+ "Optic_Socket": {
+  "location_cm": [
+   0.0,
+   12.6,
+   7.39
+  ],
+  "rotation_pyr": [
+   0,
+   0,
+   0
+  ],
+  "mesh": "SM_SCAR17S"
+ },
+ "Grip_Socket": {
+  "location_cm": [
+   0.0,
+   36.6,
+   -0.09
+  ],
+  "rotation_pyr": [
+   0,
+   0,
+   0
+  ],
+  "mesh": "SM_SCAR17S"
+ },
+ "TacticalSocket": {
+  "location_cm": [
+   -3.48,
+   40.6,
+   3.8
+  ],
+  "rotation_pyr": [
+   0,
+   0,
+   -90
+  ],
+  "mesh": "SM_SCAR17S"
+ },
+ "MagazineSocket": {
+  "location_cm": [
+   0.0,
+   11.9,
+   1.5
+  ],
+  "rotation_pyr": [
+   0,
+   0,
+   0
+  ],
+  "mesh": "SM_SCAR17S"
+ },
+ "Chamber": {
+  "location_cm": [
+   0.0,
+   18.6,
+   4.2
+  ],
+  "rotation_pyr": [
+   0,
+   0,
+   0
+  ],
+  "mesh": "SM_SCAR17S"
+ },
+ "EjectionPort": {
+  "location_cm": [
+   -2.6,
+   16.85,
+   4.7
+  ],
+  "rotation_pyr": [
+   0,
+   0,
+   -90
+  ],
+  "mesh": "SM_SCAR17S"
+ },
+ "HandPose_R": {
+  "location_cm": [
+   0.0,
+   -1.4,
+   -3.8
+  ],
+  "rotation_pyr": [
+   0,
+   0,
+   0
+  ],
+  "mesh": "SM_SCAR17S"
+ },
+ "HandPose_L": {
+  "location_cm": [
+   0.0,
+   35.6,
+   -0.6
+  ],
+  "rotation_pyr": [
+   0,
+   0,
+   0
+  ],
+  "mesh": "SM_SCAR17S"
+ },
+ "Stock": {
+  "location_cm": [
+   0.0,
+   -35.59,
+   1.2
+  ],
+  "rotation_pyr": [
+   0,
+   0,
+   0
+  ],
+  "mesh": "SM_SCAR17S"
+ },
+ "StockHinge": {
+  "location_cm": [
+   -2.4,
+   -3.0,
+   3.2
+  ],
+  "rotation_pyr": [
+   0,
+   0,
+   0
+  ],
+  "mesh": "SM_SCAR17S"
+ }
+}

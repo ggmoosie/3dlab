@@ -1,0 +1,294 @@
+{
+ "item": "SCAR17S",
+ "variant": "FN SCAR 17S NRCH, 16.25 in, 7.62x51 (FDE / Black / Camo skins)",
+ "category": "weapon",
+ "frame": "UE cm = G mm / 10; G = B - ORIGIN_B (origin at the grip top); +Y muzzle, +X gun-left, +Z up",
+ "meshes": {
+  "SM_SCAR17S_Upper": {
+   "tex": {
+    "BaseColor": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Upper_BaseColor.png",
+    "Normal": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Upper_Normal.png",
+    "ORM": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Upper_ORM.png",
+    "Mask": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Upper_Mask.png",
+    "Label_Camo": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Upper_Label_Camo.png",
+    "Label_None": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Upper_Label_None.png"
+   },
+   "lods": [
+    "SM_SCAR17S_Upper_LOD1",
+    "SM_SCAR17S_Upper_LOD2"
+   ],
+   "ucx": [
+    "UCX_SM_SCAR17S_Upper_00",
+    "UCX_SM_SCAR17S_Upper_01"
+   ]
+  },
+  "SM_SCAR17S_Barrel": {
+   "tex": {
+    "BaseColor": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Barrel_BaseColor.png",
+    "Normal": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Barrel_Normal.png",
+    "ORM": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Barrel_ORM.png",
+    "Mask": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Barrel_Mask.png"
+   },
+   "lods": [
+    "SM_SCAR17S_Barrel_LOD1",
+    "SM_SCAR17S_Barrel_LOD2"
+   ],
+   "ucx": [
+    "UCX_SM_SCAR17S_Barrel_00"
+   ]
+  },
+  "SM_SCAR17S_Muzzle": {
+   "tex": {
+    "BaseColor": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Muzzle_BaseColor.png",
+    "Normal": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Muzzle_Normal.png",
+    "ORM": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Muzzle_ORM.png",
+    "Mask": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Muzzle_Mask.png"
+   },
+   "lods": [],
+   "ucx": [
+    "UCX_SM_SCAR17S_Muzzle_00"
+   ]
+  },
+  "SM_SCAR17S_Bolt": {
+   "tex": {
+    "BaseColor": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Bolt_BaseColor.png",
+    "Normal": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Bolt_Normal.png",
+    "ORM": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Bolt_ORM.png",
+    "Mask": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Bolt_Mask.png"
+   },
+   "lods": [
+    "SM_SCAR17S_Bolt_LOD1",
+    "SM_SCAR17S_Bolt_LOD2"
+   ],
+   "ucx": [
+    "UCX_SM_SCAR17S_Bolt_00"
+   ]
+  },
+  "SM_SCAR17S_ChargingHandle": {
+   "tex": {
+    "BaseColor": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_ChargingHandle_BaseColor.png",
+    "Normal": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_ChargingHandle_Normal.png",
+    "ORM": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_ChargingHandle_ORM.png",
+    "Mask": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_ChargingHandle_Mask.png"
+   },
+   "lods": [],
+   "ucx": [
+    "UCX_SM_SCAR17S_ChargingHandle_00"
+   ]
+  },
+  "SM_SCAR17S_Lower": {
+   "tex": {
+    "BaseColor": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Lower_BaseColor.png",
+    "Normal": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Lower_Normal.png",
+    "ORM": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Lower_ORM.png",
+    "Mask": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Lower_Mask.png",
+    "Label_Camo": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Lower_Label_Camo.png",
+    "Label_None": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Lower_Label_None.png"
+   },
+   "lods": [
+    "SM_SCAR17S_Lower_LOD1",
+    "SM_SCAR17S_Lower_LOD2"
+   ],
+   "ucx": [
+    "UCX_SM_SCAR17S_Lower_00",
+    "UCX_SM_SCAR17S_Lower_01"
+   ]
+  },
+  "SM_SCAR17S_Grip": {
+   "tex": {
+    "BaseColor": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Grip_BaseColor.png",
+    "Normal": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Grip_Normal.png",
+    "ORM": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Grip_ORM.png",
+    "Mask": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Grip_Mask.png",
+    "Label_Camo": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Grip_Label_Camo.png",
+    "Label_None": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Grip_Label_None.png"
+   },
+   "lods": [
+    "SM_SCAR17S_Grip_LOD1",
+    "SM_SCAR17S_Grip_LOD2"
+   ],
+   "ucx": [
+    "UCX_SM_SCAR17S_Grip_00"
+   ]
+  },
+  "SM_SCAR17S_Stock": {
+   "tex": {
+    "BaseColor": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Stock_BaseColor.png",
+    "Normal": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Stock_Normal.png",
+    "ORM": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Stock_ORM.png",
+    "Mask": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Stock_Mask.png",
+    "Label_Camo": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Stock_Label_Camo.png",
+    "Label_None": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Stock_Label_None.png"
+   },
+   "lods": [
+    "SM_SCAR17S_Stock_LOD1",
+    "SM_SCAR17S_Stock_LOD2"
+   ],
+   "ucx": [
+    "UCX_SM_SCAR17S_Stock_00",
+    "UCX_SM_SCAR17S_Stock_01"
+   ]
+  },
+  "SM_SCAR17S_Mag": {
+   "tex": {
+    "BaseColor": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Mag_BaseColor.png",
+    "Normal": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Mag_Normal.png",
+    "ORM": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Mag_ORM.png",
+    "Mask": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Mag_Mask.png"
+   },
+   "lods": [
+    "SM_SCAR17S_Mag_LOD1",
+    "SM_SCAR17S_Mag_LOD2"
+   ],
+   "ucx": [
+    "UCX_SM_SCAR17S_Mag_00"
+   ]
+  },
+  "SM_SCAR17S_Round": {
+   "tex": {
+    "BaseColor": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Round_BaseColor.png",
+    "Normal": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Round_Normal.png",
+    "ORM": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Round_ORM.png",
+    "Mask": "/home/user/3dlab/guns/scar17s/textures/T_SCAR17S_Round_Mask.png"
+   },
+   "lods": [],
+   "ucx": []
+  }
+ },
+ "item_mesh": "SM_SCAR17S (merged, no magazine)",
+ "tris": {
+  "SM_SCAR17S_Upper": 15320,
+  "SM_SCAR17S_Upper_LOD1": 6894,
+  "SM_SCAR17S_Upper_LOD2": 2756,
+  "SM_SCAR17S_Barrel": 3660,
+  "SM_SCAR17S_Barrel_LOD1": 1646,
+  "SM_SCAR17S_Barrel_LOD2": 658,
+  "SM_SCAR17S_Muzzle": 1996,
+  "SM_SCAR17S_Bolt": 2600,
+  "SM_SCAR17S_Bolt_LOD1": 1170,
+  "SM_SCAR17S_Bolt_LOD2": 670,
+  "SM_SCAR17S_ChargingHandle": 1138,
+  "SM_SCAR17S_Lower": 8884,
+  "SM_SCAR17S_Lower_LOD1": 3996,
+  "SM_SCAR17S_Lower_LOD2": 1598,
+  "SM_SCAR17S_Grip": 2180,
+  "SM_SCAR17S_Grip_LOD1": 980,
+  "SM_SCAR17S_Grip_LOD2": 392,
+  "SM_SCAR17S_Stock": 7430,
+  "SM_SCAR17S_Stock_LOD1": 3342,
+  "SM_SCAR17S_Stock_LOD2": 1336,
+  "SM_SCAR17S_Mag": 3724,
+  "SM_SCAR17S_Mag_LOD1": 1674,
+  "SM_SCAR17S_Mag_LOD2": 670,
+  "SM_SCAR17S_Round": 520,
+  "SM_SCAR17S": 43208,
+  "SM_SCAR17S_LOD1": 19442,
+  "SM_SCAR17S_LOD2": 7776
+ },
+ "lod0_total": 47452,
+ "variants": {
+  "FDE": {
+   "Upper": "MI_SCAR17S_Upper_FDE",
+   "Lower": "MI_SCAR17S_Lower_FDE",
+   "Grip": "MI_SCAR17S_Grip_FDE",
+   "Stock": "MI_SCAR17S_Stock_FDE"
+  },
+  "Black": {
+   "Upper": "MI_SCAR17S_Upper_Black",
+   "Lower": "MI_SCAR17S_Lower_Black",
+   "Grip": "MI_SCAR17S_Grip_Black",
+   "Stock": "MI_SCAR17S_Stock_Black"
+  },
+  "Camo": {
+   "Upper": "MI_SCAR17S_Upper_Camo",
+   "Lower": "MI_SCAR17S_Lower_Camo",
+   "Grip": "MI_SCAR17S_Grip_Camo",
+   "Stock": "MI_SCAR17S_Stock_Camo"
+  }
+ },
+ "variant_params": {
+  "FDE": {
+   "ColorA": [
+    0.4,
+    0.31,
+    0.19
+   ],
+   "RoughA": 0.52,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.33,
+    0.265,
+    0.17
+   ],
+   "RoughB": 0.64,
+   "MetalB": 0.0,
+   "LabelRough": 0.6,
+   "WearAmount": 0.35,
+   "Dirt": 0.45
+  },
+  "Black": {
+   "ColorA": [
+    0.03,
+    0.03,
+    0.032
+   ],
+   "RoughA": 0.46,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.032,
+    0.031,
+    0.03
+   ],
+   "RoughB": 0.62,
+   "MetalB": 0.0,
+   "LabelRough": 0.6,
+   "WearAmount": 0.42,
+   "Dirt": 0.35
+  },
+  "Camo": {
+   "ColorA": [
+    0.4,
+    0.31,
+    0.19
+   ],
+   "RoughA": 0.52,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.33,
+    0.265,
+    0.17
+   ],
+   "RoughB": 0.64,
+   "MetalB": 0.0,
+   "LabelRough": 0.62,
+   "WearAmount": 0.3,
+   "Dirt": 0.45
+  }
+ },
+ "steel_params": {
+  "ColorA": [
+   0.5,
+   0.5,
+   0.5
+  ],
+  "RoughA": 0.4,
+  "MetalA": 0.0,
+  "ColorB": [
+   0.5,
+   0.5,
+   0.5
+  ],
+  "RoughB": 0.4,
+  "MetalB": 0.0,
+  "LabelRough": 0.5,
+  "WearAmount": 0.55,
+  "Dirt": 0.4
+ },
+ "sockets": "sockets/SM_SCAR17S_sockets.json",
+ "mechanism": "sockets/SM_SCAR17S_mechanism.json",
+ "textures": {
+  "normal": "OpenGL (flip green in UE)",
+  "ORM": "linear",
+  "Mask": "linear RGBA (R anodised, G polymer, B print, A wear)"
+ }
+}

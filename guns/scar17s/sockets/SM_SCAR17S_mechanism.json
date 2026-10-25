@@ -1,0 +1,32 @@
+{
+ "SM_SCAR17S_Bolt": {
+  "axis_ue": [
+   0,
+   -1,
+   0
+  ],
+  "travel_cm": 11.8,
+  "pivot": "assembled pose",
+  "linked_to": null
+ },
+ "SM_SCAR17S_ChargingHandle": {
+  "axis_ue": [
+   0,
+   -1,
+   0
+  ],
+  "travel_cm": 25.5,
+  "pivot": "assembled pose (forward)",
+  "linked_to": "SM_SCAR17S_Bolt (pulls it back; does not reciprocate when firing: NRCH)"
+ },
+ "SM_SCAR17S_Stock": {
+  "axis_ue": "vertical through StockHinge",
+  "angle_deg": -180,
+  "pivot": "StockHinge",
+  "note": "folds to the gun's right; rotate about +Z (UE) at StockHinge"
+ },
+ "SM_SCAR17S_Mag": {
+  "socket": "MagazineSocket",
+  "note": "drops along -Z (UE)"
+ }
+}
