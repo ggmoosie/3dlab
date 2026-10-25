@@ -23,7 +23,7 @@ for f in sorted(glob.glob(os.path.join(d, "*.fbx"))):
         print("FBX", line)
         if o.name.startswith("UCX_"):
             o.hide_set(True)
-    sys.argv = ["blender", "--", "--per-object-float"]
+    sys.argv = ["blender", "--", "--per-object-float"] + os.environ.get("QC_EXTRA", "").split()
     try:
         runpy.run_path(os.path.join(os.path.dirname(os.path.abspath(__file__)), "mesh_qc.py"), run_name="__main__")
     except SystemExit as e:

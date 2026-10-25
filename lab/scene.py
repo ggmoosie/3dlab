@@ -29,6 +29,7 @@ def link(obj, col):
 
 
 def bounds(objs):
+    bpy.context.view_layer.update()                  # world matrices are stale until the depsgraph updates
     pts = [o.matrix_world @ Vector(c) for o in objs for c in o.bound_box]
     lo = Vector((min(p.x for p in pts), min(p.y for p in pts), min(p.z for p in pts)))
     hi = Vector((max(p.x for p in pts), max(p.y for p in pts), max(p.z for p in pts)))
@@ -106,11 +107,18 @@ def camera(target, dist, yaw_deg=-35, pitch_deg=18, lens=85, name="Cam"):
 
 
 def frame(objs, yaw=-35, pitch=18, lens=85, fill=0.72, name="Cam", aspect=1.0):
-    """Camera that fits objs at the given angle (bounding sphere fit)."""
+    """Camera that fits objs at the given angle. aspect = height/width of the render; wide shots fit width and
+    height separately (a bounding sphere would leave a lineup tiny)."""
     lo, hi = bounds(objs)
-    c, r = (lo + hi) / 2, (hi - lo).length / 2
-    fov = 2 * math.atan(18 / lens) * min(1.0, aspect)   # 36 mm sensor across the wider side
-    return camera(c, r / math.sin(fov / 2 * fill), yaw, pitch, lens, name)
+    c, d = (lo + hi) / 2, hi - lo
+    hf = math.atan(18 / lens)                          # half horizontal fov (36 mm sensor across the width)
+    vf = math.atan(18 * aspect / lens)
+    y = math.radians(yaw)
+    across = abs(d.x * math.cos(y)) + abs(d.y * math.sin(y))      # width seen by the camera
+    deep = abs(d.x * math.sin(y)) + abs(d.y * math.cos(y))
+    up = d.z * math.cos(math.radians(pitch)) + deep * math.sin(math.radians(pitch))
+    dist = max(across / 2 / math.tan(hf), up / 2 / math.tan(vf)) / fill + deep / 2
+    return camera(c, dist, yaw, pitch, lens, name)
 
 
 def render(path, res=1024, samples=64, transparent=False, res_y=None):

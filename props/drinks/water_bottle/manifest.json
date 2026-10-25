@@ -1,0 +1,245 @@
+{
+ "item": "WaterBottle",
+ "replaces_rows": [
+  "Water",
+  "PlasticBottle",
+  "UsedWaterBottle"
+ ],
+ "category": "drinks",
+ "clip": "A_Consume_Drink_TwistBottle",
+ "dims_cm": [
+  6.5,
+  6.5,
+  22.0
+ ],
+ "real_object": "500 mL PET water bottle, 28 mm PCO neck finish",
+ "pivot": "base centre, +Z up",
+ "parts": {
+  "SM_WaterBottle_Cap": {
+   "pivot": "cap bottom centre on the neck axis",
+   "rest_location_cm": [
+    0,
+    0,
+    20.6
+   ],
+   "opens": "about local Z: 2 pulls x 100 deg, lifts 0.5 cm (contract), stays in the left hand"
+  },
+  "SM_WaterBottle_Liquid": {
+   "pivot": "base centre",
+   "note": "fill level 17.8 cm; scale Z or swap for drained states"
+  }
+ },
+ "material_slots": {
+  "SM_WaterBottle": [
+   "M_Lab_Glass (PET)",
+   "MI_WaterBottle_<V> (label band)"
+  ],
+  "SM_WaterBottle_Cap": [
+   "MI_WaterBottle_<V> (layer A = cap colour)"
+  ],
+  "SM_WaterBottle_Liquid": [
+   "M_Lab_Liquid \u2192 MI_WaterBottle_Liquid_<V>"
+  ]
+ },
+ "tris": {
+  "SM_WaterBottle": 3440,
+  "SM_WaterBottle_Liquid": 1216,
+  "SM_WaterBottle_Cap": 1024,
+  "SM_WaterBottle_LOD1": 1720,
+  "SM_WaterBottle_LOD2": 860
+ },
+ "textures": {
+  "size": 2048,
+  "normal": "OpenGL (flip green in UE)",
+  "variants": {
+   "HudsonSpring": "T_WaterBottle_Label_HudsonSpring.png",
+   "PurePeak": "T_WaterBottle_Label_PurePeak.png",
+   "ValueFresh": "T_WaterBottle_Label_ValueFresh.png",
+   "HydraGlacier": "T_WaterBottle_Label_HydraGlacier.png",
+   "HydraFruitPunch": "T_WaterBottle_Label_HydraFruitPunch.png",
+   "Refill": "T_WaterBottle_Label_Refill.png"
+  }
+ },
+ "variant_params": {
+  "HudsonSpring": {
+   "ColorA": [
+    0.03,
+    0.17,
+    0.55
+   ],
+   "RoughA": 0.45,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughB": 0.4,
+   "MetalB": 0.0,
+   "LabelRough": 0.35,
+   "WearAmount": 0.35,
+   "Dirt": 0.25
+  },
+  "PurePeak": {
+   "ColorA": [
+    0.85,
+    0.85,
+    0.87
+   ],
+   "RoughA": 0.45,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughB": 0.4,
+   "MetalB": 0.0,
+   "LabelRough": 0.35,
+   "WearAmount": 0.35,
+   "Dirt": 0.25
+  },
+  "ValueFresh": {
+   "ColorA": [
+    0.85,
+    0.85,
+    0.86
+   ],
+   "RoughA": 0.45,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughB": 0.4,
+   "MetalB": 0.0,
+   "LabelRough": 0.35,
+   "WearAmount": 0.35,
+   "Dirt": 0.25
+  },
+  "HydraGlacier": {
+   "ColorA": [
+    0.02,
+    0.2,
+    0.75
+   ],
+   "RoughA": 0.45,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughB": 0.4,
+   "MetalB": 0.0,
+   "LabelRough": 0.25,
+   "WearAmount": 0.35,
+   "Dirt": 0.25
+  },
+  "HydraFruitPunch": {
+   "ColorA": [
+    0.75,
+    0.05,
+    0.05
+   ],
+   "RoughA": 0.45,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughB": 0.4,
+   "MetalB": 0.0,
+   "LabelRough": 0.25,
+   "WearAmount": 0.35,
+   "Dirt": 0.25
+  },
+  "Refill": {
+   "ColorA": [
+    0.08,
+    0.42,
+    0.12
+   ],
+   "RoughA": 0.45,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "RoughB": 0.4,
+   "MetalB": 0.0,
+   "LabelRough": 0.6,
+   "WearAmount": 0.6,
+   "Dirt": 0.6
+  }
+ },
+ "liquid_params": {
+  "HudsonSpring": {
+   "LiquidTint": [
+    0.92,
+    0.96,
+    1.0
+   ],
+   "LiquidMurk": 0.0
+  },
+  "PurePeak": {
+   "LiquidTint": [
+    0.92,
+    0.96,
+    1.0
+   ],
+   "LiquidMurk": 0.0
+  },
+  "ValueFresh": {
+   "LiquidTint": [
+    0.92,
+    0.96,
+    1.0
+   ],
+   "LiquidMurk": 0.0
+  },
+  "HydraGlacier": {
+   "LiquidTint": [
+    0.25,
+    0.65,
+    1.0
+   ],
+   "LiquidMurk": 0.0
+  },
+  "HydraFruitPunch": {
+   "LiquidTint": [
+    0.95,
+    0.18,
+    0.15
+   ],
+   "LiquidMurk": 0.0
+  },
+  "Refill": {
+   "LiquidTint": [
+    0.78,
+    0.74,
+    0.55
+   ],
+   "LiquidMurk": 0.35
+  }
+ },
+ "glass_params": {
+  "PET": {
+   "Tint": [
+    0.96,
+    0.98,
+    0.99
+   ],
+   "Roughness": 0.06,
+   "IOR": 1.08
+  }
+ },
+ "collision": "UCX_SM_WaterBottle_00 (convex hull)",
+ "lods": [
+  "SM_WaterBottle_LOD1 (50%)",
+  "SM_WaterBottle_LOD2 (25%)"
+ ]
+}

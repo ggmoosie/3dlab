@@ -130,3 +130,33 @@ def dist_to_poly(x, y, poly):
         t = np.clip(((x - a[0]) * ab[0] + (y - a[1]) * ab[1]) / max(float(ab @ ab), 1e-12), 0, 1)
         d = np.minimum(d, np.hypot(x - (a[0] + t * ab[0]), y - (a[1] + t * ab[1])))
     return d
+
+
+# ---------------------------------------------------------------- UV-space helpers (lathe islands)
+def uv_grid(S):
+    j, i = np.meshgrid(np.arange(S), np.arange(S))
+    return ((j + 0.5) / S).astype(np.float32), (1 - (i + 0.5) / S).astype(np.float32)
+
+
+def in_rect(u, v, r):
+    return (u >= r[0]) & (u < r[2]) & (v >= r[1]) & (v < r[3])
+
+
+def side_map(u, v, rect, prof):
+    """For a lathe 'side' island: texel → (around_mm at the local radius, arc_mm, r_mm, z_mm). prof in mm."""
+    acc = [0.0]
+    for p, q in zip(prof, prof[1:]):
+        acc.append(acc[-1] + float(np.hypot(q[0] - p[0], q[1] - p[1])))
+    u0, v0, u1, v1 = rect
+    s = (v - v0) / (v1 - v0) * acc[-1]
+    r = np.interp(s, acc, [p[0] for p in prof])
+    z = np.interp(s, acc, [p[1] for p in prof])
+    th = (u - u0) / (u1 - u0) * 2 * np.pi
+    return th, s, r, z
+
+
+def disc_map(u, v, rect, rmax, flip=False):
+    u0, v0, u1, v1 = rect
+    x = ((u - u0) / (u1 - u0) - 0.5) * 2 * rmax * (-1 if flip else 1)
+    y = ((v - v0) / (v1 - v0) - 0.5) * 2 * rmax
+    return x, y

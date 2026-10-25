@@ -127,3 +127,36 @@ def unwrap_into(o, rect, margin=0.02, angle=66):
     k = min(u1 - u0, v1 - v0) / span
     for d in uv:
         d.uv = (u0 + (d.uv.x - lo_u) * k, v0 + (d.uv.y - lo_v) * k)
+
+
+def fix_zero_uv(o, rect, eps=1e-10):
+    """Faces with (near) zero UV area (e.g. solidify rims) get a planar box projection packed into rect."""
+    import bmesh
+    bm = bmesh.new(); bm.from_mesh(o.data)
+    uv = bm.loops.layers.uv.active
+    bad = []
+    for f in bm.faces:
+        a = 0.0
+        ls = f.loops
+        for i in range(1, len(ls) - 1):
+            p0, p1, p2 = ls[0][uv].uv, ls[i][uv].uv, ls[i + 1][uv].uv
+            a += abs((p1.x - p0.x) * (p2.y - p0.y) - (p2.x - p0.x) * (p1.y - p0.y)) / 2
+        if a < eps:
+            bad.append(f)
+    if bad:
+        u0, v0, u1, v1 = rect
+        n = len(bad)
+        cols = max(1, int(math.ceil(math.sqrt(n))))
+        cw, ch = (u1 - u0) / cols, (v1 - v0) / cols
+        for k, f in enumerate(bad):                       # each bad face gets its own little cell
+            cu, cv = u0 + (k % cols) * cw, v0 + (k // cols) * ch
+            nrm = f.normal
+            ax = max(range(3), key=lambda i: abs(nrm[i]))
+            a1, a2 = [i for i in range(3) if i != ax]
+            pts = [(l.vert.co[a1], l.vert.co[a2]) for l in f.loops]
+            lo1, lo2 = min(p[0] for p in pts), min(p[1] for p in pts)
+            sp = max(max(p[0] for p in pts) - lo1, max(p[1] for p in pts) - lo2, 1e-9)
+            for l, (x, y) in zip(f.loops, pts):
+                l[uv].uv = (cu + cw * 0.1 + 0.8 * cw * (x - lo1) / sp, cv + ch * 0.1 + 0.8 * ch * (y - lo2) / sp)
+    bm.to_mesh(o.data); bm.free()
+    return len(bad)

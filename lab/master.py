@@ -142,21 +142,29 @@ def material(name, tex, params, label=None, uv="UVMap"):
     return m
 
 
-def glass(name, tint=(0.9, 0.95, 0.92), rough=0.03, ior=1.5, normal=None):
-    """Clear glass / PET. UE: M_Lab_Glass (translucent, surface-forward)."""
+def glass(name, tint=(0.9, 0.95, 0.92), rough=0.03, ior=1.5, normal=None, orm=None):
+    """Clear glass / PET / liquid. UE: M_Lab_Glass (translucent, surface-forward). orm: roughness from G, scaled by
+    `rough` as the floor (scuffs only add)."""
     m = bpy.data.materials.get(name) or bpy.data.materials.new(name)
     m.use_nodes = True
-    b = m.node_tree.nodes["Principled BSDF"]
+    N, L = m.node_tree.nodes, m.node_tree.links
+    b = N["Principled BSDF"]
     b.inputs["Base Color"].default_value = (*tint, 1)
     b.inputs["Roughness"].default_value = rough
     b.inputs["IOR"].default_value = ior
     b.inputs["Transmission Weight"].default_value = 1.0
     if normal:
-        N, L = m.node_tree.nodes, m.node_tree.links
         t = N.new("ShaderNodeTexImage")
         t.image = _img(normal, "Non-Color")
         nm = N.new("ShaderNodeNormalMap")
         L.new(t.outputs[0], nm.inputs["Color"]); L.new(nm.outputs[0], b.inputs["Normal"])
+    if orm:
+        t = N.new("ShaderNodeTexImage")
+        t.image = _img(orm, "Non-Color")
+        sep, mx = N.new("ShaderNodeSeparateColor"), N.new("ShaderNodeMath")
+        mx.operation = "MAXIMUM"
+        mx.inputs[1].default_value = rough
+        L.new(t.outputs[0], sep.inputs[0]); L.new(sep.outputs[1], mx.inputs[0]); L.new(mx.outputs[0], b.inputs["Roughness"])
     return m
 
 
