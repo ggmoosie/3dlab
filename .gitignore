@@ -6,3 +6,5 @@ refs_user/
 guns/*/review/compare_*.jpg
 guns/*/review/cmp_*_sil.png
 guns/*/review/regions_*.jpg
+guns/**/review/compare_*.jpg
+guns/**/review/regions_*.jpg
