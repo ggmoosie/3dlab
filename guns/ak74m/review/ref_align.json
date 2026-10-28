@@ -1,0 +1,12 @@
+{
+ "iou_raw": 0.4373,
+ "iou_aligned": 0.9727,
+ "params": {
+  "roll_deg": 0.1568,
+  "scale": 1.01,
+  "tx_px": 19.6911,
+  "ty_px": 26.7386,
+  "persp_x": -0.4293,
+  "persp_y": -0.0242
+ }
+}
