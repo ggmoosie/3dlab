@@ -1,0 +1,21 @@
+{
+ "item": "PlateCarrier",
+ "tris": 2740,
+ "atlas": 2048,
+ "texel_per_mm": 3.048,
+ "panels": [
+  "front",
+  "back",
+  "cummerbund_R",
+  "cummerbund_L",
+  "strap_R",
+  "strap_L",
+  "drag_handle"
+ ],
+ "textures": {
+  "BaseColor": "textures/T_PlateCarrier_BaseColor.png",
+  "Normal": "textures/T_PlateCarrier_Normal.png",
+  "ORM": "textures/T_PlateCarrier_ORM.png"
+ },
+ "note": "Normal = OpenGL (flip green in UE). ORM = AO/Roughness/Metallic. Layout v0 (generic, no branding)."
+}
