@@ -115,20 +115,42 @@ def receiver(X, Y, Z):
     return slab(R.prof("receiver")(Y, Z), X, HW["receiver"], 1.6)
 
 
+# trigger-guard centre line read off the left photo (px): front leg x 765, flat bottom row 347, rear leg x 820
+TG_PATH = [(765.5, 304), (765.5, 336), (767, 341), (771, 344.5), (777, 346.5), (800, 347.5), (812, 346.5), (817, 343.5),
+           (819.5, 339), (820.5, 333), (821, 304)]
+
+
 def tguard(X, Y, Z):
-    return slab(R.prof("tguard", blur=0.3)(Y, Z), X, HW["trigger_guard"], 0.6)
+    """stamped trigger guard: a 1.8 mm strip, 13 mm wide, along the measured loop (a continuous band, never traced)"""
+    P = [bp(*q) for q in TG_PATH]
+    d2 = np.full_like(Y, 1e3)
+    for a, b in zip(P, P[1:]):
+        d2 = np.minimum(d2, S.capsule2(Y, Z, a, b, 0.9))
+    (ya, za), (yb, zb) = bp(819.5, 304), bp(819.5, 336)
+    d2 = np.minimum(d2, S.rect2(Y, Z, (min(ya, yb) - 2.2, zb), (max(ya, yb) + 1.6, za), 0.8))   # wide rear tang into the receiver
+    (yc, zc), (yd, zd) = bp(766, 303), bp(819, 307)
+    d2 = np.minimum(d2, S.rect2(Y, Z, (min(yc, yd), zd), (max(yc, yd), zc), 0.6))           # top flange under the receiver
+    return S.extrude(d2, np.abs(X), -HW["trigger_guard"], HW["trigger_guard"], 0.6)
+
+
+def trigger(X, Y, Z):
+    return slab(R.prof("trigger", blur=0.3)(Y, Z), X, 3.0, 0.8)
+
+
+def magcatch(X, Y, Z):
+    return slab(R.prof("magcatch", blur=0.4)(Y, Z), X, 7.0, 1.0)
 
 
 def grip(X, Y, Z):
-    return slab(R.prof("grip")(Y, Z), X, HW["grip"], 9.0)
+    return slab(R.prof("grip", blur=1.4)(Y, Z), X, HW["grip"], 9.0)
 
 
 def mag(X, Y, Z):
-    return slab(R.prof("mag")(Y, Z), X, HW["mag"], 4.0)
+    return slab(R.prof("mag", blur=1.4)(Y, Z), X, HW["mag"], 4.0)
 
 
 def stock(X, Y, Z):
-    return slab(R.prof("stock")(Y, Z), X, HW["stock"], 9.0)
+    return slab(R.prof("stock", blur=1.4)(Y, Z), X, HW["stock"], 9.0)
 
 
 # ------------------------------------------------------------------ table
@@ -137,7 +159,7 @@ def table():
     for n, fn, mat, h in (("brake", brake, "park", 0.25), ("fsb", fsb, "park", 0.25), ("barrel", barrel, "park", 0.3),
                           ("rod", rod, "park", 0.25), ("gasblock", gasblock, "park", 0.25), ("gastube", gastube, "park", 0.3),
                           ("hg_upper", hg_upper, "poly", 0.4), ("hg_lower", hg_lower, "poly", 0.4), ("rsight", rsight, "park", 0.25),
-                          ("dcover", dcover, "steel", 0.35), ("receiver", receiver, "steel", 0.4), ("tguard", tguard, "steel", 0.25),
+                          ("dcover", dcover, "steel", 0.35), ("receiver", receiver, "steel", 0.4), ("tguard", tguard, "steel", 0.2), ("trigger", trigger, "steel", 0.2), ("magcatch", magcatch, "steel", 0.2),
                           ("grip", grip, "poly", 0.4), ("mag", mag, "poly", 0.4), ("stock", stock, "poly", 0.5)):
         y0, y1, z0, z1 = R.extent(n)
         xh = max(v for k, v in HW.items()) + 4
