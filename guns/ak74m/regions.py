@@ -35,7 +35,7 @@ def main():
         tiles = [im.crop(box).resize((w * k, h * k), Image.LANCZOS) for im in (ph, pr, md)] + [df.crop(box).resize((w * k, h * k), Image.NEAREST)]
         m = np.asarray(fg)[box[1]:box[3], box[0]:box[2]]; a = al[box[1]:box[3], box[0]:box[2]]
         iou = (m & a).sum() / max((m | a).sum(), 1)
-        rows.append((f"{name}  (region IoU {iou:.3f})", tiles))
+        rows.append((f"{name}  (region IoU {iou:.3f})", tiles)); print(f"REGION {name:32s} {iou:.3f}")
     W = max(sum(t.width for t in ts) + 30 for _, ts in rows)
     H = sum(ts[0].height + 26 for _, ts in rows) + 30
     sh = Image.new("RGB", (W, H), (30, 30, 30)); d = ImageDraw.Draw(sh)

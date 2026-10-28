@@ -64,7 +64,7 @@ def apply(name, d, X, Y, Z):
 
 # ------------------------------------------------------------------ the feature table (spec counts in ak_spec.FEATURES)
 FEATURES = {
-    "brake": [dict(kind="groove", rect=(196, 262, 198, 295), depth=0.5)],                          # turned ring behind the windows
+    "compensator": [dict(kind="groove", rect=(196, 262, 198, 295), depth=0.5)],                          # turned ring behind the windows
     "fsb": [dict(kind="rivet", at=[(251, 292), (269, 291)], r=2.2, h=0.6)],                         # lug pins
     "gasblock": [dict(kind="rivet", at=[(346, 276), (366, 276)], r=2.4, h=0.6)],                    # 2 pin heads
     "hg_lower": [
@@ -73,7 +73,7 @@ FEATURES = {
     ],
     "receiver": [
         dict(kind="rivet", at=[(673, 294), (633, 276)], r=2.3, h=0.7),                             # front trunnion rivets
-        dict(kind="pocket", rect=(690, 289, 720, 300), depth=0.9, r=0.8),                           # oval mag-guide dimple
+        dict(kind="pocket", rect=(690, 289, 720, 300), depth=0.5, r=0.8),                           # oval mag-guide dimple
         dict(kind="rivet", at=[(751, 302), (766, 298), (808, 307)], r=3.0, h=0.8),                  # FCG + selector pins (through)
         dict(kind="boss", rect=(733, 283.5, 838, 304.5), h=2.2, side=1),                           # left side rail plate
         dict(kind="groove", rect=(745, 290, 828, 292), depth=0.8, side=1),                          # rail slot

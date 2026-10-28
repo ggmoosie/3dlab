@@ -1,0 +1,382 @@
+{
+ "frame": "B mm: bore z=0, muzzle face y=0, gun y<0, +x left",
+ "slots": {
+  "muzzle": {
+   "parent": "barrel",
+   "socket": "muzzle_thread",
+   "removable": true,
+   "envelope": {
+    "thread_r": 7.0,
+    "thread_len": 23.04008016032064
+   }
+  },
+  "barrel": {
+   "parent": "receiver",
+   "socket": "hg_rear_plate",
+   "removable": false
+  },
+  "front_sight": {
+   "parent": "barrel",
+   "socket": "fsb_seat",
+   "removable": false
+  },
+  "gas_block": {
+   "parent": "barrel",
+   "socket": "gas_port",
+   "removable": false
+  },
+  "cleaning_rod": {
+   "parent": "front_sight",
+   "socket": "fsb_seat",
+   "removable": true
+  },
+  "upper_handguard": {
+   "parent": "rear_sight",
+   "socket": "gastube_lever",
+   "removable": true,
+   "envelope": {
+    "y": [
+     -187.0881763527054,
+     -387.40480961923845
+    ],
+    "tube_axis_z": 26.5,
+    "tube_r": 9.4,
+    "max_hw": 20.0,
+    "note": "Zenit B-10 class: rail top, same tube + lever"
+   }
+  },
+  "lower_handguard": {
+   "parent": "barrel",
+   "socket": "hg_cap",
+   "removable": true,
+   "envelope": {
+    "y": [
+     -282.52204408817636,
+     -442.20841683366734
+    ],
+    "barrel_clear_r": 11.5,
+    "max_hw": 26.0,
+    "note": "Zenit B-11/B-30 class: drops in between cap and rear plate"
+   }
+  },
+  "rear_sight": {
+   "parent": "receiver",
+   "socket": "cover_front",
+   "removable": false
+  },
+  "dust_cover": {
+   "parent": "receiver",
+   "socket": "cover_latch",
+   "removable": true,
+   "envelope": {
+    "y": [
+     -442.20841683366734,
+     -697.3286573146293
+    ],
+    "inner_hw": 15.299999999999999,
+    "rail_z": 18.425350701402806,
+    "note": "Zenit B-33 class: same latch + rear sight notch"
+   }
+  },
+  "bcg": {
+   "parent": "receiver",
+   "socket": "carrier_rails",
+   "removable": true,
+   "travel": 130.0
+  },
+  "recoil": {
+   "parent": "receiver",
+   "socket": "cover_latch",
+   "removable": true
+  },
+  "fcg": {
+   "parent": "receiver",
+   "socket": "grip_mount",
+   "removable": false
+  },
+  "selector": {
+   "parent": "receiver",
+   "socket": "charging_handle",
+   "removable": false,
+   "anim": "rotate safe/auto/semi"
+  },
+  "grip": {
+   "parent": "receiver",
+   "socket": "grip_mount",
+   "removable": true
+  },
+  "stock": {
+   "parent": "receiver",
+   "socket": "stock_hinge",
+   "removable": true,
+   "anim": "fold left"
+  },
+  "magazine": {
+   "parent": "receiver",
+   "socket": "magwell",
+   "removable": true
+  },
+  "side_rail": {
+   "parent": "receiver",
+   "socket": "side_rail",
+   "removable": false,
+   "note": "optic mount"
+  },
+  "receiver": {
+   "parent": null,
+   "socket": null,
+   "removable": false
+  }
+ },
+ "sockets": {
+  "muzzle_thread": {
+   "pos": [
+    0.0,
+    -62.0,
+    0.0
+   ],
+   "axis": "+y"
+  },
+  "fsb_seat": {
+   "pos": [
+    0.0,
+    -118.11,
+    0.0
+   ],
+   "axis": "+y"
+  },
+  "gas_port": {
+   "pos": [
+    0.0,
+    -191.34,
+    26.5
+   ],
+   "axis": "+z"
+  },
+  "hg_cap": {
+   "pos": [
+    0.0,
+    -282.52,
+    0.0
+   ],
+   "axis": "-y"
+  },
+  "hg_rear_plate": {
+   "pos": [
+    0.0,
+    -442.21,
+    0.0
+   ],
+   "axis": "+y"
+  },
+  "gastube_lever": {
+   "pos": [
+    -12.0,
+    -393.4,
+    26.5
+   ],
+   "axis": "-x"
+  },
+  "cover_front": {
+   "pos": [
+    0.0,
+    -442.21,
+    18.43
+   ],
+   "axis": "+y"
+  },
+  "cover_latch": {
+   "pos": [
+    0.0,
+    -691.33,
+    30.0
+   ],
+   "axis": "+z"
+  },
+  "side_rail": {
+   "pos": [
+    17.4,
+    -596.23,
+    -15.59
+   ],
+   "axis": "+x"
+  },
+  "carrier_rails": {
+   "pos": [
+    0.0,
+    -470.0,
+    15.43
+   ],
+   "axis": "-y"
+  },
+  "charging_handle": {
+   "pos": [
+    -27.2,
+    -452.6,
+    21.0
+   ],
+   "axis": "-x"
+  },
+  "magwell": {
+   "pos": [
+    0.0,
+    -496.07,
+    -24.09
+   ],
+   "axis": "-z"
+  },
+  "grip_mount": {
+   "pos": [
+    0.0,
+    -657.64,
+    -38.27
+   ],
+   "axis": "-z"
+  },
+  "stock_hinge": {
+   "pos": [
+    15.2,
+    -697.33,
+    -11.34
+   ],
+   "axis": "+x"
+  }
+ },
+ "parts": {
+  "compensator": {
+   "slot": "muzzle",
+   "mat": "park",
+   "hollow": false
+  },
+  "barrel": {
+   "slot": "barrel",
+   "mat": "park",
+   "hollow": false
+  },
+  "fsb": {
+   "slot": "front_sight",
+   "mat": "park",
+   "hollow": false
+  },
+  "rod": {
+   "slot": "cleaning_rod",
+   "mat": "park",
+   "hollow": false
+  },
+  "gasblock": {
+   "slot": "gas_block",
+   "mat": "park",
+   "hollow": false
+  },
+  "gastube": {
+   "slot": "upper_handguard",
+   "mat": "park",
+   "hollow": false
+  },
+  "hg_upper": {
+   "slot": "upper_handguard",
+   "mat": "poly",
+   "hollow": false
+  },
+  "hg_lower": {
+   "slot": "lower_handguard",
+   "mat": "poly",
+   "hollow": true
+  },
+  "hg_cap": {
+   "slot": "lower_handguard",
+   "mat": "park",
+   "hollow": false
+  },
+  "receiver": {
+   "slot": "receiver",
+   "mat": "steel",
+   "hollow": true
+  },
+  "pins": {
+   "slot": "fcg",
+   "mat": "steel",
+   "hollow": false
+  },
+  "rsight": {
+   "slot": "rear_sight",
+   "mat": "park",
+   "hollow": false
+  },
+  "rs_slider": {
+   "slot": "rear_sight",
+   "mat": "steel",
+   "hollow": false
+  },
+  "gt_lever": {
+   "slot": "upper_handguard",
+   "mat": "steel",
+   "hollow": false
+  },
+  "dcover": {
+   "slot": "dust_cover",
+   "mat": "steel",
+   "hollow": true
+  },
+  "carrier": {
+   "slot": "bcg",
+   "mat": "steel",
+   "hollow": false
+  },
+  "bolt": {
+   "slot": "bcg",
+   "mat": "steel",
+   "hollow": false
+  },
+  "recoil": {
+   "slot": "recoil",
+   "mat": "steel",
+   "hollow": false
+  },
+  "hammer": {
+   "slot": "fcg",
+   "mat": "steel",
+   "hollow": false
+  },
+  "trigger": {
+   "slot": "fcg",
+   "mat": "steel",
+   "hollow": false
+  },
+  "tguard": {
+   "slot": "fcg",
+   "mat": "steel",
+   "hollow": false
+  },
+  "magcatch": {
+   "slot": "fcg",
+   "mat": "steel",
+   "hollow": false
+  },
+  "selector": {
+   "slot": "selector",
+   "mat": "steel",
+   "hollow": false
+  },
+  "grip": {
+   "slot": "grip",
+   "mat": "poly",
+   "hollow": false
+  },
+  "stock": {
+   "slot": "stock",
+   "mat": "poly",
+   "hollow": false
+  },
+  "sling_loop": {
+   "slot": "stock",
+   "mat": "steel",
+   "hollow": false
+  },
+  "mag": {
+   "slot": "magazine",
+   "mat": "poly",
+   "hollow": false
+  }
+ }
+}

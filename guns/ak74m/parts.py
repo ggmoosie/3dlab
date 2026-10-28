@@ -1,221 +1,74 @@
-"""parts.py - AK-74M high-poly parts as signed-distance fields in the B frame (mm) -> work/high.npz.
-Outline of every part = the profile-master silhouette (ak_ref.prof); cross-sections are real-world shapes: lathed round
-parts (brake, barrel, gas tube, rod), D-section dust cover, rounded polymer furniture, thin stamped trigger guard.
+"""parts.py - builds the AK-74M high-poly from the module registry -> work/high.npz + review/modules.json.
+Each mod_*.py lists PARTS rows: name, slot (iface.SLOTS), material, voxel h, outer field, optional inner cavity, bbox
+(traced part name or explicit (y0, y1, z0, z1)). Surface features (details.FEATURES) go on the OUTER field before the
+cavity is cut, so a pocket never punches through a 1 mm wall. Adding a module = adding a mod_*.py to MODULES.
 usage: .venv/bin/python guns/ak74m/parts.py [parts=a,b] [h_scale=1.0] [out=path]"""
-import os, sys, math
+import os, sys, json
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, "../.."))
 from lab import sdf as S
 import ak_ref as R
-import ak_spec as SP
+import ak_geo as G
 import details as DT
+import iface as I
+import mod_front, mod_handguard, mod_receiver, mod_bcg, mod_fcg, mod_furniture
 
+MODULES = (mod_front, mod_handguard, mod_receiver, mod_bcg, mod_fcg, mod_furniture)
 ARGS = dict(a.split("=", 1) for a in sys.argv[1:] if "=" in a)
 ONLY = ARGS["parts"].split(",") if "parts" in ARGS else None
 HS = float(ARGS.get("h_scale", 1.0))
-HW = SP.HW
-bp = R.bp
-MAT = dict(steel=0, poly=1, park=2)
 
 
-def lathe_photo(Y, Z, X, name, zc=0.0, rmax=99.0, smooth=1):
-    """round part: radius per photo column of the part's silhouette (about axis z = zc)"""
-    cr = R.column_radius(*_xr(name), name)
-    ys = np.array([c[0] for c in cr]); rs = np.array([min(c[1], rmax) for c in cr])
-    if smooth > 1:
-        rs = np.convolve(np.pad(rs, smooth // 2, mode="edge"), np.ones(smooth) / smooth, mode="valid")
-    o = np.argsort(ys); ys, rs = ys[o], rs[o]
-    rr = np.hypot(X, Z - zc)
-    r = np.interp(Y, ys, rs, left=-1, right=-1)
-    return np.maximum(rr - r, np.maximum(ys[0] - Y, Y - ys[-1]))
+def registry():
+    rows = [p for m in MODULES for p in m.PARTS]
+    names = [p["name"] for p in rows]
+    assert len(names) == len(set(names)), "duplicate part names"
+    assert all(p["slot"] in I.SLOTS for p in rows), [p["slot"] for p in rows if p["slot"] not in I.SLOTS]
+    return {p["name"]: p for p in rows}
 
 
-def _xr(name):
-    p = R.PARTS[name]
-    return min(q[0] for q in p), max(q[0] for q in p)
+def field(p):
+    outer, inner, n = p["outer"], p.get("inner"), p["name"]
+
+    def f(X, Y, Z):
+        d = DT.apply(n, outer(X, Y, Z), X, Y, Z)
+        return np.maximum(d, -inner(X, Y, Z)) if inner else d
+    return f
 
 
-def slab(P2, X, hw, r=0.8):
-    return S.rinter(P2, np.abs(X) - hw, r)
+def bounds(p):
+    y0, y1, z0, z1 = R.extent(p["trace"]) if "trace" in p else p["box"]
+    xh = p.get("xh", 28.0)
+    return (-xh, min(y0, y1) - 4, min(z0, z1) - 4), (xh, max(y0, y1) + 4, max(z0, z1) + 4)
 
 
-# ------------------------------------------------------------------ muzzle end
-def brake(X, Y, Z):
-    d = lathe_photo(Y, Z, X, "brake", zc=bp(0, 278.0)[1], rmax=14.0)
-    d = S.diff(d, S.cyl(X, Y, Z, "y", (0, 0), 3.4, -100, 5))                          # bore
-    y0, z0 = bp(170, 271); y1, z1 = bp(183.5, 285)                                    # window = the photo's hole bbox
-    d = S.rdiff(d, S.box(X, Y, Z, (-20, y1, z1), (20, y0, z0), 1.6), 0.5)           # two side windows (through)
-    d = S.rdiff(d, S.cyl(X, Y, Z, "y", (0, 0), 7.5, -4, 5), 0.6)                     # stepped front face
-    return d
-
-
-def fsb(X, Y, Z):
-    P2 = R.prof("fsb")(Y, Z)
-    _, zear = bp(0, 258)
-    hw = np.where(Z > zear, HW["fsb_ears"], HW["fsb"])
-    d = slab(P2, X, hw, 1.0)
-    gap = np.maximum.reduce([np.abs(X) - 3.4, zear + 2 - Z, -(np.abs(X) - 1.2)])     # U ears around the centre post
-    d = S.rdiff(d, gap, 0.5)
-    y, z = bp(263, 265)                                                             # big sight hole comes from the trace
-    d = S.diff(d, S.cyl(X, Y, Z, "x", (y, z), 2.4, -20, 20))                          # small pin hole (filled in the mask)
-    return d
-
-
-def barrel(X, Y, Z):
-    y0 = bp(276, 0)[0]; y1 = bp(565, 0)[0]
-    r = np.interp(Y, [y1, bp(345, 0)[0], y0], [9.6, 7.4, 7.3])
-    d = np.maximum(np.hypot(X, Z) - r, np.maximum(y1 - Y, Y - y0))
-    return S.diff(d, S.cyl(X, Y, Z, "y", (0, 0), 2.8, y1 - 5, y0 + 5))
-
-
-def rod(X, Y, Z):
-    _, z = bp(0, 291.6)                                                             # photo: rows 289.5-293.8
-    return S.cyl(X, Y, Z, "y", (0, z), 2.4, bp(558, 0)[0], bp(246, 0)[0], 1.0)
-
-
-def gasblock(X, Y, Z):
-    return slab(R.prof("gasblock")(Y, Z), X, HW["gas_block"], 3.0)
-
-
-def gastube(X, Y, Z):
-    cr = R.column_radius(*_xr("gastube"), "gastube")
-    zc = float(np.median([c[2] for c in cr]))
-    return lathe_photo(Y, Z, X, "gastube", zc=zc, rmax=HW["gas_tube"] + 1.5, smooth=3)
-
-
-# ------------------------------------------------------------------ handguards
-def hg_upper(X, Y, Z):
-    return slab(R.prof("hg_upper")(Y, Z), X, HW["hg_upper"], 8.0)
-
-
-def hg_lower(X, Y, Z):
-    return slab(R.prof("hg_lower")(Y, Z), X, HW["hg_lower"], 12.0)
-
-
-# ------------------------------------------------------------------ receiver group
-def rsight(X, Y, Z):
-    P2 = R.prof("rsight")(Y, Z)
-    _, zl = bp(0, 236)
-    hw = np.where(Z > zl, HW["rear_leaf"], HW["rear_sight_block"])
-    return slab(P2, X, hw, 1.0)
-
-
-def dcover(X, Y, Z):
-    """D-section: vertical sides, round top (radius = half width)"""
-    P2 = R.prof("dcover")(Y, Z)
-    hw = HW["dust_cover"]
-    cr = R.column_radius(*_xr("dcover"), "dcover")                                  # the cover's top follows the photo
-    ys = np.array([c[0] for c in cr]); o = np.argsort(ys)
-    from scipy.ndimage import median_filter, gaussian_filter1d
-    zt = gaussian_filter1d(median_filter(np.array([c[2] + c[1] for c in cr]), 9, mode="nearest"), 3, mode="nearest")   # no per-column noise
-    ztop = np.interp(Y, ys[o], zt[o])
-    top = np.hypot(X, np.maximum(Z - (ztop - hw), 0)) - hw
-    return S.rinter(P2, np.maximum(np.abs(X) - hw, top), 0.6)
-
-
-def receiver(X, Y, Z):
-    return slab(R.prof("receiver")(Y, Z), X, HW["receiver"], 1.6)
-
-
-# trigger-guard centre line read off the left photo (px): front leg x 765, flat bottom row 347, rear leg x 820
-TG_PATH = [(765, 304), (765, 336), (766.5, 341), (771, 344), (777, 345.8), (800, 346.8), (812, 346.2), (817, 343.5),
-           (819.5, 339), (820.5, 333), (821, 304)]
-
-
-def tguard(X, Y, Z):
-    """stamped trigger guard: a 1.8 mm strip, 13 mm wide, along the measured loop (a continuous band, never traced)"""
-    P = [bp(*q) for q in TG_PATH]
-    d2 = np.full_like(Y, 1e3)
-    for a, b in zip(P, P[1:]):
-        d2 = np.minimum(d2, S.capsule2(Y, Z, a, b, 0.9))
-    (ya, za), (yb, zb) = bp(819.5, 304), bp(819.5, 336)
-    d2 = np.minimum(d2, S.rect2(Y, Z, (min(ya, yb) - 2.2, zb), (max(ya, yb) + 1.6, za), 0.8))   # wide rear tang into the receiver
-    (yc, zc), (yd, zd) = bp(766, 303), bp(819, 307)
-    d2 = np.minimum(d2, S.rect2(Y, Z, (min(yc, yd), zd), (max(yc, yd), zc), 0.6))           # top flange under the receiver
-    return S.extrude(d2, np.abs(X), -HW["trigger_guard"], HW["trigger_guard"], 0.6)
-
-
-def trigger(X, Y, Z):
-    return slab(R.prof("trigger", blur=0.3)(Y, Z), X, 3.0, 0.8)
-
-
-def magcatch(X, Y, Z):
-    return slab(R.prof("magcatch", blur=0.4)(Y, Z), X, 7.0, 1.0)
-
-
-def grip(X, Y, Z):
-    return slab(R.prof("grip", blur=1.4)(Y, Z), X, HW["grip"], 9.0)
-
-
-def mag(X, Y, Z):
-    return slab(R.prof("mag", blur=1.4)(Y, Z), X, HW["mag"], 4.0)
-
-
-def stock(X, Y, Z):
-    return slab(R.prof("stock", blur=1.4)(Y, Z), X, HW["stock"], 9.0)
-
-
-def selector(X, Y, Z):
-    """right-side selector: 1.8 mm lever standing off the receiver, rear pivot boss, front finger tab bent outward"""
-    x_in = HW["receiver"] + SP.HW.get("selector_standoff", 2.0)
-    P = [bp(*q) for q in DT.SEL_PATH]
-    d2 = np.full_like(Y, 1e3)
-    for a, b in zip(P, P[1:]):
-        d2 = np.minimum(d2, S.capsule2(Y, Z, a, b, 4.6))                          # ~9 mm wide stamped lever
-    lever = S.extrude(d2, -X, x_in, x_in + 1.8, 0.4)
-    yp, zp = bp(*DT.SEL_PIVOT)
-    boss = S.cyl(X, Y, Z, "x", (yp, zp), 5.6, -(x_in + 2.6), -HW["receiver"] + 0.5, 0.6)
-    (ya, za), (yb, zb) = bp(*DT.SEL_TAB[0]), bp(*DT.SEL_TAB[2])
-    tab = S.extrude(S.rect2(Y, Z, (min(ya, yb), min(za, zb)), (max(ya, yb), max(za, zb)), 0.8), -X, x_in, x_in + 5.5, 0.5)
-    return S.runion(S.runion(lever, boss, 0.6), tab, 0.6)
-
-
-# ------------------------------------------------------------------ table
-def _bbox(pts, pad):
-    P = np.array([bp(*q) for q in pts])
-    return P[:, 0].min() - pad, P[:, 0].max() + pad, P[:, 1].min() - pad, P[:, 1].max() + pad
-
-
-BOX = {"selector": _bbox(DT.SEL_PATH + DT.SEL_TAB, 8)}                # parametric parts without a traced outline
-
-
-def _detailed(n, fn):
-    return lambda X, Y, Z: DT.apply(n, fn(X, Y, Z), X, Y, Z)
-
-
-def table():
-    T = {}
-    for n, fn, mat, h in (("brake", brake, "park", 0.25), ("fsb", fsb, "park", 0.25), ("barrel", barrel, "park", 0.3),
-                          ("rod", rod, "park", 0.25), ("gasblock", gasblock, "park", 0.25), ("gastube", gastube, "park", 0.3),
-                          ("hg_upper", hg_upper, "poly", 0.4), ("hg_lower", hg_lower, "poly", 0.4), ("rsight", rsight, "park", 0.25),
-                          ("dcover", dcover, "steel", 0.35), ("receiver", receiver, "steel", 0.4), ("tguard", tguard, "steel", 0.2), ("trigger", trigger, "steel", 0.2), ("magcatch", magcatch, "steel", 0.2),
-                          ("grip", grip, "poly", 0.4), ("mag", mag, "poly", 0.4), ("stock", stock, "poly", 0.5),
-                          ("selector", selector, "steel", 0.2)):
-        y0, y1, z0, z1 = BOX[n] if n in BOX else R.extent(n)
-        xh = max(v for k, v in HW.items()) + 4
-        T[n] = (_detailed(n, fn), (-xh, y0 - 4, z0 - 4), (xh, y1 + 4, z1 + 4), h, mat)
-    return T
+def manifest(reg):
+    return dict(frame="B mm: bore z=0, muzzle face y=0, gun y<0, +x left", slots=I.SLOTS,
+                sockets={k: dict(pos=[round(float(c), 2) for c in v[0]], axis=v[1]) for k, v in I.SOCKETS.items()},
+                parts={n: dict(slot=p["slot"], mat=p["mat"], hollow=bool(p.get("inner"))) for n, p in reg.items()})
 
 
 def main():
     out = ARGS.get("out", os.path.join(HERE, "work", "high.npz"))
     os.makedirs(os.path.dirname(out), exist_ok=True)
+    reg = registry()
     old = dict(np.load(out)) if (ONLY and os.path.exists(out)) else {}
     parts = {}
-    for name, (fn, lo, hi, h, mat) in table().items():
+    for name, p in reg.items():
         if ONLY and name not in ONLY:
             continue
-        off = h * HS * 0.3713
-        V, F = S.mesh(fn, np.add(lo, -off), np.add(hi, off), h * HS, lip=3.5, name=name)
-        parts[name] = (V, F, {"mat": np.full(len(V), MAT[mat])})
+        lo, hi = bounds(p); h = p["h"] * HS; off = h * 0.3713
+        V, F = S.mesh(field(p), np.add(lo, -off), np.add(hi, off), h, lip=3.5, name=name)
+        parts[name] = (V, F, {"mat": np.full(len(V), G.MAT[p["mat"]])})
     S.save(out + ".tmp.npz", parts)
     new = dict(np.load(out + ".tmp.npz"))
-    for k in list(old):
-        if k.split("__")[0] not in parts:
+    for k in old:
+        if k.split("__")[0] not in parts and k.split("__")[0] in reg:                    # keep built parts that still exist
             new[k] = old[k]
     np.savez_compressed(out, **new)
     os.remove(out + ".tmp.npz")
+    json.dump(manifest(reg), open(os.path.join(HERE, "review", "modules.json"), "w"), indent=1, default=str)
     print("HIGH_DONE", sorted({k.split("__")[0] for k in new}))
 
 
