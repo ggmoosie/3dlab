@@ -1,15 +1,17 @@
 {
  "item": "PlateCarrier",
- "tris": 2740,
+ "tris": 4152,
  "atlas": 2048,
- "texel_per_mm": 3.048,
+ "texel_per_mm": 2.652,
  "panels": [
   "front",
   "back",
-  "cummerbund_R",
-  "cummerbund_L",
-  "strap_R",
-  "strap_L",
+  "flap_front",
+  "flap_back",
+  "side_R",
+  "side_L",
+  "pad_R",
+  "pad_L",
   "drag_handle"
  ],
  "textures": {
