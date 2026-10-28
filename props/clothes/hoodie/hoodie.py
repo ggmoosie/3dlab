@@ -44,9 +44,14 @@ def lin(hx):
     return tuple(float(x) for x in tex.srgb_to_lin(tex.hex2rgb(hx)))
 
 
+FIT_HIST = []
+FITTED = {}          # variant -> (ColorA, ColorB) linear, measured fit under the studio light (fit_colour)
+
+
 def vparams(v):
     a, b, _ = VARIANTS[v]
-    return dict(ColorA=lin(a), RoughA=0.93, MetalA=0.0, ColorB=lin(b), RoughB=0.86, MetalB=0.0, LabelRough=0.7,
+    ca, cb = FITTED.get(v, (lin(a), lin(b)))
+    return dict(ColorA=tuple(ca), RoughA=0.93, MetalA=0.0, ColorB=tuple(cb), RoughB=0.86, MetalB=0.0, LabelRough=0.7,
                 WearAmount=0.35 if v != "Black" else 0.45, Dirt=0.35)
 
 
@@ -251,8 +256,11 @@ def textures(M, L, lay, nrm, ao):
     cord = np.isin(reg, TX.CORD)
     metal = np.isin(reg, TX.METAL)
     heather = tex.fbm(S, S, 140, 21) * 0.6 + tex.fbm(S, S, 600, 22) * 0.4
-    mR = fab * (0.90 + 0.10 * heather) * (1 - 0.08 * np.clip(stitches, 0, 1)) + ins * 0.72
-    mG = lining * (0.92 + 0.08 * heather) + cord * 1.0
+    mottle = tex.fbm(S, S, 60, 31)
+    # fleece sheen, baked: M_Lab_Prop has no sheen input, so fold ridges (where grazing light catches the brushed fibres)
+    # mix 6 % towards the lighter substrate; the Blender preview adds Principled sheen on top
+    mR = fab * (0.965 + 0.035 * heather) * (1 - 0.05 * ridge) * (1 - 0.28 * np.clip(stitches, 0, 1)) + ins * (0.64 + 0.12 * mottle)
+    mG = lining * (0.84 + 0.16 * mottle) + cord * 1.0
     label, area = TX.chest_print(R["pos"], reg, valid, S, os.path.join(ROOT, "fonts"))
     mB = area
     wearA = np.clip(wear + 0.2 * ridge * (fab | lining), 0, 1) * (fab | lining | cord | ins)
@@ -292,7 +300,17 @@ def materials(texs, lab, low):
         mats[v].use_fake_user = True                     # keep the variant previews in the .blend
     m = master.material(f"M_{ITEM}", texs, vparams("HeatherGrey"))
     low.data.materials[0] = m
+    for mm in list(mats.values()) + [m]:
+        sheen(mm)
     return mats
+
+
+def sheen(m):
+    """Blender preview only: Principled sheen for the brushed-fleece fuzz (UE: Cloth shading model / fuzz on the MI)."""
+    b = next(n for n in m.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
+    b.inputs["Sheen Weight"].default_value = 0.3
+    b.inputs["Sheen Roughness"].default_value = 0.45
+    b.inputs["Sheen Tint"].default_value = (1, 1, 1, 1)
 
 
 # ------------------------------------------------------------------------------------------------------------- skinning
@@ -319,6 +337,24 @@ def skin(M, low, rig):
     Wo = RG.nearest_interp(pV, pT, Wp, Vo)
     E = G.edges_of(np.asarray(Fo))[0]
     Wo = RG.cleanup(Wo, E, smooth=int(ARGS.get("wsmooth", 1)))
+    # armholes: extra local smoothing so the armhole edge partly follows the arm (arms forward / up without the swinging
+    # arm entering the chest side)
+    near = np.zeros(len(Vo), bool)
+    for sg in (1, -1):
+        near |= np.linalg.norm(Vo - np.array([sg * 20.6, 0.0, 132.0]), axis=1) < 10.0
+    deg = np.bincount(E.ravel(), minlength=len(Vo)).astype(float)[:, None]
+    for _ in range(int(ARGS.get("apsmooth", 12))):
+        acc = np.zeros_like(Wo); np.add.at(acc, E[:, 0], Wo[E[:, 1]]); np.add.at(acc, E[:, 1], Wo[E[:, 0]])
+        Wo = np.where(near[:, None], 0.5 * Wo + 0.5 * acc / np.maximum(deg, 1), Wo)
+    # elbows: soften the upper/lower blend (w^0.3, measured best vs 3.0 / 0.5) so the bent sleeve stays off the arm
+    # into the arm through the linear-blend midpoint
+    pw = float(ARGS.get("elbowsharp", 0.3))
+    for s in "lr":
+        de = np.linalg.norm(Vo - B.J["lowerarm_" + s], axis=1)
+        k_ = np.clip(1 - (de - 6.0) / 6.0, 0, 1)[:, None]               # 1 within 6 cm of the elbow joint, 0 beyond 12
+        Ws = Wo ** pw; Ws /= np.maximum(Ws.sum(1, keepdims=True), 1e-9)
+        Wo = Wo * (1 - k_) + Ws * k_
+    Wo = RG.cleanup(Wo, None, smooth=0)
     W[:n_out] = Wo; W[n_out:2 * n_out] = Wo                       # inner shell = outer: both faces move together
     oT = RG.tri_mesh(Vo, Fo)
     for k, (a, b, r_) in enumerate(M["ranges"][1:], 1):
@@ -388,8 +424,20 @@ def lods(low):
         nt = len(trims.data.polygons)
         d = cloth.modifiers.new("Decimate", "DECIMATE")
         d.ratio = max(0.05, (r * total - nt) / len(cloth.data.polygons)); d.use_collapse_triangulate = True
+        # keep the channel cloth around the eyelets intact (collapsed faces landed on the flanges -> coplanar)
+        eyes = [Vector(p.co) for p in trims.data.vertices]
+        grp = cloth.vertex_groups.new(name="__lod_keep")
+        from mathutils.kdtree import KDTree
+        kd = KDTree(len(eyes))
+        for k_, e_ in enumerate(eyes):
+            kd.insert(e_, k_)
+        kd.balance()
+        far = [v.index for v in cloth.data.vertices if kd.find(v.co)[2] > 2.5]
+        grp.add(far, 1.0, "REPLACE")
+        d.vertex_group = "__lod_keep"
         bpy.context.view_layer.objects.active = cloth
         bpy.ops.object.modifier_apply(modifier="Decimate")
+        cloth.vertex_groups.remove(cloth.vertex_groups["__lod_keep"])
         bpy.ops.object.select_all(action="DESELECT")
         cloth.select_set(True); trims.select_set(True)
         bpy.context.view_layer.objects.active = cloth
@@ -502,6 +550,31 @@ def clip_metric(low, proxy, rig, n_outer):
     return out
 
 
+def fit_colour(low, mats, v="Maroon", target_srgb=(110, 30, 38), iters=6):
+    """look_match.py method: render a chest-only crop under the studio light, take the mean colour, scale the layer albedo
+    per channel in linear by target/measured, repeat. ColorB (cords, lining) keeps its ratio to ColorA."""
+    from PIL import Image
+    m = mats[v]
+    g = next(n for n in m.node_tree.nodes if n.type == "GROUP")
+    low.data.materials[0] = m
+    cam_at((0, -10, 125), (0, -60, 0), lens=60, name="fit")
+    tgt = tex.srgb_to_lin(np.array(target_srgb) / 255.0)
+    ca = np.array(g.inputs["ColorA"].default_value[:3]); cb = np.array(g.inputs["ColorB"].default_value[:3])
+    hist = []
+    for k in range(iters):
+        p = os.path.join(WORK, f"fit_{k}.png")
+        scene.render(p, 96, 16)
+        im = np.asarray(Image.open(p).convert("RGB"), np.float64)[24:72, 24:72] / 255
+        meas = tex.srgb_to_lin(im.reshape(-1, 3).mean(0))
+        hist.append([round(float(c) * 255) for c in im.reshape(-1, 3).mean(0)])
+        r = np.clip(tgt / np.maximum(meas, 1e-5), 0.2, 4.0)
+        ca = np.clip(ca * r, 0, 1); cb = np.clip(cb * r, 0, 1)
+        g.inputs["ColorA"].default_value = (*ca, 1); g.inputs["ColorB"].default_value = (*cb, 1)
+    FITTED[v] = (tuple(float(c) for c in ca), tuple(float(c) for c in cb)); FIT_HIST[:] = hist
+    log(f"  colour fit {v}: rendered sRGB per iteration {hist} -> ColorA {np.round(ca, 4).tolist()}")
+    return hist
+
+
 def renders(low, proxy, rig, mats):
     sc = bpy.context.scene
     skin_m = master.simple("M_ProxySkin", (0.62, 0.30, 0.22), 0.55)
@@ -511,6 +584,8 @@ def renders(low, proxy, rig, mats):
         o.hide_render = True
     scene.studio([proxy], key=1.0)
     os.makedirs(REND, exist_ok=True)
+    fit_colour(low, mats)
+    low.data.materials[0] = mats["Maroon"]
     shots = []
     P = RG.poses()
     views = [("rest", (0, -6, 122), (0, -235, 20), "rest A-pose, front"), ("rest", (0, 0, 122), (0, 235, 30), "rest A-pose, back"),
@@ -535,10 +610,17 @@ def renders(low, proxy, rig, mats):
     cam_at((0, -4, 128), (-120, -170, 25), lens=60, name="hero")
     hero = os.path.join(REND, "hoodie.png")
     scene.render(hero, 1024, SMP, res_y=1024)
-    # material close-up (cuff, pocket, strings)
-    cam_at((14, -14, 112), (-40, -55, 18), lens=60, name="detail")
+    # material close-ups (Maroon): neck / eyelets / cords / seams, and cuff / pocket / band
+    from PIL import Image
+    low.data.materials[0] = mats["Maroon"]
+    cam_at((1, -12, 141), (-16, -42, 6), lens=60, name="detail_a")
+    pa = os.path.join(WORK, "detail_a.png"); scene.render(pa, 640, SMP, res_y=640)
+    cam_at((22, -12, 104), (-30, -48, 8), lens=60, name="detail_b")
+    pb = os.path.join(WORK, "detail_b.png"); scene.render(pb, 640, SMP, res_y=640)
     detail = os.path.join(REND, "hoodie_detail.png")
-    scene.render(detail, 1024, SMP, res_y=1024)
+    dimg = Image.new("RGB", (1280, 640)); dimg.paste(Image.open(pa).convert("RGB"), (0, 0)); dimg.paste(Image.open(pb).convert("RGB"), (640, 0))
+    dimg.save(detail)
+    low.data.materials[0] = mats["HeatherGrey"]
     log("  hero + detail rendered")
     return shots, hero, detail
 
@@ -551,6 +633,8 @@ def turnaround(low, proxy, mats):
     proxy.data.materials[0] = master.simple("M_ProxySkin2", (0.62, 0.30, 0.22), 0.55)
     views = [("front", 0), ("back", 180), ("right", -90), ("threequarter", -30)]
     paths = []
+    rig = low.parent
+    RG.pose(rig, {"upperarm_l": ((0, 1, 0), 24), "upperarm_r": ((0, 1, 0), -24)})     # arms relaxed like the reference
     sc = bpy.context.scene
     bd = bpy.data.objects.get("Backdrop")
     if bd:
@@ -566,6 +650,7 @@ def turnaround(low, proxy, mats):
         scene.render(p, 600, min(SMP, 32), res_y=1086)
         paths.append(p)
     ims = [Image.open(p).convert("RGB") for p in paths]
+    RG.pose(rig, {}, None)
     if bd:
         bd.hide_render = False
     bg["Color"].default_value = bg_old[0]; bg["Strength"].default_value = bg_old[1]
@@ -724,9 +809,9 @@ def main():
                                 "pocket / eyelets / cords take the weights of the cloth under them (eyelets rigid)"},
         "fit": {"proxy_body": "own SDF mannequin, ~180 cm, A-pose, never exported",
                 "gap_inner_face_to_body_cm": gaps,
-                "outer_envelope": "chest/back ~1.25 cm over the body (0.8 gap + 0.45 fleece), waist up to 2.6 cm (relaxed), "
-                                  "rib band / cuffs 1.25 cm; hood lies on the upper back up to ~4.5 cm proud. Vests should clear "
-                                  "body + 2 cm on the torso"},
+                "outer_envelope": "relaxed fit: chest/back ~3.7 cm over the body (gap + 0.45 fleece), shoulders ~3 cm, upper sleeve "
+                                  "~4.5 cm, snug 7 cm rib band and cuffs 1.25 cm; macro folds +-0.9 cm; hood stands up to ~5 cm proud "
+                                  "behind the neck. Vests worn over it should clear body + 4.5 cm on the torso"},
         "tris": tris,
         "textures": {"size": S, "normal": "OpenGL (flip green in UE)",
                      "maps": {k: os.path.basename(v) for k, v in texs.items()},
@@ -741,8 +826,13 @@ def main():
         "renders": {"sheet": "renders/_sheet.png", "hero": "renders/hoodie.png", "detail": "renders/hoodie_detail.png",
                     "turnaround": "renders/hoodie_turnaround.png (Maroon; front, back, right profile, 3/4 like the user's reference)",
                     "variants": "renders/hoodie_variants.png"},
-        "notes": "Sheen / cloth shading is not in M_Lab_Prop: the fleece fuzz lives in roughness + normal; a UE Cloth shading "
-                 "model would add it. The knit at 13 px/cm is a visible-scale jersey/rib pattern, not thread-accurate."}
+        "colour_fit": {"Maroon": {"target_srgb": [110, 30, 38], "method": "look_match-style: chest-only crop rendered under "
+                              "the studio light, per-channel linear albedo scale target/measured, 6 iterations",
+                              "rendered_srgb_per_iteration": FIT_HIST, "ColorA_linear": FITTED.get("Maroon", [None])[0]}},
+        "notes": "Sheen: M_Lab_Prop has no sheen input, so the fuzz is faked in the texture set (fold ridges mix 6 % towards the "
+                 "lighter substrate via Mask R, roughness 0.9-0.95) and the Blender preview adds Principled sheen 0.3; in UE use "
+                 "the Cloth shading model or a fresnel lerp on the MI for real sheen. Knit is not drawn at thread scale (heavy "
+                 "fleece reads smooth at viewing distance); rib, cover stitches and side-seam topstitch are in the normal map."}
     with open(os.path.join(HERE, "manifest.json"), "w") as f:
         json.dump(man, f, indent=1)
     log("DONE")

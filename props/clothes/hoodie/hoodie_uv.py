@@ -5,7 +5,7 @@ import bpy
 import hoodie_geo as G
 
 # texel density relative to the outer fabric (inside of the body is rarely seen; the hood lining is)
-DENSITY = {G.R_INNER: 0.4, G.R_POCK_IN: 0.4, G.R_LINING: 0.85, G.R_STRING: 1.3, G.R_KNOT: 1.3, G.R_AGLET: 1.5, G.R_GROM: 1.8}
+DENSITY = {G.R_INNER: 0.25, G.R_POCK_IN: 0.25, G.R_LINING: 0.65, G.R_STRING: 1.3, G.R_KNOT: 1.3, G.R_AGLET: 1.5, G.R_GROM: 1.8}
 
 
 def make_mesh(name, M, coll=None, uv=True):

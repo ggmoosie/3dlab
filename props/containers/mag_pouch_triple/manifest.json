@@ -1,0 +1,212 @@
+{
+ "item": "MagPouch3",
+ "replaces_rows": [],
+ "category": "containers",
+ "clip": null,
+ "dims_cm": [
+  27.2,
+  5.25,
+  22.57
+ ],
+ "real_object": "triple 5.56 AR magazine pouch with covers (polymer-strap MOLLE back); sized for three STANAG 30-rd magazines 2.5 x 8.1 x 19 cm (the game's MagazineAR15); bbox includes the top strap loops",
+ "pivot": "base centre, +Z up, front = -Y",
+ "parts": {
+  "SM_MagPouch3_Flap1": {
+   "pivot": "hinge at the top of the sleeve's tall back",
+   "rest_location_cm": [
+    -9.1,
+    0.3,
+    19.75
+   ],
+   "rest_rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "opens": "about local X to -115 deg (flap flips up and back)"
+  },
+  "SM_MagPouch3_Flap2": {
+   "pivot": "hinge at the top of the sleeve's tall back",
+   "rest_location_cm": [
+    0.0,
+    0.3,
+    19.75
+   ],
+   "rest_rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "opens": "about local X to -115 deg (flap flips up and back)"
+  },
+  "SM_MagPouch3_Flap3": {
+   "pivot": "hinge at the top of the sleeve's tall back",
+   "rest_location_cm": [
+    9.1,
+    0.3,
+    19.75
+   ],
+   "rest_rotation_deg": [
+    0,
+    0,
+    0
+   ],
+   "opens": "about local X to -115 deg (flap flips up and back)"
+  }
+ },
+ "optional_parts": {
+  "SM_MagPouch3_Mags": "three STANAG magazines seated in the sleeves (loaded variant); hide for empty"
+ },
+ "grid_suggestion": "3x2 container (holds 3 MagazineAR15)",
+ "tris": {
+  "SM_MagPouch3": 14276,
+  "SM_MagPouch3_Flap1": 218,
+  "SM_MagPouch3_Flap2": 218,
+  "SM_MagPouch3_Flap3": 218,
+  "SM_MagPouch3_Mags": 228,
+  "SM_MagPouch3_LOD1": 7138,
+  "SM_MagPouch3_LOD2": 3568,
+  "SM_MagPouch3_Flap1_LOD1": 108,
+  "SM_MagPouch3_Flap1_LOD2": 54,
+  "SM_MagPouch3_Flap2_LOD1": 108,
+  "SM_MagPouch3_Flap2_LOD2": 54,
+  "SM_MagPouch3_Flap3_LOD1": 108,
+  "SM_MagPouch3_Flap3_LOD2": 54,
+  "SM_MagPouch3_Mags_LOD1": 114,
+  "SM_MagPouch3_Mags_LOD2": 56
+ },
+ "textures": {
+  "size": 2048,
+  "normal": "OpenGL (flip green in UE)",
+  "maps": {
+   "BaseColor": "T_MagPouch3_BaseColor.png",
+   "Normal": "T_MagPouch3_Normal.png",
+   "ORM": "T_MagPouch3_ORM.png",
+   "Mask": "T_MagPouch3_Mask.png"
+  },
+  "variants": {
+   "Navy": null,
+   "RangerGreen": null,
+   "Coyote": null,
+   "Black": null,
+   "MultiTerrain": "T_MagPouch3_Label_MultiTerrain.png"
+  }
+ },
+ "mask": "R cordura, G webbing/thread/velcro/polymer/plastic, B print area (camo skin only), A wear",
+ "variant_params": {
+  "Navy": {
+   "ColorA": [
+    0.03819999843835831,
+    0.04520000144839287,
+    0.0723000019788742
+   ],
+   "RoughA": 0.8,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.029600000008940697,
+    0.03189999982714653,
+    0.04230000078678131
+   ],
+   "RoughB": 0.78,
+   "MetalB": 0.0,
+   "LabelRough": 0.8,
+   "WearAmount": 0.08,
+   "Dirt": 0.3
+  },
+  "RangerGreen": {
+   "ColorA": [
+    0.10459999740123749,
+    0.08869999647140503,
+    0.054499998688697815
+   ],
+   "RoughA": 0.8,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.19460000097751617,
+    0.16509999334812164,
+    0.13289999961853027
+   ],
+   "RoughB": 0.78,
+   "MetalB": 0.0,
+   "LabelRough": 0.8,
+   "WearAmount": 0.08,
+   "Dirt": 0.3
+  },
+  "Coyote": {
+   "ColorA": [
+    0.2085999995470047,
+    0.1356000006198883,
+    0.06480000168085098
+   ],
+   "RoughA": 0.8,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.2542000114917755,
+    0.17790000140666962,
+    0.09759999811649323
+   ],
+   "RoughB": 0.78,
+   "MetalB": 0.0,
+   "LabelRough": 0.8,
+   "WearAmount": 0.08,
+   "Dirt": 0.3
+  },
+  "Black": {
+   "ColorA": [
+    0.013700000010430813,
+    0.013700000010430813,
+    0.015200000256299973
+   ],
+   "RoughA": 0.8,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.01679999940097332,
+    0.01679999940097332,
+    0.01850000023841858
+   ],
+   "RoughB": 0.78,
+   "MetalB": 0.0,
+   "LabelRough": 0.8,
+   "WearAmount": 0.08,
+   "Dirt": 0.3
+  },
+  "MultiTerrain": {
+   "ColorA": [
+    0.3231000006198883,
+    0.2542000114917755,
+    0.13840000331401825
+   ],
+   "RoughA": 0.8,
+   "MetalA": 0.0,
+   "ColorB": [
+    0.27469998598098755,
+    0.2231999933719635,
+    0.1273999959230423
+   ],
+   "RoughB": 0.78,
+   "MetalB": 0.0,
+   "LabelRough": 0.8,
+   "WearAmount": 0.08,
+   "Dirt": 0.3
+  }
+ },
+ "collision": [
+  "UCX_SM_MagPouch3_00",
+  "UCX_SM_MagPouch3_Flap1_00",
+  "UCX_SM_MagPouch3_Flap2_00",
+  "UCX_SM_MagPouch3_Flap3_00"
+ ],
+ "lods": [
+  "SM_MagPouch3_LOD1",
+  "SM_MagPouch3_LOD2",
+  "SM_MagPouch3_Flap1_LOD1",
+  "SM_MagPouch3_Flap1_LOD2",
+  "SM_MagPouch3_Flap2_LOD1",
+  "SM_MagPouch3_Flap2_LOD2",
+  "SM_MagPouch3_Flap3_LOD1",
+  "SM_MagPouch3_Flap3_LOD2",
+  "SM_MagPouch3_Mags_LOD1",
+  "SM_MagPouch3_Mags_LOD2"
+ ],
+ "notes": "One texture set for body, flaps and magazines. Liner at 0.3x texel density."
+}

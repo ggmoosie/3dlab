@@ -47,7 +47,7 @@ def seam_field(pos, valid, V, typed, kinds, step=0.05):
     return d, s
 
 
-def stitch(d, s, at, length=0.30, gap=0.12, width=0.055):
+def stitch(d, s, at, length=0.32, gap=0.12, width=0.075):
     """Raised thread dashes on a line at distance `at` from the seam."""
     on = (np.mod(s, length + gap) < length).astype(np.float32)
     return on * np.exp(-((d - at) / width) ** 2)
@@ -72,7 +72,7 @@ def details(R, px_cm, seams, V, wear_pts, seed=7):
     rp = 0.46
     ph = np.mod(fu / rp, 1.0)
     ribh = np.clip(np.cos(2 * np.pi * (ph - 0.33)) * 1.2, -1, 1) * 0.5 + 0.5
-    H += rib * (0.050 * ribh ** 0.8 + 0.006 * course + 0.004 * fuzz)
+    H += rib * (0.075 * ribh ** 0.8 + 0.006 * course + 0.004 * fuzz)
     # brushed fleece inside: soft random loft
     H += ins * 0.025 * tex.fbm(S, S, 160, seed + 2)
     # cords: twisted / flat-braided
@@ -84,7 +84,9 @@ def details(R, px_cm, seams, V, wear_pts, seed=7):
     d, s = seam_field(pos, body_reg, V, seams["typed"], {"side", "cover", "rib"})
     H += body_reg * (-0.075 * np.exp(-(d / 0.16) ** 2) + 0.03 * np.exp(-((d - 0.45) / 0.28) ** 2))
     dc, sc = seam_field(pos, body_reg, V, seams["typed"], {"cover"})
-    st = stitch(dc, sc, 0.42) + stitch(dc, sc, 0.72)
+    st = stitch(dc, sc, 0.42) + stitch(dc, sc, 0.78)                  # double-needle cover stitch both sides
+    ds_, ss_ = seam_field(pos, body_reg, V, seams["typed"], {"side"})
+    st += stitch(ds_, ss_, 0.5)                                       # single topstitch beside the overlocked side seams
     dr, sr = seam_field(pos, body_reg, V, seams["typed"], {"rib"})
     st += stitch(dr, sr, 0.35, 0.22, 0.10) + stitch(dr, sr, 0.62, 0.22, 0.10)
     dh, shh = seam_field(pos, body_reg, V, seams["typed"], {"chan"})
@@ -97,7 +99,7 @@ def details(R, px_cm, seams, V, wear_pts, seed=7):
     st += pk * stitch(do, so, 1.05)
     H += pk * (0.06 * np.exp(-((do - 0.5) / 0.45) ** 2) - 0.03 * np.exp(-((do - 1.05) / 0.2) ** 2))
     st = np.clip(st, 0, 1) * outer_like
-    H += 0.045 * st
+    H += 0.065 * st
     stitches += st
     # wear: openings and edges rub first, elbows and pocket edges pill, plus fuzz noise
     wear = np.zeros((S, S), np.float32)

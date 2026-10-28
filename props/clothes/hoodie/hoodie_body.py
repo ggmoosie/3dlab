@@ -141,8 +141,8 @@ BODY_T = np.array([
     (119, 15.7, 10.9, -6.0), (127, 16.7, 11.7, -6.0), (135, 17.2, 11.5, -5.5), (141, 16.3, 10.2, -3.9), (146, 12.6, 8.4, -1.6),
     (150, 7.6, 6.8, 0.2)])
 # outer-surface offset of the hoodie over the body loft (gap + fabric): band 0.5+0.7 rib, chest 0.8+0.45, waist relaxed
-EASE_T = np.array([(89.0, 1.25), (96.0, 1.3), (98.5, 1.9), (104, 2.0), (111, 1.9), (119, 1.6), (126, 1.35), (135, 1.25),
-                   (141, 1.25), (146, 1.3), (151, 1.3)])
+EASE_T = np.array([(89.0, 1.25), (96.0, 1.3), (98.5, 2.7), (104, 3.2), (111, 3.4), (119, 3.6), (126, 3.7), (135, 3.6),
+                   (141, 3.0), (146, 2.0), (151, 1.4)])
 Z_HEM, Z_BAND = 89.0, 96.0          # reference: hem at the hip, 7 cm rib band covering the belt line
 
 
@@ -201,9 +201,9 @@ def arm_garment(P, s):
     cuff_top = 1 - 5.2 / fl
     # forearm radius: body 4.1 -> 2.9; outer sleeve: + 2.45 relaxed, bunching flare just above the cuff, + 1.2 at the cuff
     rb = 4.1 + (2.9 - 4.1) * np.clip(t, 0, 1) - 0.25 * np.clip((t - 1) * fl, 0, 1.5)
-    ease = np.interp(t, [0, 0.45, cuff_top - 0.06, cuff_top, cuff_top + 0.05, 1.0], [2.45, 2.5, 2.7, 1.9, 1.25, 1.2])
+    ease = np.interp(t, [0, 0.45, cuff_top - 0.06, cuff_top, cuff_top + 0.05, 1.0], [4.0, 3.6, 3.5, 2.0, 1.25, 1.2])
     fore = cone(P, el, wr + (wr - el) / fl * 1.9, 1.0, 1.0) + 1.0 - (rb + ease)
-    up = cone(P, sh, el, 5.0 + 2.45, 4.1 + 2.45)
+    up = cone(P, sh, el, 5.0 + 4.6, 4.1 + 4.0)               # roomy upper sleeve
     return smin(up, fore, 1.5)
 
 
@@ -237,8 +237,8 @@ def _garment(P):
     sh = np.full(len(P), 1e9)
     for s in "lr":
         x = _side(s)
-        shoulder = smin(cone(P, (x * 5, 1.0, 148.0), (x * 16.5, 2.4, 145.6), 5.0 + 1.3, 4.6 + 1.3),
-                        ellipsoid(P, (x * 19.0, 2.4, 142.2), (6.0 + 1.5, 6.3 + 1.5, 7.2 + 1.5)), 3.0)
+        shoulder = smin(cone(P, (x * 5, 1.0, 148.0), (x * 16.5, 2.4, 145.6), 5.0 + 1.4, 4.6 + 3.0),
+                        ellipsoid(P, (x * 19.5, 2.4, 142.0), (6.0 + 3.2, 6.3 + 3.0, 7.2 + 3.0)), 3.0)
         sh = np.minimum(sh, smin(shoulder, arm_garment(P, s), 3.0))
     return smin(t, sh, 4.0)
 

@@ -13,7 +13,7 @@ import hoodie_body as B
 R_TORSO, R_BAND, R_SLEEVE, R_CUFF, R_HOOD, R_CHAN, R_POCKET, R_INNER, R_LINING, R_POCK_IN, R_RIM, R_STRING, R_GROM, R_KNOT, R_AGLET = range(15)
 REGION_NAMES = ["torso", "band", "sleeve", "cuff", "hood", "channel", "pocket", "inner", "lining", "pocket_in", "rim", "string",
                 "grommet", "knot", "aglet"]
-T_BODY, T_RIB, T_HOOD, T_CHAN, T_POCKET = 0.45, 0.7, 0.4, 0.8, 0.35
+T_BODY, T_RIB, T_HOOD, T_CHAN, T_POCKET = 0.45, 0.7, 0.4, 1.0, 0.35
 
 
 def sstep(e0, e1, x):
@@ -164,12 +164,12 @@ def body_cage():
     rows = [[add(p) for p in ring_pts(z)] for z in ROWS_Z]
     # R4 side points sit under the arm
     for k, x in ((3, 1), (9, -1)):
-        V[rows[4][k]] = np.array([x * 18.6, 1.2, 129.0])
+        V[rows[4][k]] = np.array([x * 20.6, 1.2, 128.5])
     # R5 shoulder line
     r5 = []
     for k, t in enumerate(TH):
         if k in (3, 9):
-            p = (math.sin(t) * 21.3, 2.4, 146.0)          # slightly dropped shoulder
+            p = (math.sin(t) * 23.0, 2.4, 145.6)          # dropped shoulder
         else:
             q = ring_pts(141.5)[k]
             z = 141.5 + (2.0 if abs(math.cos(t)) > 0.8 else 0.0) + (0.8 if math.cos(t) < -0.5 else 0.0)
@@ -202,8 +202,9 @@ def body_cage():
             seams[tuple(sorted((L[i], L[(i + 1) % 6])))] = "cover"
         ud = (el - sh) / np.linalg.norm(el - sh); fd = (wr - el) / np.linalg.norm(wr - el)
         fl = np.linalg.norm(wr - el)
-        centres = [(sh + 0.25 * (el - sh), ud, 7.5), (sh + 0.84 * (el - sh), ud, 7.0),
-                   (el, (ud + fd) / np.linalg.norm(ud + fd), 6.8), (el + 0.17 * (wr - el), fd, 6.6),
+        centres = [(sh + 0.25 * (el - sh), ud, 9.6), (sh + 0.84 * (el - sh), ud, 9.0),
+                   (el, (ud + fd) / np.linalg.norm(ud + fd), 8.6), (el + 0.17 * (wr - el), fd, 8.3),
+                   (el + 0.55 * (wr - el), fd, 7.6),                         # extra loop: stacking folds read in silhouette
                    (wr - 5.2 * fd, fd, 4.5), (wr + 1.6 * fd, fd, 4.1)]      # cuff over the hand root
         # armhole angles in the upper-arm frame
         ref = np.array([0, -1.0, 0])
@@ -263,7 +264,7 @@ def body_mesh(level):
 
 # ------------------------------------------------------------------------------------------------------------- hood
 NECK_AX = np.array([0.0, 0.9, 0.0])
-PHI_V = math.radians(21.0)                  # half-angle of the front V where the hood edges meet the neckline
+PHI_V = math.radians(11.0)                  # half-angle of the front V where the hood edges meet the neckline
 O1, DO = 1.3, 1.6                           # layer-1 offset over the garment, layer-2 extra offset (two fabrics + air)
 CHAN_W = 2.5                                # drawstring channel width
 
@@ -286,20 +287,21 @@ def bez(p0, p1, p2, p3, t):
     return (1 - t) ** 3 * p0 + 3 * (1 - t) ** 2 * t * p1 + 3 * (1 - t) * t * t * p2 + t ** 3 * p3
 
 
-R1, R2 = 0.9, 0.85                          # roll-over radius at the neckline, crown-fold radius (layer gaps 1.2 / 1.7 cm)
+R1, R2 = 1.15, 0.9                          # roll-over radius at the neckline, crown-fold radius (layer gaps 1.2 / 1.7 cm)
 
 
 def hood_paths(N, phi, npts=30):
-    """Every hood column is a 'turtle' path in the vertical plane through its neckline point:
-    rise -> roll-over turn (outwards) -> layer 1 hanging down the back -> crown fold (turning back out) -> layer 2 up.
-    Turn angles and lengths vary smoothly with the column angle: tall straight collar at the front V, a lip that curls
-    outwards at the front sides, a thick roll at the sides, the full two-layer bag on the back. Fixed turn radii keep
-    every layer gap >= 2 fabric thicknesses, so layers never cross.  Returns P (c, 5*npts, 3), segment ids, bag weight."""
+    """Every hood column is a 'turtle' path in the vertical plane through its neckline point. At the back (hood worn down,
+    a deflated half-dome on the upper back): short rise -> roll over -> layer 1 down the back -> a big rounded fold at the
+    hood point (the dome's depth) -> outer layer up -> crown curl forward toward the head, ending in the channel edge
+    (the opening, lining visible from above). At the front the same path degenerates to a straight standing collar; the
+    left flap crosses in front of the right one at the V. Turns have fixed minimum radii so layers never cross.
+    Returns P (c, 6*npts, 3), segment ids, back weight."""
     c = len(phi)
     up = np.array([0, 0, 1.0])
     ph = np.minimum(phi, 2 * np.pi - phi)
-    wr = sstep(math.radians(30), math.radians(85), ph)          # roll-over
-    w = sstep(math.radians(55), math.radians(120), ph)          # bag
+    wr = sstep(math.radians(55), math.radians(100), ph)         # roll-over (clean straight collar across the front)
+    w = sstep(math.radians(70), math.radians(130), ph)          # hood volume
     psi = phi - np.pi
     backw = np.maximum(np.cos(psi), 0)
     psi_h = PHI_V + (2 * np.pi - 2 * PHI_V) * phi / (2 * np.pi)
@@ -307,58 +309,63 @@ def hood_paths(N, phi, npts=30):
     back = np.array([0, 1.0, 0])
     dd = out_h + back[None] * (0.8 * np.abs(np.sin(phi)) * (np.cos(phi) < 0.3))[:, None]
     dd /= np.linalg.norm(dd, axis=1)[:, None]
-    Nh = neckline_xyz(psi_h)                                    # where each column sits once past the V fan
-    h = 4.4 + 2.3 * w - 1.6 * wr * (1 - w)        # collar at the V, lower roll at the sides, standing wall behind the neck
+    Nh = neckline_xyz(psi_h)
+    h = 4.6 - 3.6 * wr                                          # collar at the V, a short rise where the hood rolls back
     th0 = -0.25 + 0.45 * wr
-    Lbag = 3.5 + 15.5 * backw ** 1.3            # hood point at the shoulder-blade line
-    L1, L2 = w * Lbag, w * Lbag * 0.99
-    T1, T2 = np.pi * wr, np.pi * sstep(0.0, 0.3, w)
-    P = np.zeros((c, 5 * npts, 3)); sid = np.repeat(np.arange(5), npts)
-    mind = np.zeros((c, 5 * npts))
+    R2b = 0.9 + 3.6 * w * (0.4 + 0.6 * backw)                    # fold radius = half the dome depth (4.5 cm at the back)
+    L1 = w * (2.0 + 10.0 * backw ** 2.5)                        # down the back to a pointed hood tip (~138 cm)
+    L2 = w * (3.0 + 11.5 * backw ** 1.0)                        # outer layer back up to the crown (~157 cm)
+    T1 = np.pi * wr
+    T2 = np.pi * sstep(0.0, 0.3, w)
+    T3 = 2.0 * w * (0.5 + 0.5 * backw)                          # crown curl toward the head (up to 115 deg)
+    R3 = 0.6 + 3.2 * w * backw
+    left = np.zeros(c)                                           # edges meet in a clean V (no crossing layers)
+    P = np.zeros((c, 6 * npts, 3)); sid = np.repeat(np.arange(6), npts)
+    mind = np.zeros((c, 6 * npts))
     for i in range(c):
-        pts, th, pos = [], th0[i], np.zeros(2)                    # pos = (along dd, up)
+        th, pos = th0[i], np.zeros(2)                             # pos = (along dd, up)
+
         def straight(L):
             nonlocal pos
-            out = []
-            for t in np.linspace(0, 1, npts, endpoint=False):
-                out.append(pos + L * t * np.array([math.sin(th), math.cos(th)]))
+            out = [pos + L * t * np.array([math.sin(th), math.cos(th)]) for t in np.linspace(0, 1, npts, endpoint=False)]
             pos = pos + L * np.array([math.sin(th), math.cos(th)])
             return out
+
         def turn(ang, r, sgn):
             nonlocal pos, th
-            out = []
             ctr = pos + sgn * r * np.array([math.cos(th), -math.sin(th)])
+            out = []
             for t in np.linspace(0, 1, npts, endpoint=False):
                 a_ = th + sgn * ang * t
                 out.append(ctr - sgn * r * np.array([math.cos(a_), -math.sin(a_)]))
             th = th + sgn * ang
             pos = ctr - sgn * r * np.array([math.cos(th), -math.sin(th)])
             return out
-        seg = straight(h[i]) + turn(T1[i], R1, 1) + straight(L1[i]) + turn(T2[i], R2, -1) + straight(L2[i])
-        seg = np.array(seg + [pos])[:5 * npts]
-        q = np.linspace(0, 1, len(seg))
+        seg = (straight(h[i]) + turn(T1[i], R1, 1) + straight(L1[i]) + turn(T2[i], R2b[i], -1) + straight(L2[i])
+               + turn(T3[i], R3[i], -1))
+        seg = np.array(seg + [pos])[:6 * npts]
         P[i] = N[i] + seg[:, :1] * dd[i] + seg[:, 1:2] * up
-        # V fan: slide from the neckline point to the column's own angle over the rise
-        fan = sstep(0.0, 0.6, np.clip(seg[:, 1] / max(h[i], 1e-3), 0, 1))
-        fan[npts:] = 1.0
+        hf = np.clip(seg[:, 1] / max(h[i], 1e-3), 0, 1)
+        fan = sstep(0.0, 0.6, hf); fan[npts:] = 1.0
         P[i, :, :2] += fan[:, None] * (Nh[i, :2] - N[i, :2])
-        # minimum clearance over the support for the hanging layers
-        k1 = 2 * npts
-        mind[i, k1:3 * npts] = 2 * R1
+        lap = sstep(0.0, 0.35, hf); lap[npts:] = 1.0
+        P[i] += (out_h[i] * 1.3 * left[i]) * lap[:, None]
         tt = np.linspace(0, 1, npts)
-        mind[i, 3 * npts:4 * npts] = 2 * R1 + 2 * R2 * (1 - np.cos(np.pi * tt)) / 2
-        mind[i, 4 * npts:] = 2 * R1 + 2 * R2
-    # the bag spreads sideways as it hangs (reference: hood about shoulder-blade wide)
-    drop = np.clip((N[:, None, 2] - P[..., 2]) / 12.0, 0, 1) * w[:, None]
-    P[..., 0] *= 1 + 0.4 * drop * (np.arange(P.shape[1])[None, :] >= npts)
-    # keep hanging layers off the back (push along the support gradient)
+        mind[i, 2 * npts:3 * npts] = 2 * R1
+        mind[i, 3 * npts:4 * npts] = 2 * R1 + 2 * R2b[i] * (1 - np.cos(np.pi * tt)) / 2
+        mind[i, 4 * npts:5 * npts] = 2 * R1 + 2 * R2b[i]
+        mind[i, 5 * npts:] = 2 * R1
+    # the dome spreads sideways as it hangs (reference: hood about shoulder-blade wide)
+    k = np.arange(P.shape[1])
+    spread = sstep(npts, 3 * npts, k)[None, :] * w[:, None]          # by path position: all layers of a column scale together
+    P[..., 0] *= 1 + 0.3 * spread
     flat = P.reshape(-1, 3); md = (mind * w[:, None]).reshape(-1)
     sel = md > 0
     for _ in range(4):
         dsup = support_sdf(flat[sel])
         need = md[sel] - dsup
-        g = B.grad(support_sdf, flat[sel]); g /= np.maximum(np.linalg.norm(g, axis=1), 1e-9)[:, None]
-        tmp = flat[sel]; tmp += g * np.maximum(need, 0)[:, None]; flat[sel] = tmp
+        gr = B.grad(support_sdf, flat[sel]); gr /= np.maximum(np.linalg.norm(gr, axis=1), 1e-9)[:, None]
+        tmp = flat[sel]; tmp += gr * np.maximum(need, 0)[:, None]; flat[sel] = tmp
     return flat.reshape(P.shape), sid, w
 
 
@@ -369,13 +376,13 @@ def resample(P, sid, w, rows_mult=1):
     S = np.concatenate([np.zeros((c, 1)), np.cumsum(seglen, 1)], 1)
     L = S[:, -1]
     body_end = np.maximum(L - CHAN_W, 0.45 * L)
-    sb = np.stack([S[:, np.argmax(sid == k)] for k in range(5)], 1)
-    al = [0, 2, 4, 7, 9, 10]                     # rows at segment starts: rise 2, roll 2, layer 1 3, fold 2, layer 2 1
-    ks = np.arange(0, 10 * rows_mult + 1) / rows_mult
-    al_s = np.stack([np.interp(ks, al, [sb[i, 0], sb[i, 1], sb[i, 2], sb[i, 3], sb[i, 4], body_end[i]]) for i in range(c)])
+    sb = np.stack([S[:, np.argmax(sid == k)] for k in range(6)], 1)
+    al = [0, 1, 3, 5, 8, 10, 11]                 # rows at segment starts: rise 1, roll 2, layer 1 2, fold 3, layer 2 2, curl 1
+    ks = np.arange(0, 11 * rows_mult + 1) / rows_mult
+    al_s = np.stack([np.interp(ks, al, [sb[i, 0], sb[i, 1], sb[i, 2], sb[i, 3], sb[i, 4], sb[i, 5], body_end[i]]) for i in range(c)])
     al_s = np.minimum(al_s, body_end[:, None])
     al_s = np.maximum.accumulate(al_s, axis=1)
-    un_s = body_end[:, None] * ks[None, :] / 10
+    un_s = body_end[:, None] * ks[None, :] / 11
     tgt = un_s + (al_s - un_s) * w[:, None]
     ch = body_end[:, None] + (L - body_end)[:, None] * (np.arange(1, 2 * rows_mult + 1) / (2 * rows_mult))[None, :]
     tgt = np.concatenate([tgt, ch], 1)
@@ -412,7 +419,7 @@ def hood_mesh(body, mult=1):
     chan_row = rows - 1 - 2 * mult
     for j in range(n):
         seams[tuple(sorted((idx[j, chan_row], idx[j + 1, chan_row])))] = "chan"
-        for r in (3 * mult, 7 * mult):                         # UV cuts after the roll and through the crown fold
+        for r in (3 * mult, 6 * mult, 10 * mult):              # UV cuts: after the roll, through the point fold, at the crown
             seams[tuple(sorted((idx[j, r], idx[j + 1, r])))] = "cut"
     params = dict(phi=np.repeat(phi, rows - 1), u=u[:, 1:].ravel(), w=np.repeat(w, rows - 1))
     return dict(V=newV, F=F, reg=reg, seams=seams, idx=idx, params=params, chan_row=chan_row)
@@ -439,79 +446,74 @@ def pocket_mask(P):
 
 
 def folds(P, sl, level_hi=False, hood=None):
-    """Displacement (cm, along the outward normal) of the cloth folds. Low = sculpted primary folds; hi adds secondary folds
-    and crumple. Same function on the game mesh and on the bake source, so they agree."""
+    """Displacement (cm, along the outward normal). MACRO folds (wavelength >= ~2 edge lengths of the game mesh) are on both
+    meshes so the silhouette breaks; MICRO folds only on the bake source (normal map). Same function on both meshes."""
     n = len(P)
     d = np.zeros(n)
     x, y, z = P.T
     pm = pocket_mask(P)
     prof = lambda a: 0.75 * np.sin(a) + 0.25 * (np.abs(np.sin(a)) - 0.64)   # soft, rounded heavy-fleece folds
+    hi = 1.0 if level_hi else 0.0
     for s, sg in (("l", 1), ("r", -1)):
         side = (np.sign(x) == sg) & (sl > 0.02)
-        if not side.any():
-            continue
-        Q = P[side]
-        sarc, r, l1, l2 = arm_coords(Q, s)
-        sh, el, wr = arm_axis(s)
-        ud = (el - sh) / l1; fd = (wr - el) / l2
-        inner = fd - (fd @ ud) * ud; inner /= np.linalg.norm(inner)
-        e2 = np.cross(ud, inner)
-        c = r @ inner
-        th = np.arctan2(r @ e2, c)
-        w_sl = sl[side]
-        dd = np.zeros(len(Q))
-        # elbow: compression folds on the inside of the bend, softer rings around the back
-        win = np.exp(-((sarc - l1) / 6.0) ** 2)
-        a = 2 * np.pi * (sarc - l1) / 3.4 + 1.3 * c + 0.7 * np.sin(2 * th)
-        dd += 0.62 * (0.3 + 0.7 * np.maximum(c, 0)) * win * prof(a)
-        # stacked bunching above the ribbed cuff
-        sc = l1 + l2 - 5.2
-        win = np.exp(-((sarc - (sc - 4.5)) / 3.6) ** 2) * (sarc < sc + 0.3)
-        a = 2 * np.pi * sarc / 2.8 + 0.9 * np.sin(2 * th + 0.4 * sarc) + 0.6 * th
-        dd += 0.48 * win * prof(a)
-        # upper sleeve: diagonal drag folds from the armpit along the underside
-        under = np.maximum(-(r @ np.array([0, 0, 1.0])), 0)
-        win = sstep(4, 9, sarc) * (1 - sstep(l1 - 8, l1 - 4, sarc))
-        a = 2 * np.pi * (sarc + 3.0 * th) / 7.0
-        dd += 0.26 * under * win * prof(a)
-        # forearm: soft horizontal wrinkles
-        win = sstep(l1 + 3, l1 + 6, sarc) * (1 - sstep(sc - 7, sc - 4, sarc))
-        dd += 0.30 * win * prof(2 * np.pi * sarc / 4.6 + 0.5 * np.sin(th) + 0.3 * th)
-        if level_hi:
-            win = np.exp(-((sarc - l1) / 7.0) ** 2) + np.exp(-((sarc - (sc - 4)) / 4.0) ** 2)
-            dd += 0.12 * win * prof(2 * np.pi * sarc / 1.5 + 2.1 * th + 0.8 * np.sin(3 * th))
-        d[side] += dd * np.clip(w_sl, 0, 1)
-        # armpit: radial folds fanning onto the torso side and under the sleeve
-        ap = np.array([sg * 18.6, 1.2, 129.0])
+        if side.any():
+            Q = P[side]
+            sarc, r, l1, l2 = arm_coords(Q, s)
+            sh, el, wr = arm_axis(s)
+            ud = (el - sh) / l1; fd = (wr - el) / l2
+            inner = fd - (fd @ ud) * ud; inner /= np.linalg.norm(inner)
+            e2 = np.cross(ud, inner)
+            c = r @ inner
+            th = np.arctan2(r @ e2, c)
+            dd = np.zeros(len(Q))
+            sc = l1 + l2 - 5.2
+            # elbow: two big compression folds inside the bend, softer rings around the back
+            win = np.exp(-((sarc - l1) / 6.0) ** 2)
+            dd += 0.95 * (0.35 + 0.65 * np.maximum(c, 0)) * win * prof(2 * np.pi * (sarc - l1) / 5.5 + 1.2 * c + 0.6 * np.sin(2 * th))
+            dd += 0.55 * np.maximum(c, 0) * win                 # fabric bunches outward in the bend (clearance when flexed)
+            dd += hi * 0.18 * win * prof(2 * np.pi * sarc / 1.8 + 2.1 * th + 0.8 * np.sin(3 * th))
+            # sleeve stacking above the cuff
+            win = np.exp(-((sarc - (sc - 5.0)) / 3.6) ** 2) * (sarc < sc + 0.3)
+            dd += 0.85 * win * prof(2 * np.pi * sarc / 4.2 + 0.8 * np.sin(2 * th + 0.3 * sarc) + 0.5 * th)
+            dd += hi * 0.2 * win * prof(2 * np.pi * sarc / 2.0 + 1.7 * th)
+            # upper sleeve: diagonal drag folds from the armpit along the underside
+            under = np.maximum(-(r @ np.array([0, 0, 1.0])), 0)
+            win = sstep(4, 9, sarc) * (1 - sstep(l1 - 8, l1 - 4, sarc))
+            dd += 0.45 * under * win * prof(2 * np.pi * (sarc + 3.0 * th) / 9.0)
+            # forearm: soft horizontal wrinkles
+            win = sstep(l1 + 3, l1 + 6, sarc) * (1 - sstep(sc - 8, sc - 5, sarc))
+            dd += 0.5 * win * prof(2 * np.pi * sarc / 5.5 + 0.5 * np.sin(th) + 0.3 * th)
+            d[side] += dd * np.clip(sl[side], 0, 1)
+        # armpit: big radial folds fanning onto the torso side and under the sleeve
+        ap = np.array([sg * 20.6, 1.2, 128.5])
         v = P - ap
         rr = np.linalg.norm(v, axis=1)
         al = np.arctan2(v[:, 1], v[:, 2] + 1e-9)
-        win = np.exp(-((rr - 7.0) / 4.5) ** 2) * sstep(1.5, 3.5, rr) * (np.abs(x) > 12)
-        d += 0.52 * win * prof(2.6 * al + 0.22 * rr)
-        if level_hi:
-            d += 0.10 * win * prof(5.3 * al + 0.5 * rr + 1.0)
+        win = np.exp(-((rr - 7.5) / 5.0) ** 2) * sstep(1.5, 3.5, rr) * (np.abs(x) > 12)
+        d += 0.9 * win * prof(2.0 * al + 0.18 * rr)
+        d += hi * 0.15 * win * prof(5.3 * al + 0.5 * rr + 1.0)
     torso = sl < 0.5
-    # waist: gathers above the ribbed band (vertical) + the blouse rolling over the band (horizontal)
     cy = np.interp(z, B.BODY_T[:, 0], B.BODY_T[:, 3])
     th = np.arctan2(x, -(y - cy))
-    win = np.exp(-((z - (B.Z_BAND + 3.5)) / 3.0) ** 2) * (z > B.Z_BAND)
-    d += torso * (1 - pm) * 0.30 * win * prof(7.0 * th + 0.9 * np.sin(3 * th) + 0.12 * z)
+    # blousing: the body rolls over the band (outward puff) and gathers into it
+    puff = np.exp(-((z - (B.Z_BAND + 2.4)) / 1.9) ** 2) * (z > B.Z_BAND + 0.2)
+    d += torso * (1 - pm) * 0.7 * puff
+    win = np.exp(-((z - (B.Z_BAND + 3.5)) / 3.2) ** 2) * (z > B.Z_BAND)
+    d += torso * (1 - 0.6 * pm) * 0.45 * win * prof(6.0 * th + 0.9 * np.sin(3 * th) + 0.12 * z)
     win = np.exp(-((z - (B.Z_BAND + 1.6)) / 1.8) ** 2) * (z > B.Z_BAND + 0.3)
-    d += torso * (1 - pm) * 0.18 * win * prof(2 * np.pi * (z - B.Z_BAND) / 3.0 + 0.5 * np.sin(4 * th))
+    d += hi * torso * (1 - pm) * 0.22 * win * prof(2 * np.pi * (z - B.Z_BAND) / 3.0 + 0.5 * np.sin(4 * th))
     # side seams pull a few diagonal folds over the hips
-    win = np.exp(-((z - (B.Z_BAND + 6.0)) / 5.0) ** 2) * sstep(0.75, 0.95, np.abs(np.sin(th)))
-    d += torso * (1 - pm) * 0.24 * win * prof(2 * np.pi * (z + 6 * np.abs(th)) / 6.5)
+    win = np.exp(-((z - (B.Z_BAND + 7.0)) / 5.0) ** 2) * sstep(0.75, 0.95, np.abs(np.sin(th)))
+    d += torso * (1 - pm) * 0.35 * win * prof(2 * np.pi * (z + 6 * np.abs(th)) / 8.0)
     # soft large-scale drape everywhere (keeps panels from looking inflated)
-    d += (1 - pm) * 0.16 * np.sin(0.23 * x + 0.11 * z + 0.7) * np.sin(0.19 * y + 0.13 * z + 1.9)
-    if level_hi:
-        d += (1 - pm) * 0.05 * np.sin(0.9 * x + 0.5 * z) * np.sin(0.8 * y - 0.7 * z + 0.4) * np.sin(0.6 * z + 1.3 * x)
+    d += (1 - pm) * 0.25 * np.sin(0.23 * x + 0.11 * z + 0.7) * np.sin(0.19 * y + 0.13 * z + 1.9)
+    d += hi * (1 - pm) * 0.06 * np.sin(0.9 * x + 0.5 * z) * np.sin(0.8 * y - 0.7 * z + 0.4) * np.sin(0.6 * z + 1.3 * x)
     if hood is not None:
         phi, u, w = hood
-        bag = sstep(0.10, 0.25, u) * (1 - sstep(0.80, 0.92, u)) * w
+        bag = sstep(0.35, 0.5, u) * (1 - sstep(0.75, 0.85, u)) * w          # outer dome only, not the roll / curl
         a = 5.4 * (phi - np.pi) + 0.9 * np.sin(3.0 * u + phi)
-        d += bag * (0.55 + 0.25 * np.sin(2 * phi)) * prof(a)
-        if level_hi:
-            d += bag * 0.12 * prof(11 * (phi - np.pi) + 4 * u)
+        d += bag * (0.35 + 0.1 * np.sin(2 * phi)) * prof(a)
+        d += hi * bag * 0.15 * prof(11 * (phi - np.pi) + 4 * u)
     return d
 
 
@@ -557,7 +559,7 @@ def front_hit(x, z, f):
 
 
 def pocket_mesh(mult=1, surf_f=None):
-    ns, nv = 16 * mult, 8 * mult
+    ns, nv = 14 * mult, 8 * mult
     s = np.linspace(-1, 1, ns + 1); v = np.linspace(0, 1, nv + 1)
     S, Vv = np.meshgrid(s, v, indexing="ij")
     z = PK_Z0 + (PK_Z1 - PK_Z0) * Vv
@@ -743,7 +745,7 @@ def string_paths(Vo, Fo, eyelets):
     from mathutils.bvhtree import BVHTree
     bvh = BVHTree.FromPolygons([Vector(v) for v in Vo], [list(map(int, f)) for f in Fo])
     out = []
-    for (p, n), length in zip(eyelets, (24.5, 23.8)):
+    for (p, n), length in zip(eyelets, (18.5, 17.8)):        # ~16-17 cm hang below the eyelets
         start = [p - n * 0.55, p - n * 0.1, p + n * 0.55, p + n * 1.0 + np.array([0, 0, -0.3])]
         X = rope(start, length, bvh, STR_R + 0.12)
         Xs = X.copy()
@@ -758,7 +760,7 @@ def string_parts(paths, hi=False):
     parts = []
     for P in paths:
         L = np.r_[0, np.cumsum(np.linalg.norm(np.diff(P, axis=0), axis=1))][-1]
-        cord = resample_poly(P, 90 if hi else 34)
+        cord = resample_poly(P, 90 if hi else 24)
         V, F, sm = tube(cord, STR_R, 12 if hi else 6, squash=STR_SQ)
         parts.append((V, F, sm, R_STRING, tube.coords))
         s = np.r_[0, np.cumsum(np.linalg.norm(np.diff(P, axis=0), axis=1))]
@@ -800,15 +802,15 @@ def build(level, eyelets=None, paths=None, log=print):
     if not hi:                                   # the game mesh can't carry 3 cm folds: keep their low-pass, bake the rest
         E = edges_of(F)[0]
         deg = np.bincount(E.ravel(), minlength=len(V)).astype(float)
-        for _ in range(3):
+        for _ in range(1):                       # macro folds are sized for this mesh: one light pass only
             acc = np.zeros(len(V)); np.add.at(acc, E[:, 0], d[E[:, 1]]); np.add.at(acc, E[:, 1], d[E[:, 0]])
-            d = 0.5 * d + 0.5 * acc / np.maximum(deg, 1)
+            d = 0.7 * d + 0.3 * acc / np.maximum(deg, 1)
     # channel: rounded bulge between the stitch row and the edge
     u_ch = np.zeros(len(V)); rows = hood["idx"].shape[1]
     for j in range(hood["idx"].shape[0]):
         for r in range(hood["chan_row"] + 1, rows - 1):
             u_ch[hood["idx"][j, r]] = 1
-    d += 0.22 * u_ch
+    d += 0.35 * u_ch
     V = displace(V, F, d)
     thick = vertex_thickness(len(V), F, reg)
     V, npush = clear_body(V, F, thick, mask=np.r_[np.ones(nb, bool), np.zeros(len(hood["V"]), bool)])
@@ -820,7 +822,7 @@ def build(level, eyelets=None, paths=None, log=print):
         vn = vertex_normals(V, F)
         eyelets = []
         nn = idx.shape[0] - 1
-        for j in (1 * mult, nn - 1 * mult):
+        for j in (4 * mult, nn - 4 * mult):
             a, b = idx[j, cr], idx[j, rows - 1]
             p = (V[a] + V[b]) / 2; n = vn[a] + vn[b]; n /= np.linalg.norm(n)
             eyelets.append((p + n * 0.03, n))            # 0.3 mm proud: no flange face coplanar with the channel
