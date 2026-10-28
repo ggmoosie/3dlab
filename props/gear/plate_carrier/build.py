@@ -12,7 +12,8 @@ import spec
 ITEM = "PlateCarrier"
 TEX = os.path.join(HERE, "textures"); OUT = os.path.join(HERE, "fbx"); REN = os.path.join(HERE, "renders")
 SIZE = int(A.get("size", 2048))
-INNER = dict(name="inner", outline=[(0, 0), (160, 0), (160, 160), (0, 160)], color=spec.COLOR, puff_tex=0.3, features=[])
+INNER = dict(name="inner", outline=[(0, 0), (160, 0), (160, 160), (0, 160)], color=spec.COLOR, puff_tex=0.3,
+             features=[dict(kind="spacer", rect=(0, 0, 160, 160))])                   # undersides: spacer mesh
 
 
 def maps():

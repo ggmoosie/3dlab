@@ -18,7 +18,7 @@ def proxy():
     m = bpy.data.materials.new("Clay"); m.use_nodes = True
     b = m.node_tree.nodes["Principled BSDF"]; b.inputs["Base Color"].default_value = (0.32, 0.31, 0.30, 1); b.inputs["Roughness"].default_value = 0.7
     out = []
-    for kind, loc, scl in (("cyl", (0, 0.01, 1.18), (0.158, 0.108, 0.26)), ("sph", (0, 0.01, 1.40), (0.20, 0.115, 0.13)),
+    for kind, loc, scl in (("cyl", (0, 0.01, 1.18), (0.158, 0.108, 0.26)), ("sph", (0, 0.01, 1.40), (0.17, 0.11, 0.105)),
                            ("cyl", (0, 0.01, 1.56), (0.055, 0.055, 0.09)), ("sph", (0, 0.0, 1.72), (0.09, 0.105, 0.115))):
         if kind == "cyl":
             bpy.ops.mesh.primitive_cylinder_add(vertices=48, location=loc)

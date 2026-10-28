@@ -3,8 +3,9 @@
 shooter's-cut front + back plate bags, padded shoulder straps, PALS cummerbund, loop field, drag handle.
 Every number here is layout DATA: a new carrier/vest/rig = a new spec file."""
 import numpy as np
+from lab.softgoods.core import rrect
 
-COLOR = "#4a503d"                        # ranger green; swap per skin
+COLOR = "#2b2c2e"                        # black (refs); ranger green "#4a503d", coyote "#7a6a4f"
 CHEST = dict(yc=10.0, A=178.0, B=125.0)  # torso ellipse the plate bags sit on (outer surface of the wearer + gap)
 
 
@@ -34,48 +35,55 @@ def shooters_cut(w, h, cut_w, cut_h, uc):
 
 
 def panels():
+    """TacTec-class layout read off the user's references (front 3/4, side, back, front on mannequin); no logo patch"""
     C = CHEST; out = []
-    # ---- front plate bag
+    # ---- front plate bag: loop strip, pull tab, laser-cut PALS grid; lower third hidden by the front flap
     P = ellipse_arc(C["A"], C["B"], C["yc"], 1130, -1.25, 1.25); uc = arclen(P) / 2
-    out.append(dict(name="front", path=P, across=(0, 0, 1), center=(0, C["yc"], 1300), t=24, puff=5, puff_w=22, binding=12,
-                    color=COLOR, outline=shooters_cut(275, 330, 42, 70, uc), features=[
-                        dict(kind="loop", rect=(uc - 95, 248, uc + 95, 300)),
-                        dict(kind="molle", rect=(uc - 116, 22, uc + 116, 176), rows=3),
-                        dict(kind="seam", pts=[(uc - 125, 205), (uc + 125, 205)], depth=0.6),
-                        dict(kind="label", rect=(uc + 90, 186, uc + 118, 198)),
-                        dict(kind="wrinkle", rect=(uc - 135, 180, uc - 60, 250), angle=60, amp=0.7, wave=16),
-                        dict(kind="wrinkle", rect=(uc + 60, 180, uc + 135, 250), angle=-60, amp=0.7, wave=16)]))
-    # ---- back plate bag
+    out.append(dict(name="front", path=P, across=(0, 0, 1), center=(0, C["yc"], 1300), t=24, puff=5, puff_w=22, binding=10,
+                    color=COLOR, outline=shooters_cut(275, 335, 38, 62, uc), features=[
+                        dict(kind="loop", rect=(uc - 88, 296, uc + 88, 324)),
+                        dict(kind="label", rect=(uc - 16, 283, uc + 16, 291)),
+                        dict(kind="lasercut", rect=(uc - 118, 102, uc + 118, 280)),
+                        dict(kind="wrinkle", rect=(uc - 135, 230, uc - 70, 330), angle=60, amp=0.6, wave=16),
+                        dict(kind="wrinkle", rect=(uc + 70, 230, uc + 135, 330), angle=-60, amp=0.6, wave=16)]))
+    # ---- back plate bag: handle/loop strip, laser-cut grid
     P = ellipse_arc(C["A"], C["B"], C["yc"], 1110, -1.25, 1.25, back=True); uc = arclen(P) / 2
-    out.append(dict(name="back", path=P, across=(0, 0, 1), center=(0, C["yc"], 1300), t=24, puff=5, puff_w=22, binding=12,
-                    color=COLOR, outline=shooters_cut(280, 350, 40, 66, uc), features=[
-                        dict(kind="molle", rect=(uc - 118, 20, uc + 118, 280), rows=5),
-                        dict(kind="wrinkle", rect=(uc - 140, 280, uc + 140, 350), angle=90, amp=0.6, wave=18)]))
-    # ---- cummerbund, both sides (under the front bag, PALS 3 rows)
+    out.append(dict(name="back", path=P, across=(0, 0, 1), center=(0, C["yc"], 1300), t=24, puff=5, puff_w=22, binding=10,
+                    color=COLOR, outline=shooters_cut(280, 350, 38, 62, uc), features=[
+                        dict(kind="loop", rect=(uc - 60, 312, uc + 60, 338)),
+                        dict(kind="lasercut", rect=(uc - 118, 100, uc + 118, 300)),
+                        dict(kind="wrinkle", rect=(uc - 140, 300, uc + 140, 350), angle=90, amp=0.5, wave=18)]))
+    # ---- full-width front + back flaps: 3 rows of real PALS webbing (the cummerbund closes under them)
+    for nm, back, z in (("flap_front", False, 1118), ("flap_back", True, 1100)):
+        P = ellipse_arc(C["A"] + 33, C["B"] + 33, C["yc"], z, -1.05, 1.05, back=back); uc = arclen(P) / 2
+        out.append(dict(name=nm, path=P, across=(0, 0, 1), center=(0, C["yc"], 1300), t=7, puff=2.5, puff_w=12, binding=9,
+                        color=COLOR, outline=rrect(uc - 178, 0, uc + 178, 150, r=10), features=[
+                            dict(kind="molle", rect=(uc - 168, 4, uc + 168, 148), rows=3),
+                            dict(kind="wrinkle", rect=(uc - 178, 0, uc - 90, 150), angle=75, amp=0.7, wave=14),
+                            dict(kind="wrinkle", rect=(uc + 90, 0, uc + 178, 150), angle=-75, amp=0.7, wave=14)]))
+    # ---- elastic sides: ruched bungee bands + webbing ladder, gaps between
     for sx in (-1, 1):
-        a = np.linspace(0, 1, 60)
-        ang = (0.95 + (2.35 - 0.95) * a) * sx                         # from the back edge round the side to the front
-        Ac, Bc = C["A"] - 10, C["B"] - 8
-        P = np.c_[Ac * np.sin(ang), C["yc"] + Bc * np.cos(ang), np.full(60, 1150)]
+        ang = (0.85 + (2.20 - 0.85) * np.linspace(0, 1, 60)) * sx
+        Ac, Bc = C["A"] - 4, C["B"] - 3
+        P = np.c_[Ac * np.sin(ang), C["yc"] + Bc * np.cos(ang), np.full(60, 1122)]
         L = arclen(P)
-        out.append(dict(name=f"cummerbund_{'L' if sx > 0 else 'R'}", path=P, across=(0, 0, 1), center=(0, C["yc"], 1300),
-                        t=6, puff=1.5, puff_w=10, binding=10, color=COLOR, outline=[(4, 0), (L - 4, 0), (L - 4, 160), (4, 160)],
-                        features=[dict(kind="molle", rect=(14, 4, L - 30, 156), rows=3),
-                                  dict(kind="wrinkle", rect=(L - 110, 0, L - 4, 160), angle=80, amp=1.0, wave=12),
-                                  dict(kind="seam", pts=[(L - 26, 8), (L - 26, 152)], depth=0.5)]))
-    # ---- padded shoulder straps
+        out.append(dict(name=f"side_{'L' if sx > 0 else 'R'}", path=P, across=(0, 0, 1), center=(0, C["yc"], 1300), t=5, puff=1.0,
+                        puff_w=8, binding=0, color=COLOR, outline=[(2, 0), (L - 2, 0), (L - 2, 140), (2, 140)],
+                        features=[dict(kind="elastic", rect=(2, 0, L - 2, 140), rows=3)]))
+    # ---- wide padded shoulder pads (spacer mesh underneath via the inner tile), adjuster cover tab at the front
     for sx in (-1, 1):
-        x = 96 * sx
-        P = catmull([(x, -108, 1420), (x * 1.01, -98, 1478), (x * 1.04, -62, 1536), (x * 1.05, -5, 1556),
-                     (x * 1.04, 52, 1540), (x * 1.01, 102, 1492), (x, 118, 1440)])
+        x = 98 * sx
+        P = catmull([(x, -112, 1418), (x * 1.01, -104, 1470), (x * 1.04, -72, 1528), (x * 1.06, -15, 1552),
+                     (x * 1.05, 45, 1540), (x * 1.02, 98, 1494), (x, 120, 1440)])
         L = arclen(P)
-        out.append(dict(name=f"strap_{'L' if sx > 0 else 'R'}", path=P, across=(1, 0, 0), center=(x, 10, 1380), t=12, puff=4,
-                        puff_w=14, binding=8, color=COLOR, outline=[(0, -32), (L, -32), (L, 32), (0, 32)],
-                        features=[dict(kind="stitch", pts=[(10, 0), (L - 10, 0)]),
-                                  dict(kind="molle", rect=(L * 0.18, -13, L * 0.42, 13), rows=1),
-                                  dict(kind="wrinkle", rect=(L * 0.35, -32, L * 0.65, 32), angle=0, amp=0.8, wave=10)]))
+        out.append(dict(name=f"pad_{'L' if sx > 0 else 'R'}", path=P, across=(1, 0, 0), center=(x, 10, 1380), t=16, puff=6,
+                        puff_w=18, binding=8, color=COLOR, outline=rrect(0, -48, L, 48, r=14),
+                        features=[dict(kind="pocket", rect=(8, -34, L * 0.24, 34), flap=14, puff=2.5),
+                                  dict(kind="stitch", pts=[(L * 0.28, -30), (L * 0.95, -30)]),
+                                  dict(kind="stitch", pts=[(L * 0.28, 30), (L * 0.95, 30)]),
+                                  dict(kind="wrinkle", rect=(L * 0.3, -48, L * 0.7, 48), angle=0, amp=0.9, wave=11)]))
     # ---- drag handle (webbing loop on the back bag's top edge)
-    P = catmull([(-42, 120, 1452), (-30, 128, 1478), (0, 132, 1488), (30, 128, 1478), (42, 120, 1452)])
+    P = catmull([(-42, 122, 1456), (-30, 130, 1482), (0, 134, 1492), (30, 130, 1482), (42, 122, 1456)])
     out.append(dict(name="drag_handle", path=P, across=(0, 1, 0), center=(0, 125, 1420), t=3, puff=0.6, puff_w=6, binding=0,
                     color=COLOR, outline=[(0, -19), (arclen(P), -19), (arclen(P), 19), (0, 19)],
                     features=[dict(kind="molle", rect=(-5, -19, arclen(P) + 5, 19), rows=1, web=38)]))

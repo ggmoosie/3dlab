@@ -6,7 +6,7 @@ Layers per panel: H (mm height), ID (material id), thread (stitch coverage), cov
 import numpy as np
 from scipy import ndimage
 
-FABRIC, WEBBING, LOOP, BINDING, THREAD, ELASTIC, LABEL = range(7)
+FABRIC, WEBBING, LOOP, BINDING, THREAD, ELASTIC, LABEL, LASER, SLOT, MESH = range(10)
 #            name        albedo x  rough  weave pitch  weave amp
 MATS = {FABRIC:  ("cordura", 1.00, 0.88, 0.55, 0.05),
         WEBBING: ("webbing", 0.92, 0.80, 0.45, 0.06),
@@ -14,7 +14,10 @@ MATS = {FABRIC:  ("cordura", 1.00, 0.88, 0.55, 0.05),
         BINDING: ("binding", 0.88, 0.80, 0.45, 0.05),
         THREAD:  ("thread",  0.70, 0.70, 0.00, 0.00),
         ELASTIC: ("elastic", 0.85, 0.85, 0.35, 0.08),
-        LABEL:   ("label",   1.25, 0.75, 0.25, 0.03)}
+        LABEL:   ("label",   1.25, 0.75, 0.25, 0.03),
+        LASER:   ("laminate", 0.95, 0.72, 0.50, 0.03),     # laser-cut laminate face
+        SLOT:    ("slot",    0.30, 0.95, 0.00, 0.00),      # cut-through / gap (sees the dark layer below)
+        MESH:    ("spacer",  0.85, 0.92, 0.00, 0.00)}      # 3-D spacer mesh (inner pads)
 
 
 # ------------------------------------------------------------------ geometry helpers (mm)
@@ -166,7 +169,50 @@ def f_pocket(L, U, V, tpm, rect, flap=20.0, puff=3.0, seed=0, **_):
     f_seam(L, U, V, tpm, [(u0 + 2, v1 - flap), (u1 - 2, v1 - flap)], depth=1.2, width=1.5)
 
 
-FEATURES = dict(molle=f_molle, loop=f_loop, label=f_label, stitch=f_stitch, seam=f_seam, wrinkle=f_wrinkle, pocket=f_pocket)
+def f_lasercut(L, U, V, tpm, rect, pitch_u=38.1, pitch_v=25.4, slot_l=27.0, slot_h=4.2, **_):
+    """laser-cut PALS laminate: horizontal slots in staggered-free rows, column stitch lines between slot columns"""
+    u0, v0, u1, v1 = rect
+    inside = _rect_uv(U, V, rect)
+    L["H"] = np.where(inside, L["H"] + 0.7, L["H"]); L["ID"][inside] = LASER
+    ncol = int((u1 - u0) // pitch_u); uc0 = (u0 + u1) / 2 - ncol * pitch_u / 2
+    nrow = int((v1 - v0) // pitch_v)
+    for i in range(nrow):
+        vc = v1 - pitch_v / 2 - i * pitch_v
+        for k in range(ncol):
+            ucn = uc0 + (k + 0.5) * pitch_u
+            du, dv = np.abs(U - ucn) - slot_l / 2 + slot_h / 2, np.abs(V - vc)
+            sd = np.hypot(np.maximum(du, 0), dv) - slot_h / 2                     # stadium slot
+            cut = (sd < 0) & inside
+            L["H"] = np.where(cut, L["H"] - 2.4 * np.clip(-sd * 2, 0, 1), L["H"]); L["ID"][cut] = SLOT
+    for k in range(ncol + 1):
+        uk = uc0 + k * pitch_u
+        f_stitch(L, U, V, tpm, [(uk, v0 + 2), (uk, v1 - 2)])
+
+
+def f_elastic(L, U, V, tpm, rect, rows=3, band=22.0, ladder=46.0, **_):
+    """elastic side panel: ruched bungee bands, see-through gaps, vertical webbing ladder"""
+    u0, v0, u1, v1 = rect; inside = _rect_uv(U, V, rect)
+    L["H"] = np.where(inside, L["base"] - 1.5, L["H"]); L["ID"][inside] = SLOT
+    pitch = (v1 - v0) / rows
+    for i in range(rows):
+        vc = v1 - pitch / 2 - i * pitch; dv = np.abs(V - vc); m = inside & (dv < band / 2)
+        ruche = 0.5 + 0.5 * np.sin(2 * np.pi * (U + 3 * noise(U.shape, 2 * tpm, i)) / 5.0)
+        L["H"] = np.where(m, L["base"] + 1.6 * np.sqrt(np.clip(1 - (dv / (band / 2)) ** 2, 0, 1)) * (0.7 + 0.3 * ruche), L["H"])
+        L["ID"][m] = ELASTIC
+    for k in range(int((u1 - u0) // ladder) + 1):
+        uk = u0 + ladder / 2 + k * ladder; m = inside & (np.abs(U - uk) < 12.7)
+        L["H"] = np.where(m, L["base"] + 2.4 + 0.05 * np.sin(2 * np.pi * V / 0.9), L["H"]); L["ID"][m] = WEBBING
+
+
+def f_spacer(L, U, V, tpm, rect, cell=6.0, **_):
+    """3-D spacer mesh (pad undersides): diamond holes"""
+    inside = _rect_uv(U, V, rect)
+    a, b = (U + V) / cell, (U - V) / cell
+    hole = (np.abs(a - np.round(a)) < 0.3) & (np.abs(b - np.round(b)) < 0.3)
+    L["H"] = np.where(inside, L["H"] + np.where(hole, -0.9, 0.5), L["H"]); L["ID"][inside & ~hole] = MESH; L["ID"][inside & hole] = SLOT
+
+
+FEATURES = dict(lasercut=f_lasercut, elastic=f_elastic, spacer=f_spacer, molle=f_molle, loop=f_loop, label=f_label, stitch=f_stitch, seam=f_seam, wrinkle=f_wrinkle, pocket=f_pocket)
 
 
 # ------------------------------------------------------------------ one panel
