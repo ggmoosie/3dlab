@@ -1,0 +1,28 @@
+{
+ "L": {
+  "iou": 0.9618,
+  "camera": {
+   "roll_deg": 0.0062,
+   "scale": 0.9998,
+   "tx_px": 0.8522,
+   "ty_px": 0.6308,
+   "persp_x": 0.0011,
+   "persp_y": -0.0535
+  },
+  "photo_only": 0.0186,
+  "model_only": 0.0204
+ },
+ "R": {
+  "iou": 0.9521,
+  "camera": {
+   "roll_deg": -0.1197,
+   "scale": 0.9947,
+   "tx_px": -10.3242,
+   "ty_px": 0.8691,
+   "persp_x": 0.3763,
+   "persp_y": -0.2726
+  },
+  "photo_only": 0.0231,
+  "model_only": 0.026
+ }
+}

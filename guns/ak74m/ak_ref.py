@@ -93,6 +93,31 @@ def poly_mask(poly, shape):
 
 
 _F = {}
+UP = 6
+VEC_TOL = 0.2                                          # Douglas-Peucker tolerance (photo px) of the vectorised outline
+ARC_SIGMA = 1.6                                        # smoothing along the contour (photo px of arc): kills 1-px stairs
+
+
+def vector_mask(m, sigma, up):
+    """traced pixels -> clean outline: smooth (sigma px), sub-pixel contours, Douglas-Peucker simplify (straight edges stay
+    straight, curves smooth, no pixel stairs), rasterise even-odd at `up` x supersampling"""
+    from skimage.measure import find_contours, approximate_polygon
+    g = ndimage.gaussian_filter(m.astype(np.float32), sigma)
+    im = Image.new("1", (m.shape[1] * up, m.shape[0] * up), 0)
+    acc = np.zeros((m.shape[0] * up, m.shape[1] * up), bool)
+    for c in find_contours(np.pad(g, 1), 0.5):
+        if len(c) > 8:                                                                  # resample by arc length, smooth along it
+            seg = np.r_[0, np.cumsum(np.hypot(*np.diff(c, axis=0).T))]
+            t = np.arange(0, seg[-1], 0.25)
+            c = np.c_[np.interp(t, seg, c[:, 0]), np.interp(t, seg, c[:, 1])]
+            c = ndimage.gaussian_filter1d(c, ARC_SIGMA / 0.25, axis=0, mode="wrap")
+        c = approximate_polygon(c - 1, tolerance=VEC_TOL)
+        if len(c) < 3:
+            continue
+        p = Image.new("1", im.size, 0)
+        ImageDraw.Draw(p).polygon([((x + 0.5) * up, (r + 0.5) * up) for r, x in c], fill=1)
+        acc ^= np.asarray(p, bool)                                                     # even-odd: holes stay holes
+    return acc
 
 
 def prof(name, blur=0.6, photo=PHOTO):
@@ -104,11 +129,10 @@ def prof(name, blur=0.6, photo=PHOTO):
     m = fg & poly_mask(PARTS[name], fg.shape)
     ys, xs = np.nonzero(m)
     x0, x1, r0, r1 = xs.min() - 10, xs.max() + 11, ys.min() - 10, ys.max() + 11
-    c = Image.fromarray((m[r0:r1, x0:x1] * 255).astype(np.uint8)).resize(((x1 - x0) * UP, (r1 - r0) * UP), Image.BILINEAR)
-    c = c.filter(ImageFilter.GaussianBlur(UP * blur))
-    hi = np.asarray(c) > 127
+    hi = vector_mask(m[r0:r1, x0:x1], blur, UP)
     res = S_MM / UP
     d = (ndimage.distance_transform_edt(~hi) - ndimage.distance_transform_edt(hi)) * res
+    d = ndimage.gaussian_filter(d, 1.6)                                                # EDT quantisation ripple off the bevels
     # Field2D wants columns increasing in its first coordinate: our y DEcreases with photo x -> flip columns
     d = d[:, ::-1]
     y0 = (X_MUZ - x1) * S_MM
