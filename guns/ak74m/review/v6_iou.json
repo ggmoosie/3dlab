@@ -1,0 +1,28 @@
+{
+ "L": {
+  "iou": 0.978,
+  "camera": {
+   "roll_deg": -0.0061,
+   "scale": 0.9996,
+   "tx_px": 0.816,
+   "ty_px": 0.4967,
+   "persp_x": 0.0001,
+   "persp_y": 0.0027
+  },
+  "photo_only": 0.0081,
+  "model_only": 0.0143
+ },
+ "R": {
+  "iou": 0.9687,
+  "camera": {
+   "roll_deg": -0.1061,
+   "scale": 1.0,
+   "tx_px": -10.2637,
+   "ty_px": 1.3011,
+   "persp_x": 0.3639,
+   "persp_y": -0.1978
+  },
+  "photo_only": 0.0158,
+  "model_only": 0.016
+ }
+}

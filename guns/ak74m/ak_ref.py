@@ -60,6 +60,9 @@ def masks(photo=PHOTO):
     hl, hn = ndimage.label(holes)
     hs = ndimage.sum(holes, hl, range(1, hn + 1))
     fg = fg | np.isin(hl, 1 + np.nonzero(hs < 90)[0])                                  # small = shiny pin heads, not holes
+    sl = ndimage.find_objects(hl)
+    glare = [i + 1 for i, q in enumerate(sl) if (q[1].stop - q[1].start) > 25 * (q[0].stop - q[0].start)]
+    fg = fg | np.isin(hl, glare)                                                       # long hair-thin = specular streak, not a gap
     _M[photo] = (fg, a)
     return _M[photo]
 
@@ -73,15 +76,16 @@ PARTS = {
     "gasblock": [(338, 252), (375, 252), (375, 302), (338, 302)],
     "gastube":  [(352, 234), (448, 234), (448, 264), (352, 264)],
     "hg_upper": [(444, 230), (565, 230), (565, 262), (444, 262)],
-    "hg_lower": [(444, 262), (575, 262), (575, 320), (444, 320)],
-    "rsight":   [(564, 212), (660, 212), (660, 252), (564, 252)],
+    "hg_lower": [(444, 262), (622, 262), (622, 314), (444, 314)],          # runs back to the trunnion (x 622)
+    "rsight":   [(564, 212), (660, 212), (660, 252), (622, 252), (622, 262), (564, 262)],
     "dcover":   [(605, 230), (892, 230), (892, 262), (605, 262)],
-    "receiver": [(560, 250), (892, 250), (892, 347), (828, 347), (828, 304), (560, 304)],
+    "receiver": [(622, 258), (892, 258),          # top rails live under the dust cover
+                  (892, 347), (821.5, 347), (821.5, 304), (622, 304)],
     "tguard":   [(760, 300), (828, 300), (828, 352), (760, 352)],              # parametric strip (thin, light: not traced)
     "trigger":  [(781, 303), (812, 303), (812, 339), (781, 339)],
     "magcatch": [(731, 300), (769, 300), (769, 362), (731, 362)],
     "grip":     [(836, 318), (935, 300), (935, 425), (836, 425)],
-    "mag":      [(596, 300), (732, 300), (732, 498), (596, 498)],
+    "mag":      [(622, 300), (732, 300), (732, 498), (590, 498), (590, 314), (622, 314)],
     "stock":    [(886, 252), (1158, 252), (1158, 385), (886, 385)],
 }
 

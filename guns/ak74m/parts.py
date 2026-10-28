@@ -9,6 +9,7 @@ sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, "../.."))
 from lab import sdf as S
 import ak_ref as R
 import ak_spec as SP
+import details as DT
 
 ARGS = dict(a.split("=", 1) for a in sys.argv[1:] if "=" in a)
 ONLY = ARGS["parts"].split(",") if "parts" in ARGS else None
@@ -41,10 +42,10 @@ def slab(P2, X, hw, r=0.8):
 
 # ------------------------------------------------------------------ muzzle end
 def brake(X, Y, Z):
-    d = lathe_photo(Y, Z, X, "brake", rmax=11.6)
+    d = lathe_photo(Y, Z, X, "brake", zc=bp(0, 278.0)[1], rmax=14.0)
     d = S.diff(d, S.cyl(X, Y, Z, "y", (0, 0), 3.4, -100, 5))                          # bore
-    y0, z0 = bp(168, 270); y1, z1 = bp(188, 285)
-    d = S.rdiff(d, S.box(X, Y, Z, (-20, y1, z1), (20, y0, z0), 2.0), 0.6)           # two side windows (through)
+    y0, z0 = bp(170, 271); y1, z1 = bp(183.5, 285)                                    # window = the photo's hole bbox
+    d = S.rdiff(d, S.box(X, Y, Z, (-20, y1, z1), (20, y0, z0), 1.6), 0.5)           # two side windows (through)
     d = S.rdiff(d, S.cyl(X, Y, Z, "y", (0, 0), 7.5, -4, 5), 0.6)                     # stepped front face
     return d
 
@@ -56,21 +57,21 @@ def fsb(X, Y, Z):
     d = slab(P2, X, hw, 1.0)
     gap = np.maximum.reduce([np.abs(X) - 3.4, zear + 2 - Z, -(np.abs(X) - 1.2)])     # U ears around the centre post
     d = S.rdiff(d, gap, 0.5)
-    y, z = bp(255, 250)
-    d = S.diff(d, S.cyl(X, Y, Z, "x", (y, z), 4.6, -20, 20))                          # through hole
+    y, z = bp(263, 265)                                                             # big sight hole comes from the trace
+    d = S.diff(d, S.cyl(X, Y, Z, "x", (y, z), 2.4, -20, 20))                          # small pin hole (filled in the mask)
     return d
 
 
 def barrel(X, Y, Z):
     y0 = bp(276, 0)[0]; y1 = bp(565, 0)[0]
-    r = np.interp(Y, [y1, bp(345, 0)[0], y0], [10.2, 8.4, 8.0])
+    r = np.interp(Y, [y1, bp(345, 0)[0], y0], [9.6, 7.4, 7.3])
     d = np.maximum(np.hypot(X, Z) - r, np.maximum(y1 - Y, Y - y0))
     return S.diff(d, S.cyl(X, Y, Z, "y", (0, 0), 2.8, y1 - 5, y0 + 5))
 
 
 def rod(X, Y, Z):
-    _, z = bp(0, 292.5)
-    return S.cyl(X, Y, Z, "y", (0, z), 3.0, bp(558, 0)[0], bp(246, 0)[0], 1.0)
+    _, z = bp(0, 291.6)                                                             # photo: rows 289.5-293.8
+    return S.cyl(X, Y, Z, "y", (0, z), 2.4, bp(558, 0)[0], bp(246, 0)[0], 1.0)
 
 
 def gasblock(X, Y, Z):
@@ -105,7 +106,9 @@ def dcover(X, Y, Z):
     P2 = R.prof("dcover")(Y, Z)
     hw = HW["dust_cover"]
     cr = R.column_radius(*_xr("dcover"), "dcover")                                  # the cover's top follows the photo
-    ys = np.array([c[0] for c in cr]); zt = np.array([c[2] + c[1] for c in cr]); o = np.argsort(ys)
+    ys = np.array([c[0] for c in cr]); o = np.argsort(ys)
+    from scipy.ndimage import median_filter, gaussian_filter1d
+    zt = gaussian_filter1d(median_filter(np.array([c[2] + c[1] for c in cr]), 9, mode="nearest"), 3, mode="nearest")   # no per-column noise
     ztop = np.interp(Y, ys[o], zt[o])
     top = np.hypot(X, np.maximum(Z - (ztop - hw), 0)) - hw
     return S.rinter(P2, np.maximum(np.abs(X) - hw, top), 0.6)
@@ -116,7 +119,7 @@ def receiver(X, Y, Z):
 
 
 # trigger-guard centre line read off the left photo (px): front leg x 765, flat bottom row 347, rear leg x 820
-TG_PATH = [(765.5, 304), (765.5, 336), (767, 341), (771, 344.5), (777, 346.5), (800, 347.5), (812, 346.5), (817, 343.5),
+TG_PATH = [(765, 304), (765, 336), (766.5, 341), (771, 344), (777, 345.8), (800, 346.8), (812, 346.2), (817, 343.5),
            (819.5, 339), (820.5, 333), (821, 304)]
 
 
@@ -153,17 +156,45 @@ def stock(X, Y, Z):
     return slab(R.prof("stock", blur=1.4)(Y, Z), X, HW["stock"], 9.0)
 
 
+def selector(X, Y, Z):
+    """right-side selector: 1.8 mm lever standing off the receiver, rear pivot boss, front finger tab bent outward"""
+    x_in = HW["receiver"] + SP.HW.get("selector_standoff", 2.0)
+    P = [bp(*q) for q in DT.SEL_PATH]
+    d2 = np.full_like(Y, 1e3)
+    for a, b in zip(P, P[1:]):
+        d2 = np.minimum(d2, S.capsule2(Y, Z, a, b, 4.6))                          # ~9 mm wide stamped lever
+    lever = S.extrude(d2, -X, x_in, x_in + 1.8, 0.4)
+    yp, zp = bp(*DT.SEL_PIVOT)
+    boss = S.cyl(X, Y, Z, "x", (yp, zp), 5.6, -(x_in + 2.6), -HW["receiver"] + 0.5, 0.6)
+    (ya, za), (yb, zb) = bp(*DT.SEL_TAB[0]), bp(*DT.SEL_TAB[2])
+    tab = S.extrude(S.rect2(Y, Z, (min(ya, yb), min(za, zb)), (max(ya, yb), max(za, zb)), 0.8), -X, x_in, x_in + 5.5, 0.5)
+    return S.runion(S.runion(lever, boss, 0.6), tab, 0.6)
+
+
 # ------------------------------------------------------------------ table
+def _bbox(pts, pad):
+    P = np.array([bp(*q) for q in pts])
+    return P[:, 0].min() - pad, P[:, 0].max() + pad, P[:, 1].min() - pad, P[:, 1].max() + pad
+
+
+BOX = {"selector": _bbox(DT.SEL_PATH + DT.SEL_TAB, 8)}                # parametric parts without a traced outline
+
+
+def _detailed(n, fn):
+    return lambda X, Y, Z: DT.apply(n, fn(X, Y, Z), X, Y, Z)
+
+
 def table():
     T = {}
     for n, fn, mat, h in (("brake", brake, "park", 0.25), ("fsb", fsb, "park", 0.25), ("barrel", barrel, "park", 0.3),
                           ("rod", rod, "park", 0.25), ("gasblock", gasblock, "park", 0.25), ("gastube", gastube, "park", 0.3),
                           ("hg_upper", hg_upper, "poly", 0.4), ("hg_lower", hg_lower, "poly", 0.4), ("rsight", rsight, "park", 0.25),
                           ("dcover", dcover, "steel", 0.35), ("receiver", receiver, "steel", 0.4), ("tguard", tguard, "steel", 0.2), ("trigger", trigger, "steel", 0.2), ("magcatch", magcatch, "steel", 0.2),
-                          ("grip", grip, "poly", 0.4), ("mag", mag, "poly", 0.4), ("stock", stock, "poly", 0.5)):
-        y0, y1, z0, z1 = R.extent(n)
+                          ("grip", grip, "poly", 0.4), ("mag", mag, "poly", 0.4), ("stock", stock, "poly", 0.5),
+                          ("selector", selector, "steel", 0.2)):
+        y0, y1, z0, z1 = BOX[n] if n in BOX else R.extent(n)
         xh = max(v for k, v in HW.items()) + 4
-        T[n] = (fn, (-xh, y0 - 4, z0 - 4), (xh, y1 + 4, z1 + 4), h, mat)
+        T[n] = (_detailed(n, fn), (-xh, y0 - 4, z0 - 4), (xh, y1 + 4, z1 + 4), h, mat)
     return T
 
 
