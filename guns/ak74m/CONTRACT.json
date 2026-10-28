@@ -1,0 +1,29 @@
+{
+ "asset": "AK74M",
+ "variant": "AK-74M 5.45x39, 415 mm barrel, black polymer furniture (upper + lower handguard, pistol grip), side-folding solid polymer stock (folds to the LEFT), 30-rd black polymer magazine, two-port muzzle brake, left-side optic mount rail, stamped receiver with ribbed dust cover. Profile masters: refs_user 163245 (left side, muzzle left) and 163254 (right side, muzzle right).",
+ "variant_lock_notes": "All 12 user references show the same rifle (black AK-74M). akt4anatomy.jpg is a chart (plum furniture) used for part names only; colours/furniture from the photos win. The two images pasted in chat (field strip on a mat, railed 'tactical' AK) were never attached as files and are not used.",
+ "units": "Blender metres (1 BU = 1 m = 100 UE cm); specs in mm",
+ "frame": {
+  "ue_from_blender": "UE (x, y, z) = Blender (x, -y, z)",
+  "axes": "+Y muzzle, +X the gun's LEFT, +Z up (gun frame G)",
+  "origin": "top-rear of the pistol grip where it meets the receiver (grip top centre)",
+  "B_frame": "authoring frame B: origin on the bore axis at the muzzle-brake face, +Y toward the muzzle (so the gun lies at Y < 0), +Z up, +X gun left; G = B - ORIGIN_B (ak_spec.py)"
+ },
+ "dimensions_mm": {"overall_stock_extended": 943, "overall_stock_folded": 705, "barrel": 415, "sight_radius": 379},
+ "budgets": {"lod0_tris_total": 38000, "lod1_ratio": 0.45, "lod2_ratio": 0.18, "texture_max": 2048},
+ "assemblies": {
+  "Receiver": "stamped receiver + trunnions, rivets, rear sight block + leaf, side rail, trigger guard, pistol-grip bolt",
+  "DustCover": "moving part: lifts off; pivot = rear-sight-block notch front",
+  "BoltCarrier": "moving part: carrier + piston + charging handle, travels -Y",
+  "Barrel": "barrel + front sight block + gas block + cleaning rod + handguard retainer",
+  "Muzzle": "two-port muzzle brake",
+  "Handguard": "upper (gas-tube cover) + lower handguard",
+  "Grip": "polymer pistol grip",
+  "Stock": "side-folding polymer stock + hinge, pivot = hinge axis (folds to +X / gun left)",
+  "Mag": "30-rd polymer magazine, pivot = front lug (rock-in)",
+  "Controls": "selector lever (pivot at its axle), magazine catch, trigger"
+ },
+ "sockets": ["Muzzle", "Aim", "FrontSight", "MagazineSocket", "Grip_Socket", "HandPose_R", "HandPose_L", "Stock", "Ejection", "TacticalSocket", "Optic_Socket (left side rail)"],
+ "textures": "BaseColor (sRGB) / Normal (OpenGL; flip green in UE) / ORM / Mask (universal lab master: R steel finish A, G polymer B, B print area, A wear)",
+ "no_marks": "no factory proof marks, arsenal logos, serials or text: blank recesses only"
+}
