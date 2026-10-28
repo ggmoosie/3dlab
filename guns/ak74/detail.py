@@ -98,6 +98,10 @@ def apply(d, X, Y, Z, part, hw):
             sg = -1 if side == "R" else 1
             boss = S.extrude(d2 + 0.6, X * sg, hw - 0.5, hw + h, 0.5)
             d = S.runion(d, boss, 0.6)
+        c = pt("L", 875.0, 289.0)
+        btn = np.maximum(np.hypot(Y - c[0], Z - c[1]) - 3.6, S.slab(X, hw - 0.5, hw + 1.6))
+        btn = S.rdiff(btn, np.maximum(np.hypot(Y - c[0], Z - c[1]) - 1.5, hw + 1.0 - X), 0.2)
+        d = S.runion(d, btn, 0.4)
         for side, x, row in SMALL_DIMPLES:
             c = pt(side, x, row); sg = -1 if side == "R" else 1
             d = S.rdiff(d, np.maximum(np.hypot(Y - c[0], Z - c[1]) - 1.1, hw - 0.5 - X * sg), 0.3)
@@ -134,14 +138,50 @@ def apply(d, X, Y, Z, part, hw):
     return d
 
 
+def _arc_center(p0, p1, sag):
+    """centre and radius (B mm) of the outline arc p0 -> p1 (px) with sagitta sag (px)"""
+    a = np.array(bp(*p0)); b = np.array(bp(*p1))
+    mid = (a + b) / 2; ch = b - a; L = np.linalg.norm(ch)
+    # photo 'left normal' (x right, row down) maps to B with z flipped: rotate the chord the other way
+    nrm = np.array([-ch[1], ch[0]]) / L
+    s = sag * MM
+    Rr = (s * s + (L / 2) ** 2) / (2 * s)
+    return mid + nrm * (s - Rr), abs(Rr)
+
+
+def _circ3(a, b, c):
+    """circle through three px points -> (centre B mm, radius mm)"""
+    A, B_, C = (np.array(bp(*p)) for p in (a, b, c))
+    M = np.array([[2 * (B_ - A)[0], 2 * (B_ - A)[1]], [2 * (C - A)[0], 2 * (C - A)[1]]])
+    rhs = np.array([B_ @ B_ - A @ A, C @ C - A @ A])
+    cc = np.linalg.solve(M, rhs)
+    return cc, float(np.linalg.norm(cc - A))
+
+
 def mag_detail(d, X, Y, Z, hw):
-    """30-rd polymer magazine (163300 / profiles): the side panel steps down 0.8 mm forward of a line parallel to the
-    spine; small transverse tick ribs along the spine and the front; floorplate lip; front lug + rear catch tab on top"""
+    """30-rd polymer magazine (163300 + profiles): the side panel is a raised field 0.7 mm proud, bounded by a front band
+    (6 mm) and the rear spine (7 mm); short transverse tick ribs along both bands (11 mm pitch); floorplate lip"""
+    global _MAGARC
+    if "_MAGARC" not in globals():
+        from outlines import fitted_table
+        o = fitted_table()["mag"]
+        _MAGARC = (_circ3(o.p[2], o.p[3], o.p[4]), _circ3(o.p[11], o.p[9], o.p[7]))
+    (c, Rf), (cr, Rr) = _MAGARC
+    rho = np.hypot(Y - c[0], Z - c[1]); phi = np.arctan2(Z - c[1], Y - c[0])
+    rho_r = np.hypot(Y - cr[0], Z - cr[1])
     ax = np.abs(X)
-    # spine band (rear 9 mm of the side) stands 0.8 proud of the panel: cut the panel area instead
-    # panel area = inside the outline offset 6 mm from the rear edge, above the floorplate
-    from outlines import fitted_table
-    o = fitted_table()["mag"]
+    zfl = bp(700.0, 482.0)[1]                                         # above the floorplate lip
+    ztop = bp(650.0, 318.0)[1]
+    inband = (Z > zfl + 2.0) & (Z < ztop)
+    # panel field: inside the front band / spine -> raised
+    fld = np.maximum(Rf + 6.0 - rho, np.maximum((rho_r - (Rr - 7.0)) * np.sign(Rr), np.maximum(zfl + 4.0 - Z, Z - (ztop - 2.0))))
+    panel = S.extrude(fld + 0.8, ax, hw - 0.5, hw + 0.7, 0.4)
+    d = S.runion(d, panel, 0.5)
+    # tick ribs along the front band (radial short ribs every 11 mm of arc)
+    pitch = 11.0 / max(Rf, 1.0)
+    t = np.abs(((phi / pitch) % 1.0) - 0.5) * pitch * rho
+    tick = np.maximum.reduce([t - 0.45, np.abs(rho - (Rf + 3.0)) - 1.9, -(Z - (zfl + 6.0)), Z - (ztop - 4.0)])
+    d = S.runion(d, S.extrude(tick, ax, hw - 0.5, hw + 0.45, 0.2), 0.2)
     return d
 
 

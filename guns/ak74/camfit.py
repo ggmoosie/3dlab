@@ -85,7 +85,7 @@ def warp(img, cam, shape, p=None, box=None):
     return full
 
 
-def fit_cam(alpha, k, cam):
+def fit_cam(alpha, k, cam, scan=True):
     m = R.mask(k)
     ys, xs = np.nonzero(m)
     box = (max(0, xs.min() - 25), max(0, ys.min() - 25), min(m.shape[1], xs.max() + 25), min(m.shape[0], ys.max() + 25))
@@ -94,7 +94,17 @@ def fit_cam(alpha, k, cam):
     def res(p):
         w = warp(alpha, cam, m.shape, p, box)[box[1]:box[3], box[0]:box[2]]
         return (ndimage.gaussian_filter(w, 1.2)[::2, ::2] - ms).ravel()
-    for free in ([0, 1, 2, 3, 4, 5], list(range(9))):
+    # coarse scan of the along-the-gun perspective term (left photo: ~6 % scale change front -> back), each with a quick
+    # affine refit, before the full 9-parameter refinement
+    best = None
+    for p6 in ((np.arange(-90, 31, 15) if k == "L" else np.arange(-20, 21, 10)) if scan else [0.0]):
+        cam.p[:] = 0; cam.p[6] = p6
+        sol = optimize.least_squares(lambda q: res(np.r_[q, p6, 0, 0]), np.zeros(6), diff_step=1e-3, max_nfev=60)
+        c = float((sol.fun ** 2).sum())
+        if best is None or c < best[0]:
+            best = (c, np.r_[sol.x, p6, 0, 0])
+    cam.p[:] = best[1]
+    for free in ([0, 1, 2, 3, 4, 5], list(range(9)), list(range(9))):
         def r2(q):
             p = cam.p.copy(); p[free] = q
             return res(p)
@@ -210,3 +220,69 @@ def diff_sheets(k, sil, iou, aff, cam, g, tag, src, model=None):
             sh.paste(t, (x, y + 36)); x += t.width + 10
         y += max(t.height for t in ims) + 44
     sh.save(os.path.join(HERE, "review", f"regions_{tag}_{src}_{k}.jpg"), quality=88)
+
+
+class RigidCam:
+    """main camera composed with a rigid in-plane motion of one assembly (photo px): rotate by th about (cx, cy), shift"""
+    def __init__(self, cam, cx, cy):
+        self.cam, self.cx, self.cy = cam, cx, cy
+        self.q = np.zeros(3)
+
+    def map(self, x, r, p=None):
+        q = self.q if p is None else p
+        th = math.radians(q[2]); c, s = math.cos(th), math.sin(th)
+        dx, dy = x - self.cx - q[0], r - self.cy - q[1]
+        return self.cam.map(self.cx + c * dx + s * dy, self.cy - s * dx + c * dy)
+
+    def describe(self):
+        return dict(shift_px=[round(float(self.q[0]), 2), round(float(self.q[1]), 2)], rot_deg=round(float(self.q[2]), 3))
+
+
+def warp_any(img, cam, shape, p=None, box=None):
+    if isinstance(cam, RigidCam):
+        H, W = shape
+        box = box or (0, 0, W, H)
+        xs, rs = np.meshgrid(np.arange(box[0], box[2]) + 0.5, np.arange(box[1], box[3]) + 0.5)
+        u, v = cam.map(xs, rs, p)
+        out = ndimage.map_coordinates(img, [v - 0.5, u - 0.5], order=1, mode="constant", cval=0.0)
+        full = np.zeros((H, W), np.float32); full[box[1]:box[3], box[0]:box[2]] = out
+        return full
+    return warp(img, cam, shape, p, box)
+
+
+def iou_groups(al, k, cam, cams):
+    m = R.mask(k)
+    w = warp(al["main"], cam, m.shape)
+    for gname, a in al.items():
+        if gname == "main":
+            continue
+        w = np.maximum(w, warp_any(a, cams.get(gname) or cam, m.shape))
+    s = w > 0.5
+    return float((s & m).sum() / (s | m).sum()), s
+
+
+def fit_groups(al, k, cam):
+    """each sub-assembly: rigid in-plane rotation + shift (hinge play, magazine rock) on top of the main camera"""
+    m = R.mask(k)
+    base = warp(al["main"], cam, m.shape)
+    cams = {}
+    for gname, a in al.items():
+        if gname == "main":
+            continue
+        wg = warp(a, cam, m.shape)
+        ys, xs = np.nonzero(wg > 0.02)
+        if not len(xs):
+            cams[gname] = None
+            continue
+        c = RigidCam(cam, float(xs.mean()), float(ys.mean()))
+        box = (max(0, xs.min() - 15), max(0, ys.min() - 15), min(m.shape[1], xs.max() + 15), min(m.shape[0], ys.max() + 15))
+        ms = ndimage.gaussian_filter(m.astype(np.float32), 1.2)[box[1]:box[3], box[0]:box[2]]
+        bs = base[box[1]:box[3], box[0]:box[2]]
+
+        def res(q):
+            w = warp_any(a, c, m.shape, q, box)[box[1]:box[3], box[0]:box[2]]
+            return (ndimage.gaussian_filter(np.maximum(bs, w), 1.2) - ms).ravel()[::2]
+        sol = optimize.least_squares(res, np.zeros(3), diff_step=1e-2, max_nfev=200)
+        c.q = sol.x
+        cams[gname] = c
+    return cams

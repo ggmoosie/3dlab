@@ -52,7 +52,7 @@ SOCKETS_B = {
     "FrontSight": ((0, *P.FRONT_SIGHT_TOP), (0, 0, 0)),
     "RearSight": ((0, *P.REAR_NOTCH), (0, 0, 0)),
     "Aim": ((0, P.REAR_NOTCH[0], P.REAR_NOTCH[1] - 1.0), (0, 0, 0)),
-    "Optic_Socket": ((P.HW_REC + 5.0, R.bp(792.0, 289.0)[0] if False else R.lp2b(792.0, 289.0)[0], R.lp2b(792.0, 289.0)[1]), (0, 0, 90)),
+    "Optic_Socket": ((P.HW_REC + 5.0, *R.lp2b(792.0, 289.0)), (0, 0, 90)),
     "EjectionPort": ((-P.HW_REC, R.bp(650.0, 267.5)[0], R.bp(650.0, 267.5)[1]), (0, 0, -90)),
     "MagazineSocket": ((0, *P.MAG_TOP), (0, 0, 0)),
     "Chamber": ((0, yb(690.0), 0), (0, 0, 0)),

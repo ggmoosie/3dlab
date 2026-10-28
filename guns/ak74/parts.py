@@ -181,7 +181,8 @@ def _sec_u(X, Z, grow, x):
 def hg_rings_u(X, Y, Z):
     """steel ferrules of the upper handguard (gas tube assembly): rear (x 775.6..785) and front (880.5..893.5)"""
     rr = np.maximum(_sec_u(X, Z, 0.5, 780), S.slab(Y, yb(775.6), yb(785.0)))
-    rf = np.maximum(_sec_u(X, Z, 0.4, 887), S.slab(Y, yb(880.5), yb(893.5)))
+    rf = S.rinter(S.slab(Z, zb(270.5, 887), zb(243.6, 887)), np.abs(X) - (P.HW_UHG + 0.4), 7.6)
+    rf = np.maximum(rf, S.slab(Y, yb(880.5), yb(893.5)))
     d = np.minimum(rr, rf)
     return S.diff(d, S.cyl(X, Y, Z, "y", (0, GT_Z), GT_R + 0.2, yb(770.0), yb(900.0)))
 
@@ -218,7 +219,7 @@ def gastube(X, Y, Z):
     """gas tube from the RSB to the gas-block cup: plain tube r 8.35, rear collar by the handguard cap (r 10.6), two vent
     holes per side and shallow longitudinal flutes on the exposed part (163337)"""
     Rr = np.hypot(X, Z - GT_Z)
-    prof = [(yb(770.0), GT_R), (yb(893.0), GT_R), (yb(893.2), 10.5), (yb(904.0), 10.5), (yb(905.6), GT_R), (yb(946.0), GT_R)]
+    prof = [(yb(770.0), GT_R), (yb(893.0), GT_R), (yb(893.2), 10.5), (yb(904.0), 10.5), (yb(905.6), GT_R), (yb(943.0), GT_R)]
     d = lathe(Y, Rr, prof)
     for xh in (912.0, 920.0):
         d = S.diff(d, S.cyl(X, Y, Z, "x", (yb(xh), GT_Z + 1.0), 1.4, -12, 12))
@@ -232,7 +233,7 @@ def gasblock(X, Y, Z):
     """gas block: cup (axis 25.4, r 9.0) taking the tube, web down to the barrel ring (r 9.4), bayonet lug below with the
     rod notch, the arch over the barrel; outline = the photo's (fitted)"""
     side = F("gasblock")(Y, Z)
-    cup = S.rinter(side, np.hypot(X, Z - 25.4) - 9.0, 1.5)
+    cup = S.rinter(side, np.hypot(X, Z - 25.4) - 9.0, 0.6)
     web = S.rinter(side, np.maximum(np.abs(X) - 8.8, Z - 25.4), 1.2)
     ring = S.rinter(side, np.hypot(X, Z) - 9.4, 1.0)
     lug = S.rinter(side, np.maximum(np.abs(X) - 5.8, Z + 8.0), 0.8)
@@ -247,9 +248,12 @@ def gasblock(X, Y, Z):
 
 def barrel(X, Y, Z):
     Rr = np.hypot(X, Z)
+    # front handguard retainer collar on the barrel (x 896..905.5, bottom row 294.5 = r 9.4)
+    collar = np.maximum(np.minimum(Rr - 9.4, S.box(X, Y, Z, (-7.5, yb(896.0), 0.0), (7.5, yb(905.5), zb(271.4, 901)), 2.0)),
+                        S.slab(Y, yb(896.0), yb(905.5)))
     prof = [(yb(698.0), 7.6), (yb(890.0), 7.0), (yb(905.0), 6.7), (yb(966.0), 6.7), (yb(1004.0), 6.6), (yb(1015.0), 6.48),
             (yb(1058.0), 6.4), (yb(1094.0), 6.2), (yb(1100.0), 6.2)]
-    d = lathe(Y, Rr, prof)
+    d = S.runion(lathe(Y, Rr, prof), S.rinter(collar, -1e3 + 0 * Rr, 0.0), 0.6)
     return S.diff(d, S.cyl(X, Y, Z, "y", (0, 0), 2.8, yb(690.0), yb(1110.0)))
 
 
@@ -277,7 +281,7 @@ def fsb(X, Y, Z):
     base = S.box(X, Y, Z, (-2.4, yb(1081.5), ztop - 16.0), (2.4, yb(1087.5), ztop - 10.5), 0.6)
     d = S.union(d, post, base)
     yw, zw = bp(1081.2, 264.7)
-    d = S.rdiff(d, S.cyl(X, Y, Z, "x", (yw, zw), 5.9 * R.S_MM, -20, 20), 0.3)
+    d = S.rdiff(d, S.cyl(X, Y, Z, "x", (yw, zw), 6.4 * R.S_MM, -20, 20), 0.3)
     zr = zb(299.6, 1075)
     d = S.rdiff(d, np.maximum(np.hypot(X, Z - zr) - 2.0, S.slab(Y, yb(1050.0), yb(1100.0))), 0.3)
     d = S.diff(d, S.cyl(X, Y, Z, "y", (0, 0), 6.25, yb(1050.0), yb(1100.0)))
@@ -303,7 +307,9 @@ def brake(X, Y, Z):
     yv, zv = bp(1117.5, 286.6)
     d = S.rdiff(d, np.maximum(np.hypot(Y - yv, Z - zv) - 1.45, 9.6 - np.abs(X)), 0.2)
     d = S.rdiff(d, S.box(X, Y, Z, (-2.6, yb(1170.0), -20), (2.6, yb(1182.0), -5.6), 0.4), 0.3)
-    return d
+    # inner baffle ring seen through the front opening (163339): a thin conical ring inside the chamber
+    baffle = np.maximum(np.maximum(Rr - 8.7, 4.2 - Rr), S.slab(Y - (Rr - 4.2) * 0.35, yb(1163.5), yb(1165.0)))
+    return S.union(d, baffle)
 
 
 # ================================================================== controls, trigger group
@@ -386,12 +392,13 @@ def trigger(X, Y, Z):
 def guard(X, Y, Z):
     """stamped trigger guard: 1.8 mm strip, 10 mm wide (row crossings: rear leg x 529.8, bottom 356.5 at x 540..548, front
     leg x 584.2 into the catch block)"""
+    tang = S.extrude(rect_px(Y, Z, 529.0, 315.4, 537.4, 320.2, 0.6), np.abs(X), 0, 5.0, 0.6)
     path = [(529.8, 316.0), (529.8, 346.5), (532.6, 352.5), (538.0, 355.6), (548.0, 355.6), (570.0, 354.0), (578.0, 352.0),
             (583.4, 348.0), (585.0, 343.0), (585.0, 316.0)]
     d2 = np.full_like(Y, 1e3)
     for a, b in zip(path[:-1], path[1:]):
         d2 = np.minimum(d2, cap_px(Y, Z, a, b, 0.95))
-    return S.extrude(d2, np.abs(X), 0, 5.0, 0.6)
+    return S.union(S.extrude(d2, np.abs(X), 0, 5.0, 0.6), tang)
 
 
 def magcatch(X, Y, Z):
@@ -404,13 +411,29 @@ def magcatch(X, Y, Z):
 def grip(X, Y, Z):
     hw = P.HW_GRIP
     d = S.rinter(F("grip")(Y, Z), np.abs(X) - hw, 7.0)
-    return DT.apply(d, X, Y, Z, "grip", hw)
+    d = DT.apply(d, X, Y, Z, "grip", hw)
+    # grip screw from below (163304): round counterbore in the bottom face with the slotted screw head inside
+    (ya, za), (yb2, zb2) = bp(464.0, 423.0), bp(489.0, 427.8)
+    ang = math.atan2(zb2 - za, yb2 - ya); yc, zc = (ya + yb2) / 2, (za + zb2) / 2
+    u = (Y - yc) * math.cos(ang) + (Z - zc) * math.sin(ang); v = -(Y - yc) * math.sin(ang) + (Z - zc) * math.cos(ang)
+    bore = np.maximum(np.hypot(X, u) - 3.4, -v - 7.0)
+    d = S.rdiff(d, bore, 0.4)
+    head = np.maximum(np.maximum(np.hypot(X, u) - 2.9, S.slab(v, -7.5, -2.8)), -np.maximum(np.abs(X) - 0.45, -v - 3.6))
+    return S.union(d, head)
 
 
 def magazine(X, Y, Z):
     hw = P.HW_MAG
     d = S.rinter(F("mag")(Y, Z), np.abs(X) - hw, 2.2)
-    return DT.apply(d, X, Y, Z, "mag", hw)
+    d = DT.apply(d, X, Y, Z, "mag", hw)
+    # top (inside the magwell when inserted; seen in 163300 and the exploded / field-strip views): feed lips, the front
+    # locking lug and the rear catch tab
+    ztop = zb(312.0, 640)
+    lips = S.box(X, Y, Z, (-7.5, yb(612.0), ztop - 2), (7.5, yb(660.0), ztop + 2.6), 1.0)
+    lips = S.rdiff(lips, S.box(X, Y, Z, (-4.8, yb(608.0), ztop - 1), (4.8, yb(664.0), ztop + 4), 0.8), 0.4)
+    flug = S.box(X, Y, Z, (-6.0, yb(675.0), ztop - 1.0), (6.0, yb(680.0), ztop + 5.0), 0.8)        # inside the magwell
+    rtab = S.box(X, Y, Z, (-5.0, yb(606.5), ztop - 1.0), (5.0, yb(610.5), ztop + 4.0), 0.6)
+    return S.union(d, lips, flug, rtab)
 
 
 # ================================================================== stock
@@ -422,11 +445,23 @@ def stock_hw(Y):
 def stock(X, Y, Z):
     hw = stock_hw(Y)
     d = S.rinter(F("stock")(Y, Z), np.abs(X) - hw, 6.5)
-    return DT.apply(d, X, Y, Z, "stock", hw)
+    d = DT.apply(d, X, Y, Z, "stock", hw)
+    # hinge knuckle: the stock's steel-lined knuckle around the hinge barrel (middle band between the receiver knuckles)
+    za, zc = zb(301.6, 456), zb(278.4, 456)
+    kn = S.cyl(X, Y, Z, "z", (P.HINGE[0], P.HINGE[1]), 5.6, za, zc, 0.6)
+    web = S.box(X, Y, Z, (P.HW_STOCK_WRIST - 6.0, yb(449.0), za), (P.HINGE[0], P.HINGE[1], zc), 0.8)
+    kn = S.runion(kn, web, 1.0)
+    kn = S.diff(kn, S.cyl(X, Y, Z, "z", (P.HINGE[0], P.HINGE[1]), 4.65, za - 1, zc + 1))
+    return S.runion(d, kn, 0.8)
 
 
 def buttplate(X, Y, Z):
     d = S.rinter(F("buttplate")(Y, Z), np.abs(X) - (P.HW_STOCK_BUTT - 0.3), 5.5)
+    # folding latch hook on the left of the butt (L_d: x 1125..1145, rows 300..345; 163304): plate + hook lip
+    (y0, z1), (y1, z0) = R.lp2b(1145.0, 300.0), R.lp2b(1125.0, 345.0)
+    hook = S.box(X, Y, Z, (P.HW_STOCK_BUTT - 1.5, min(y0, y1), z0), (P.HW_STOCK_BUTT + 2.2, max(y0, y1), z1), 0.6)
+    lipp = S.box(X, Y, Z, (P.HW_STOCK_BUTT + 0.5, max(y0, y1) - 3.0, z0), (P.HW_STOCK_BUTT + 5.0, max(y0, y1), z0 + 7.0), 0.6)
+    d = S.union(d, S.runion(hook, lipp, 0.6))
     yk, zk = bp(196.0, 348.6)
     knob = S.cyl(X, Y, Z, "y", (0, zk), 5.9 * R.S_MM, yb(192.6, 348.6), yb(200.5, 348.6), 0.8)
     return S.union(d, knob)
@@ -436,8 +471,15 @@ def hinge(X, Y, Z):
     """stock hinge block between the stock front (x 452) and the receiver (x 458.5), rows 286..311; vertical hinge barrel
     on the left side"""
     blk = S.rinter(rect_px(Y, Z, 451.6, 285.6, 459.0, 311.2, 0.6), np.abs(X) - (P.HW_REC - 0.4), 1.0)
-    barrelh = S.cyl(X, Y, Z, "z", (P.HINGE[0], P.HINGE[1]), 4.6, zb(318.0, 456), zb(262.0, 456), 0.8)
-    return S.union(blk, barrelh)
+    z0, z1 = zb(318.0, 456), zb(262.0, 456)
+    barrelh = S.cyl(X, Y, Z, "z", (P.HINGE[0], P.HINGE[1]), 4.6, z0, z1, 0.8)
+    web = S.box(X, Y, Z, (P.HW_REC - 1.0, P.HINGE[1] - 3.6, z0 + 1.0), (P.HINGE[0], P.HINGE[1] + 3.6, z1 - 1.0), 0.8)
+    # knuckle gaps: the stock's two knuckles ride between the receiver's (3 knuckles, 2 gaps)
+    d = S.union(blk, S.runion(barrelh, web, 1.0))
+    for zc in (zb(278.0, 456), zb(302.0, 456)):
+        d = S.rdiff(d, np.maximum(np.abs(Z - zc) - 0.35, np.maximum(np.hypot(X - P.HINGE[0], Y - P.HINGE[1]) - 5.0,
+                                                                      -np.hypot(X - P.HINGE[0], Y - P.HINGE[1]) + 2.0)), 0.15)
+    return d
 
 
 def sidrail(X, Y, Z):
@@ -467,8 +509,8 @@ def table():
     add("hg_ring_l", hg_ring_l, (880, 900), (264, 310), 22.5, 0.2, "park")
     add("lowerhg", lowerhg, (722, 890), (265, 323), 23.5, 0.24, "poly")
     add("gastube", gastube, (766, 990), (244, 274), 12.0, 0.16, "park")
-    add("gasblock", gasblock, (954, 1007), (245, 309), 12.0, 0.16, "park")
-    add("barrel", barrel, (694, 1103), (274, 298), 9.0, 0.2, "park")
+    add("gasblock", gasblock, (936, 1007), (245, 309), 12.0, 0.16, "park")
+    add("barrel", barrel, (694, 1103), (270, 298), 11.0, 0.2, "park")
     add("rod", rod, (756, 1095), (294, 304), 4.0, 0.12, "park")
     add("fsb", fsb, (1054, 1097), (228, 310), 11.5, 0.14, "park")
     add("brake", brake, (1090, 1182), (270, 304), 14.5, 0.14, "park")
@@ -480,9 +522,9 @@ def table():
     add("magcatch", magcatch, (584, 610), (313, 361), 10.0, 0.1, "park")
     add("grip", grip, (450, 535), (313, 432), 16.0, 0.2, "poly")
     add("magazine", magazine, (594, 738), (308, 503), 16.0, 0.22, "magpoly")
-    add("stock", stock, (196, 456), (274, 393), 22.5, 0.26, "poly")
-    add("buttplate", buttplate, (190, 202), (281, 392), 22.5, 0.14, "poly")
-    add("hinge", hinge, (446, 470), (257, 323), 22.0, 0.16, "park")
+    add("stock", stock, (196, 460), (274, 393), 28.0, 0.26, "poly")
+    add("buttplate", buttplate, (190, 230), (281, 392), 27.0, 0.14, "poly")
+    add("hinge", hinge, (446, 470), (257, 323), 27.0, 0.16, "park")
     add("siderail", sidrail, (720, 870), (270, 310), 0.0, 0.14, "park")
     T["siderail"] = (sidrail, (P.HW_REC - 1.0, yb(560.0) - 4, zb(312.0, 620) - 3), (P.HW_REC + 8.0, yb(700.0) + 4, zb(262.0, 620) + 3), 0.14, "park")
     add("slings", slings, (410, 460), (290, 335), 30.0, 0.12, "park")

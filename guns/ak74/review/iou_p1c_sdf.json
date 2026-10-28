@@ -1,0 +1,58 @@
+{
+ "R": {
+  "iou": 0.9794330916282136,
+  "iou_calibration_only": 0.9660857277437588,
+  "camera": {
+   "scale_x": 1.00058,
+   "scale_y": 1.00063,
+   "rot_deg": -0.0076,
+   "persp": [
+    -3.6e-07,
+    -3.36e-06
+   ],
+   "k1": -2.8611522519272627e-09
+  },
+  "regions": {
+   "muzzle brake": 0.9604,
+   "front sight block": 0.9534,
+   "gas block": 0.9395,
+   "barrel + rod": 0.9495,
+   "handguards + gas tube": 0.975,
+   "receiver + dust cover": 0.9857,
+   "rear sight": 0.984,
+   "selector": 1.0,
+   "trigger group": 0.931,
+   "pistol grip": 0.9698,
+   "magazine": 0.977,
+   "stock + hinge": 0.9853
+  }
+ },
+ "L": {
+  "iou": 0.9641528269352936,
+  "iou_calibration_only": 0.8735696890335687,
+  "camera": {
+   "scale_x": 1.05961,
+   "scale_y": 1.03923,
+   "rot_deg": -0.4637,
+   "persp": [
+    -3.695e-05,
+    -3.8e-05
+   ],
+   "k1": -2.4379793894257727e-09
+  },
+  "regions": {
+   "muzzle brake": 0.9536,
+   "front sight block": 0.9347,
+   "gas block": 0.9114,
+   "barrel + rod": 0.9444,
+   "handguards + gas tube": 0.948,
+   "receiver + dust cover": 0.9839,
+   "rear sight": 0.9675,
+   "selector": 1.0,
+   "trigger group": 0.9188,
+   "pistol grip": 0.9656,
+   "magazine": 0.9731,
+   "stock + hinge": 0.9598
+  }
+ }
+}
