@@ -49,7 +49,7 @@ objs = [o for o in bpy.data.objects if o.type == "MESH"]
 for o in objs: o.data.materials.clear(); o.data.materials.append(M)
 s = bpy.context.scene; w = s.world or bpy.data.worlds.new("W"); s.world = w; w.use_nodes = True
 w.node_tree.nodes["Background"].inputs[0].default_value = (0.8, 0.8, 0.82, 1); w.node_tree.nodes["Background"].inputs[1].default_value = 0.35
-s.render.engine = "CYCLES"; s.cycles.samples = 32; s.cycles.use_denoising = True; s.view_settings.view_transform = "AgX"
+s.render.engine = "CYCLES"; s.cycles.samples = int(A.get("spp", 48)); s.cycles.use_denoising = True; s.view_settings.view_transform = "AgX"
 lo, hi = scene.bounds(objs); c = (lo + hi) / 2; r = (hi - lo).length
 for nm, off, e in (("key", (0.5, -0.4, 0.9), 22), ("key2", (-0.5, -0.4, 0.9), 22), ("rim", (0, 1, 0.5), 15)):
     ld = bpy.data.lights.new(nm, "AREA"); ld.size = r; ld.energy = e * r * r
